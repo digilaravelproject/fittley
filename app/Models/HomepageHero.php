@@ -55,7 +55,7 @@ class HomepageHero extends Model
         if (!$this->youtube_video_id) {
             return null;
         }
-        return "https://www.youtube.com/embed/{$this->youtube_video_id}?autoplay=1&mute=1&loop=1&playlist={$this->youtube_video_id}&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1";
+        return "/storage/app/public/fitdoc/videos/h2MNaRO2XDehDBcFzpG8Yn7mkA3Nt1zlS3kElgnC.mp4";
     }
 
     /**
@@ -66,7 +66,7 @@ class HomepageHero extends Model
         if (!$this->youtube_video_id) {
             return null;
         }
-        return "https://img.youtube.com/vi/{$this->youtube_video_id}/maxresdefault.jpg";
+        return "/storage/app/public/fitdoc/banners/LK1MNV6lD809Z8pAgV6k6hokAKEJnZiDT9JDsR1m.jpg";
     }
 
     /**

@@ -17,9 +17,14 @@
     <div class="fitdoc-container">
 
         {{-- HERO --}}
-        <section class="hero-section"
-            style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)),
-         url('{{ $heroStream && $heroStream->banner_image ? Storage::url($heroStream->banner_image) : 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?ixlib=rb-4.0.3' }}') center/cover no-repeat;">
+
+         <section class="hero-section" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)),
+           url('{{ $heroStream && $heroStream->banner_image 
+                   ? asset('storage/app/public/'.$heroStream->banner_image) 
+                   : 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?ixlib=rb-4.0.3' }}') 
+           center/cover no-repeat;">
+
+
             <div class="container-fluid">
                 <div class="hero-content text-white">
                     <h1>FitNews Live</h1>

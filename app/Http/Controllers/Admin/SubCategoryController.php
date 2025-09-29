@@ -104,4 +104,6 @@ class SubCategoryController extends Controller
         return redirect()->route('admin.fitlive.subcategories.index')
             ->with('success', 'Sub-category deleted successfully.');
     }
+
+
 }

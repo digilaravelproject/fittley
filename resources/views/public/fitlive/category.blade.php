@@ -83,7 +83,7 @@
                     @else border-secondary @endif">
                     
                     @if($session->banner_image)
-                        <img src="{{ Storage::url($session->banner_image) }}" 
+                        <img src="{{ asset('storage/app/public/'.$session->banner_image) }}" 
                              class="card-img-top" 
                              alt="{{ $session->title }}"
                              style="height: 200px; object-fit: cover;">

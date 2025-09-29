@@ -323,13 +323,27 @@ class User extends Authenticatable
     /**
      * Get the user's referral code (create if doesn't exist)
      */
-    public function getReferralCodeAttribute()
+    public function getReferralCodeAttribute_old()
     {
         if (!$this->referralCode()->exists()) {
             $this->createDefaultReferralCode();
         }
         return $this->referralCode()->first();
     }
+
+    public function getReferralCodeAttribute()
+    {
+        if (!$this->exists) {
+            return null;
+        }
+
+        if (!$this->referralCode()->exists()) {
+            $this->createDefaultReferralCode();
+        }
+
+        return $this->referralCode()->first();
+    }
+
 
     /**
      * Create default referral code for user

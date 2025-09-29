@@ -46,7 +46,7 @@ class SubCategory extends Model
 
     public function getRouteKeyName()
     {
-        return 'slug'; // or some other field
+        return 'id'; // or some other field
     }
 
 

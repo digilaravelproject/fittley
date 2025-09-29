@@ -104,7 +104,6 @@ Route::middleware(['auth', 'role:instructor'])->prefix('instructor')->name('inst
 // Public FitLive Routes
 Route::prefix('fitlive')->name('fitlive.')->group(function () {
     Route::get('/', [FitLiveController::class, 'index'])->name('index');
-     Route::get('/{slug}', [FitLiveController::class, 'show'])->name('daily-classes.show');
     // Scroll the fitflix vdo
     Route::get('/vdo', [FitLiveController::class, 'fitflixShortsVdo'])->name('vdo');
 
@@ -116,6 +115,9 @@ Route::prefix('fitlive')->name('fitlive.')->group(function () {
         Route::get('/session/{id}', [FitLiveController::class, 'session'])->name('session');
         Route::get('/category/{category}', [FitLiveController::class, 'category'])->name('category');
     });
+
+    Route::get('/{id}', [FitLiveController::class, 'show'])->name('daily-classes.show');
+
 });
 
 

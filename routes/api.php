@@ -205,6 +205,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/single/{fgSingle}', [App\Http\Controllers\Api\FitGuideApiController::class, 'showSingle']);
         Route::get('/series/{fgSeries}', [App\Http\Controllers\Api\FitGuideApiController::class, 'showSeries']);
         Route::get('/{id}/fitcast', [App\Http\Controllers\Api\FitGuideApiController::class, 'getFitCastsById']);
+        Route::post('/fitcast/{id}/share', [App\Http\Controllers\Api\FitGuideApiController::class, 'share']);
+        Route::post('/fitcast/{id}/like', [App\Http\Controllers\Api\FitGuideApiController::class, 'like']);
         Route::get('/series/{fgSeries}/episodes', [App\Http\Controllers\Api\FitGuideApiController::class, 'seriesEpisodes']);
     });
     

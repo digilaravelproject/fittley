@@ -68,7 +68,7 @@ class FitLiveController extends Controller
         ));
     }
 
-    public function show($slug)
+    public function show($id)
     {
         // Fetch subcategories
         $subcategories = SubCategory::where('category_id', 21)
@@ -76,11 +76,10 @@ class FitLiveController extends Controller
             ->orderBy('sort_order')
             ->get(['id', 'name', 'slug']);
 
-
-        $selectedSubcategory = $subcategories->firstWhere('slug', $slug);
-        if (!$selectedSubcategory) {
-            abort(404);
-        }
+        $selectedSubcategory = $subcategories->firstWhere('id', $id);
+            if (!$selectedSubcategory) {
+                abort(404);
+            }
 
         $now = Carbon::now();
 

@@ -931,6 +931,12 @@ class FitLiveSessionApiController extends Controller
             
             // Generate access token (mock)
             $accessToken = 'mock_token_' . uniqid();
+            $channelInfo = [
+                'livekit_room' => $session->livekit_room,
+                'channel_name' => $session->getChannelName(),
+                'hls_url' => $session->hls_url,
+                'is_streaming' => !empty($session->hls_url) && $session->isLive(),
+            ];
             
             return response()->json([
                 'success' => true,
@@ -941,7 +947,8 @@ class FitLiveSessionApiController extends Controller
                         'title' => $session->title,
                         'status' => $session->status,
                         'livekit_room' => $session->livekit_room,
-                        'hls_url' => $session->hls_url
+                        'hls_url' => $session->hls_url,
+                        'channel' => $channelInfo
                     ],
                     'participant' => $participantData,
                     'access_token' => $accessToken,

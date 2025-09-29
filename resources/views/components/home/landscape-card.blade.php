@@ -2,8 +2,7 @@
 
 
 @php
-
-    $fallbackImage = asset('storage/fitlive/banners/' . 'default-banner.jpg');
+    $fallbackImage = asset('storage/app/public/fitlive/banners/' . 'default-banner.jpg');
     $finalImage = !empty($image) ? $image : $fallbackImage;
 @endphp
 

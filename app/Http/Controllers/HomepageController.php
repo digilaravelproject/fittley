@@ -61,6 +61,7 @@ class HomepageController extends Controller
             // ->whereHas('fitLiveSessions', function($query) {
             //     $query->where('visibility', 'public');
             // })
+            ->where('id', '!=', 17)
             ->orderBy('sort_order')
             ->get();
         }

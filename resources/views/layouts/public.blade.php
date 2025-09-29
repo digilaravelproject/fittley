@@ -806,7 +806,7 @@
         <div class="container mx-2">
 
             <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-                <img src="{{ asset('storage/logos/app_logo.png') }}" height="40" class="me-2 ms-3 ms-md-0">
+                <img src="{{ asset('storage/app/public/app_logo.png') }}" height="40" class="me-2 ms-3 ms-md-0">
             </a>
             {{-- Mobile Auth Section (Visible only on Mobile) --}}
             <div class="d-flex d-lg-none align-items-center" style="margin-right: -1rem;">
@@ -851,7 +851,7 @@
 
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('fitlive.index') ? 'active' : '' }}"
-                            href="{{ route('fitlive.index') }}">
+                            href="#">
                             <!-- <i class="fas fa-broadcast-tower me-1"></i> -->
                             Community
                         </a>
@@ -946,21 +946,20 @@
             <a href="{{ url('/') }}" class="bottom-nav-item {{ Request::is('/') ? 'active' : '' }}">
                 <div class="bottom-nav-icon">
                     <img src="{{ Request::is('/')
-                        ? asset('storage/navigation-icon/home filled.png')
-                        : asset('storage/navigation-icon/home_stroke_grey.png') }}"
+                        ? asset('storage/app/public/navigation-icon/home filled.png')
+                        : asset('storage/app/public/navigation-icon/home_stroke_grey.png') }}"
                         alt="Home Icon" class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">Home</span>
             </a>
 
 
-
             <a href="{{ route('fitlive.index') }}"
                 class="bottom-nav-item {{ Request::is('fitlive.index') ? 'active' : '' }}">
                 <div class="bottom-nav-icon">
                     <img src="{{ Request::is('fitlive.index')
-                        ? asset('storage/navigation-icon/community filled.png')
-                        : asset('storage/navigation-icon/community_grey.png') }}"
+                        ? asset('storage/app/public/navigation-icon/community filled.png')
+                        : asset('storage/app/public/navigation-icon/community_grey.png') }}"
                         alt="Home Icon" class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">Community</span>
@@ -971,8 +970,8 @@
                 class="bottom-nav-item {{ Request::is('fitlive/vdo') ? 'active' : '' }}">
                 <div class="bottom-nav-icon">
                     <img src="{{ Request::is('fitlive/vdo')
-                        ? asset('storage/navigation-icon/fitflix filled.png')
-                        : asset('storage/navigation-icon/fitflix_stroke_grey.png') }}"
+                        ? asset('storage/app/public/navigation-icon/fitflix filled.png')
+                        : asset('storage/app/public/navigation-icon/fitflix_stroke_grey.png') }}"
                         alt="Home Icon" class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">FitFlix</span>
@@ -981,8 +980,8 @@
                 class="bottom-nav-item {{ Request::is('fitarena.index') ? 'active' : '' }}">
                 <div class="bottom-nav-icon">
                     <img src="{{ Request::is('fitarena.index')
-                        ? asset('storage/navigation-icon/fittalk new filled.png')
-                        : asset('storage/navigation-icon/FitTalk new.png') }}"
+                        ? asset('storage/app/public/navigation-icon/fittalk new filled.png')
+                        : asset('storage/app/public/navigation-icon/FitTalk new.png') }}"
                         alt="Home Icon" class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">FitTalk</span>
@@ -990,8 +989,8 @@
             <a href="{{ url('/tools') }}" class="bottom-nav-item {{ Request::is('tools') ? 'active' : '' }}">
                 <div class="bottom-nav-icon">
                     <img src="{{ Request::is('tools')
-                        ? asset('storage/navigation-icon/Tool filled.png')
-                        : asset('storage/navigation-icon/Tool_grey.png') }}"
+                        ? asset('storage/app/public/navigation-icon/Tool filled.png')
+                        : asset('storage/app/public/navigation-icon/Tool_grey.png') }}"
                         alt="Home Icon" class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">Tools</span>
@@ -1008,7 +1007,7 @@
         <div class="container text-center">
             {{-- Logo centered --}}
             <div class="con-logo mb-3">
-                <img src="{{ asset('storage/app_logo.png') }}" alt="FITTELLY Logo" height="50" class="mb-2">
+                <img src="{{ asset('storage/app/public/app_logo.png') }}" alt="FITTELLY Logo" height="50" class="mb-2">
             </div>
 
             {{-- Social icons centered --}}

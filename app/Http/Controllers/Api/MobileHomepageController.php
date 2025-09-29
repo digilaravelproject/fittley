@@ -7,6 +7,7 @@ use App\Models\FitSeries;
 use App\Models\FitDoc;
 use App\Models\FitLiveSession;
 use App\Models\Category;
+use App\Models\SubCategory;
 use App\Models\FitCast;
 use App\Models\FitNews;
 use App\Models\FitInsight;
@@ -89,7 +90,7 @@ class MobileHomepageController extends Controller
     /**
      * Get Fit Live sessions with title, category, image, id
      */
-    private function getFitLive(): array
+    private function getFitLive_old(): array
     {
         try {
             $sessions = FitLiveSession::with(['category', 'instructor'])
@@ -112,6 +113,37 @@ class MobileHomepageController extends Controller
                 });
 
             return $sessions->toArray();
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Get Fit Live sessions with title, category, image, id
+     */
+    private function getFitLive(): array
+    {
+        try {
+            $subcategories = SubCategory::with(['category'])
+                ->where('category_id', 21)
+                ->where('id', '!=', 17)
+                ->orderBy('sort_order')
+                ->get()
+                ->map(function ($subcategory) {
+                    return [
+                        'id' => $subcategory->id,
+                        'title' => $subcategory->name,
+                        'category' => $subcategory->category ? $subcategory->category->name : 'Unknown Category',
+                        'image' => $subcategory->banner_image ? asset('storage/app/public/' . $subcategory->banner_image) : null,
+                        'description' => null, // subcategories table doesn’t have description
+                        'instructor' => null, // not applicable for subcategory
+                        'scheduled_at' => null, // not applicable
+                        'status' => null, // not applicable
+                        'type' => 'subcategory'
+                    ];
+                });
+
+            return $subcategories->toArray();
         } catch (\Exception $e) {
             return [];
         }

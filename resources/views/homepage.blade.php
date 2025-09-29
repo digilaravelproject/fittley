@@ -4,7 +4,7 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="{{ asset('assets/home/css/homepage.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('public/assets/home/css/homepage.css') }}?v={{ time() }}">
 @endpush
 
 @section('content')
@@ -96,7 +96,7 @@
 
                                 <div class="slider-container" id="fitdoc-videos-slider">
                                     @foreach ($fitDocVideos as $video)
-                                        <x-home.portrait-card :video="$video" badge="Movie" badgeClass="badge-single" url="fitdoc.single.show"/>
+                                        <x-home.portrait-card-second :video="$video" badge="Movie" badgeClass="badge-single" url="fitdoc.single.show"/>
                                     @endforeach
                                 </div>
 
@@ -164,9 +164,7 @@
                                         @foreach ($allContent as $subCategory)
 
                                             @if ($category->id == 19)
-
                                                 <x-home.landscape-card
-
                                                     :route="route('fitlive.daily-classes.show', $category->slug)"
 
                                                     :title="$subCategory->title"
@@ -180,7 +178,7 @@
                                                     :video="$subCategory"
                                                     badge="Live"
                                                     badgeClass="badge-live"
-                                                    url="fitlive.index"
+                                                    url="fitlive.daily-classes.show"
                                                 />
                                             @endif
                                         @endforeach
@@ -229,7 +227,7 @@
                                                 <x-home.landscape-card
                                                     :route="route('fitarena.show', $event)"
                                                     :title="$event->title"
-                                                    :image="$event->banner_image_path ? asset('storage/app/public/' . $event->banner_image_path) : null"
+                                                    :image="$event->banner_image_path ? $event->banner_image_path : null"
                                                     :badge="$badge"
                                                     :meta="[ '<i class=\'fas fa-calendar\'></i> ' . ($event->created_at?->format('M d, Y') ?? '') ]"
                                                 />
@@ -402,5 +400,5 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="{{ asset('assets/home/js/homepage.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('public/assets/home/js/homepage.js') }}?v={{ time() }}"></script>
 @endpush

@@ -8,7 +8,9 @@
     <section class="event-hero bg-dark text-white position-relative overflow-hidden">
         <div class="hero-background">
             @if($event->banner_image)
-                <img src="{{ Storage::url($event->banner_image) }}" alt="{{ $event->title }}" class="w-100 h-100 object-cover opacity-50">
+                <img src="{{ asset('storage/app/public/'.$event->banner_image) }}" 
+                    alt="{{ $event->title }}" 
+                    class="w-100 h-100 object-cover opacity-50">
             @else
                 <div class="bg-gradient-primary w-100 h-100"></div>
             @endif

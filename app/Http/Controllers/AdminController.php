@@ -138,9 +138,14 @@ class AdminController extends Controller
             return redirect()->route('admin.users')->with('error', 'You cannot delete yourself!');
         }
 
+        // Delete referral code first
+        $user->referralCode()->delete();
+
         $user->delete();
+
         return redirect()->route('admin.users')->with('success', 'User deleted successfully!');
     }
+
 
     /**
      * Show roles management

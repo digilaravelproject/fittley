@@ -9,7 +9,7 @@
     <section class="hero-section bg-dark text-white position-relative overflow-hidden">
         <div class="hero-background">
             @if($heroEvent->banner_image)
-                <img src="{{ Storage::url($heroEvent->banner_image) }}" alt="{{ $heroEvent->title }}" class="w-100 h-100 object-cover opacity-50">
+                <img src="{{ asset('storage/app/public/'.$heroEvent->banner_image) }}" alt="{{ $heroEvent->title }}" class="w-100 h-100 object-cover opacity-50">
             @else
                 <div class="bg-gradient-primary w-100 h-100"></div>
             @endif
@@ -50,7 +50,7 @@
                     <div class="card event-card h-100 border-0 shadow-sm bg-dark text-white">
                         <div class="position-relative">
                             @if($event->banner_image)
-                                <img src="{{ Storage::url($event->banner_image) }}" class="card-img-top" alt="{{ $event->title }}" style="height: 200px; object-fit: cover;">
+                                <img src="{{ asset('storage/app/public/'.$event->banner_image) }}" class="card-img-top" alt="{{ $event->title }}" style="height: 200px; object-fit: cover;">
                             @else
                                 <div class="bg-gradient-primary" style="height: 200px;"></div>
                             @endif
@@ -100,7 +100,7 @@
                     <div class="card event-card h-100 border-0 shadow-sm bg-dark text-white">
                         <div class="position-relative">
                             @if($event->banner_image)
-                                <img src="{{ Storage::url($event->banner_image) }}" class="card-img-top" alt="{{ $event->title }}" style="height: 200px; object-fit: cover;">
+                                <img src="{{ asset('storage/app/public/'.$event->banner_image) }}" class="card-img-top" alt="{{ $event->title }}" style="height: 200px; object-fit: cover;">
                             @else
                                 <div class="bg-gradient-secondary" style="height: 200px;"></div>
                             @endif
@@ -147,7 +147,7 @@
                     <div class="card event-card h-100 border-0 shadow-sm bg-dark text-white">
                         <div class="position-relative">
                             @if($event->banner_image)
-                                <img src="{{ Storage::url($event->banner_image) }}" class="card-img-top" alt="{{ $event->title }}" style="height: 150px; object-fit: cover;">
+                                <img src="{{ asset('storage/app/public/'.$event->banner_image) }}" class="card-img-top" alt="{{ $event->title }}" style="height: 150px; object-fit: cover;">
                             @else
                                 <div class="bg-gradient-warning" style="height: 150px;"></div>
                             @endif

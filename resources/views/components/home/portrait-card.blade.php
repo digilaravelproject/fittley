@@ -7,7 +7,7 @@
 
     @php
         // $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');
-        $fallbackImage = asset('storage/fitlive/banners/default-banner.jpg');
+        $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');
         $finalImage = !empty($video->banner_image_path)
             ? asset('storage/app/public/' . $video->banner_image_path)
             : $fallbackImage;

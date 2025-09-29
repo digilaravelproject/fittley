@@ -247,6 +247,103 @@ class FitGuideApiController extends Controller
     }
 
     /**
+ * Like or unlike a blog (FitLiveSession)
+ */
+    public function like(Request $request, $sessionId): JsonResponse
+    {
+        try {
+            $request->validate([
+                'post_type' => 'required|in:fit_series_video,fit_live_video,fit_guide_video,fit_cast_video,fit_news_video,fit_insight_video'
+            ]);
+
+            $user = Auth::user();
+            $session = FitCast::find($sessionId);
+
+            if (!$session) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Session not found'
+                ], 404);
+            }
+
+            $existingLike = PostLike::where('post_type', $request->post_type)
+                ->where('post_id', $sessionId)
+                ->where('user_id', $user->id)
+                ->first();
+
+            if ($existingLike) {
+                // Remove like
+                $existingLike->delete();
+                $session->decrement('likes_count'); // optional if you want live count tracking
+                $isLiked = false;
+                $message = 'Like removed';
+            } else {
+                // Add new like
+                PostLike::create([
+                    'post_type' => $request->post_type,
+                    'post_id' => $sessionId,
+                    'user_id' => $user->id
+                ]);
+                $session->increment('likes_count'); // optional if you want live count tracking
+                $isLiked = true;
+                $message = 'Session liked';
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'data' => [
+                    'is_liked' => $isLiked,
+                    'likes_count' => $session->fresh()->likes_count
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to toggle like',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Share a blog
+     */
+    public function share(Request $request, $id): JsonResponse
+    {
+        try {   
+
+            $FitLiveSession = FitCast::find($id);
+
+            if (!$FitLiveSession) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to share session',
+                    'error'   => 'Session not found'
+                ], 404); // Use 404 since resource not found
+            }
+
+            // Increment share count
+            $FitLiveSession->increment('shares_count');
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'share_url' => url("/fitlive/session/{$FitLiveSession->id}"),
+                    'total_shares' => $FitLiveSession->shares_count
+                ],
+                'message' => 'Session shared successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to share session',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Get FitGuide categories
      */
     public function categories(Request $request): JsonResponse
