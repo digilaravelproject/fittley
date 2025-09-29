@@ -1,0 +1,822 @@
+* {
+    font-family: "Inter", sans-serif;
+}
+/* Override main content padding for homepage */
+.main-content {
+    padding-top: 0;
+    margin-top: 0;
+}
+
+/* Remove container padding for full-screen hero */
+.homepage-container {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Netflix-style Dark Theme */
+:root {
+    --netflix-red: #e50914;
+    --netflix-black: #000000;
+    --netflix-dark-gray: #141414;
+    --netflix-gray: #2f2f2f;
+    --netflix-light-gray: #8c8c8c;
+    --netflix-white: #ffffff;
+    --fittelly-orange: #f7a31a;
+    --fittelly-orange-hover: #e8941a;
+}
+
+body {
+    background-color: var(--netflix-black);
+    color: var(--netflix-white);
+    /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+
+    font-family: "Inter", sans-serif;
+}
+
+/* Hero Section - Full Screen */
+.hero-section {
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--netflix-black);
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+}
+
+.hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: 1;
+    /* Ensure video covers entire screen */
+    min-width: 100vw;
+    min-height: 100vh;
+    /* Optimize for mobile */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    /* Disable video controls */
+    pointer-events: none;
+}
+.container-fluid {
+    max-width: 1600px;
+    padding: 0;
+}
+
+/* Fallback for browsers that don't support object-fit */
+@supports not (object-fit: cover) {
+    .hero-video {
+        width: auto;
+        height: auto;
+        min-width: 100%;
+        min-height: 100%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.7));
+    z-index: 3;
+}
+
+.hero-section .container {
+    width: 100vw;
+    max-width: none;
+    margin: 0;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 3;
+}
+
+.hero-content {
+    max-width: 600px;
+    z-index: 3;
+    color: var(--netflix-white);
+    position: relative;
+}
+
+.hero-category {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--netflix-white);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--netflix-white);
+    line-height: 1.2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.hero-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--netflix-white);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.hero-meta i {
+    color: var(--fittelly-orange);
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    color: var(--netflix-white);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-hero {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-hero.primary {
+    background: var(--fittelly-orange);
+    color: var(--netflix-black);
+}
+
+.btn-hero.primary:hover {
+    background: #e8941a;
+    transform: translateY(-2px);
+}
+
+.btn-hero.secondary {
+    background: rgba(255, 255, 255, 0.3);
+    color: var(--netflix-white);
+    backdrop-filter: blur(10px);
+}
+
+.btn-hero.secondary:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+/* Content Sections */
+.content-section {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0 1rem;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--netflix-white);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title i {
+    color: var(--fittelly-orange);
+}
+
+.view-all-btn {
+    color: var(--fittelly-orange);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.view-all-btn:hover {
+    color: #e8941a;
+}
+
+/* Content Slider */
+.content-slider {
+    position: relative;
+    overflow: auto;
+    /* Add smooth scrolling for mobile */
+    -webkit-overflow-scrolling: touch;
+}
+
+.slider-container {
+    display: flex;
+    transition: transform 0.3s ease;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    overflow: visible;
+    width: auto;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    /* Prevent text selection during swipe */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    white-space: nowrap; /* Isse content ek line me hi rehga */
+    -ms-overflow-style: none; /* IE/Edge ke liye scrollbar hide karne ke liye */
+    scrollbar-width: none; /* Firefox ke liye scrollbar hide karne ke liye */
+}
+
+/* Scrollbar hide karne ke liye */
+.slider-container::-webkit-scrollbar {
+    display: none; /* Chrome/Safari ke liye */
+}
+
+.content-card {
+    flex: 0 0 280px;
+    background: var(--netflix-dark-gray);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    aspect-ratio: 3 / 2;
+    height: calc(280px * 3 / 2);
+    /* aspect-ratio: 9/16;
+    height: calc(280px * 16 / 9); */
+    scroll-snap-align: start;
+    margin-bottom: 0.2rem;
+}
+.content-card-landscap {
+    flex: 0 0 25vw;
+    aspect-ratio: 9 / 16;
+    height: calc(50vh * 9 / 16);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.content-card:hover {
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.content-card:hover .card-image {
+    transform: scale(1.1);
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.9));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content-card:hover .card-overlay {
+    opacity: 1;
+}
+
+.play-icon {
+    width: 60px;
+    height: 60px;
+    background: var(--fittelly-orange);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--netflix-black);
+    transform: scale(0.8);
+    transition: transform 0.3s ease;
+}
+
+.content-card:hover .play-icon {
+    transform: scale(1);
+}
+
+.card-content {
+    padding: 1rem;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(20, 20, 20, 0.95));
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--netflix-white);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    display: box; /* fallback for older specs */
+    -webkit-box-orient: vertical;
+    box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2; /* ✅ this is the standard one */
+    overflow: hidden;
+}
+
+.card-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--netflix-light-gray);
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.status-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 0.2rem 0.6rem;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-live {
+    background: var(--netflix-red);
+    color: var(--netflix-white);
+    animation: pulse 2s infinite;
+}
+
+.badge-series {
+    background: var(--netflix-red);
+    color: var(--netflix-white);
+}
+
+.badge-single {
+    background: var(--fittelly-orange);
+    color: var(--netflix-black);
+}
+
+.badge-upcoming {
+    background: rgb(104 104 104 / 79%);
+    color: var(--netflix-white);
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Slider Controls */
+.slider-controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    border: none;
+    color: var(--netflix-white);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 5;
+}
+
+.slider-controls:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.slider-prev {
+    left: 10px;
+}
+
+.slider-next {
+    right: 10px;
+}
+
+/* Mobile Grid Layout */
+.mobile-grid {
+    display: none;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 0 1rem;
+}
+
+.mobile-grid .content-card {
+    flex: none;
+    height: 300px;
+}
+
+.mobile-grid .card-image {
+    height: 200px;
+}
+
+/* Category Sections */
+.category-section {
+    margin-bottom: 1rem;
+}
+
+.category-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--netflix-white);
+    margin-bottom: 1rem;
+    padding: 0 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section {
+        height: 70vh;
+        background-attachment: scroll;
+    }
+
+    .hero-video {
+        /* Ensure video covers mobile screens properly */
+        object-fit: cover;
+        object-position: center;
+        width: 100vw;
+        height: 70vh;
+        min-width: 100vw;
+        min-height: 70vh;
+        scale: 2;
+    }
+
+    .hero-overlay {
+        width: 100vw;
+        height: 70vh;
+    }
+
+    .hero-content {
+        padding: 2rem 1rem;
+        max-width: 100%;
+    }
+
+    .hero-category {
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-content h1 {
+        font-size: 2.2rem;
+        line-height: 1.1;
+        margin-bottom: 1rem;
+    }
+
+    .hero-meta {
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .hero-meta span {
+        font-size: 0.8rem;
+        padding: 0.25rem 0.6rem;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .btn-hero {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        justify-content: center;
+        width: 100%;
+        max-width: 280px;
+    }
+
+    /* Adjust slider for mobile */
+    .slider-container {
+        padding: 0 0.5rem;
+        gap: 0.75rem;
+        /* width: calc(3 * 200px + 2 * 0.75rem + 1rem); */
+        overflow-x: auto;
+        white-space: nowrap; /* Isse content ek line me hi rehga */
+        -ms-overflow-style: none; /* IE/Edge ke liye scrollbar hide karne ke liye */
+        scrollbar-width: none; /* Firefox ke liye scrollbar hide karne ke liye */
+    }
+    /* Scrollbar hide karne ke liye */
+    .slider-container::-webkit-scrollbar {
+        display: none; /* Chrome/Safari ke liye */
+    }
+
+    .content-card {
+        flex: 0 0 200px;
+        aspect-ratio: 9/16;
+        height: calc(200px * 16 / 9);
+    }
+
+    .card-image {
+        height: 70%;
+    }
+
+    /* Hide year and minutes on mobile */
+    .card-meta span:nth-child(2) {
+        display: none;
+    }
+
+    .card-content {
+        padding: 0.75rem;
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+        line-height: 1.3;
+    }
+
+    .card-meta {
+        font-size: 0.8rem;
+    }
+
+    .card-meta span {
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    /* Slider controls for mobile */
+    .slider-controls {
+        display: flex;
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+
+    .slider-prev {
+        left: 5px;
+    }
+
+    .slider-next {
+        right: 5px;
+    }
+
+    .section-title {
+        font-size: 1.4rem;
+    }
+
+    .category-title {
+        font-size: 1.2rem;
+        padding: 0 0.5rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .status-badge {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .play-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.2rem;
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+    .navbar.scrolled {
+        padding: 0.5rem 0.8rem !important;
+        background-color: var(--netflix-black);
+    }
+
+    .hero-section {
+        height: 46vh;
+        margin-top: 3rem;
+    }
+    .hero-overlay {
+        height: 48vh;
+    }
+    .hero-section .container {
+        margin-top: 3rem;
+    }
+    .hero-video {
+        height: 70vh;
+        min-height: 70vh;
+        scale: 3;
+    }
+
+    .hero-content {
+        padding: 1.5rem 1rem;
+        margin-left: -1.3rem;
+    }
+
+    .hero-content h1 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-meta {
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-meta span {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .hero-content p {
+        font-size: 0.65rem;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        opacity: 0.7;
+        text-align: left;
+        letter-spacing: 0.2px;
+    }
+
+    .hero-buttons {
+        display: flex;
+        flex-wrap: nowrap; /* ❗ don't wrap on mobile */
+        gap: 1.5rem; /* reduce gap */
+        justify-content: center; /* optional: center horizontally */
+        overflow-x: auto; /* ❗ enable horizontal scrolling if needed */
+        flex-direction: row; /* keep buttons in a row */
+        width: fit-content; /* fit to content width */
+        max-width: 100%; /* prevent overflow */
+        -ms-overflow-style: none; /* IE/Edge ke liye scrollbar hide kar
+ne ke liye */
+        scrollbar-width: none; /* Firefox ke liye scrollbar hide karne ke liye */
+    }
+
+    .btn-hero {
+        padding: 0.7rem 1rem; /* smaller padding */
+        font-size: 0.62rem; /* smaller font */
+        white-space: nowrap; /* ❗ prevent text wrapping inside buttons */
+        flex-shrink: 1; /* allow buttons to shrink if needed */
+        width: auto; /* auto width */
+        letter-spacing: 1px; /* optional: improve readability */
+        max-width: 8rem; /* limit max width */
+    }
+    .section-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    /* Even smaller cards for very small screens */
+    .content-card {
+        flex: 0 0 105px;
+        aspect-ratio: 3 / 2;
+        height: calc(110px * 3 / 2);
+        border-radius: 6px;
+    }
+
+    .card-image {
+        height: 100%;
+    }
+
+    .card-content {
+        padding: 0.5rem;
+    }
+
+    .card-title {
+        font-size: 0.4rem;
+        line-height: 1;
+        letter-spacing: 1px;
+    }
+
+    .card-meta {
+        font-size: 0.75rem;
+    }
+
+    .slider-container {
+        /* gap: 0.41rem; */
+        /* width: calc(3 * 160px + 2 * 0.5rem + 1rem); */
+        display: flex;
+        gap: 5px; /* or match your layout */
+        transition: transform 0.4s ease-in-out;
+        will-change: transform;
+    }
+
+    .category-title {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+        opacity: 75%;
+    }
+
+    .section-title,
+    .view-all-btn {
+        font-size: 0.9rem;
+        letter-spacing: 0.8px;
+        font-weight: 500;
+    }
+    .status-badge {
+        font-size: 0.4rem;
+        padding: 0.2rem 0.4rem;
+        z-index: 2;
+        letter-spacing: 0.3px;
+    }
+    .slider-controls {
+        display: none !important; /* hide on very small screens */
+    }
+    .slider-controls {
+        display: flex;
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+    .slider-controls[disabled] {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+    .content-card-landscap {
+        flex: 0 0 160px;
+        aspect-ratio: 9 / 16;
+        height: calc(180px * 9 / 16);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    .card-overlay,
+    .card-content {
+        display: none;
+    }
+}

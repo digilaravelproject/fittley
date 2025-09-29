@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Disallow sensitive areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /storage/
+Disallow: /vendor/
+Disallow: /app/
+Disallow: /bootstrap/
+Disallow: /config/
+Disallow: /database/
+Disallow: /resources/
+Disallow: /routes/
+Disallow: /tests/
+
+# Allow important files
+Allow: /css/
+Allow: /js/
+Allow: /images/
+Allow: /fonts/
+
+# Sitemap
+Sitemap: https://yourdomain.com/sitemap.xml

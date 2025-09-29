@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Video Security */
+video {
+    /* Disable right-click context menu */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    /* Disable drag and drop */
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+    
+    /* Disable text selection */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Disable right-click on video containers */
+.video-container,
+.video-player,
+.hero-video,
+.video-element {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: auto;
+}
+
+/* Prevent video download via CSS */
+video::-webkit-media-controls-download-button {
+    display: none;
+}
+
+video::-webkit-media-controls-enclosure {
+    overflow: hidden;
+}
+
+video::-webkit-media-controls-panel {
+    width: calc(100% + 30px);
+    margin-left: -15px;
+}

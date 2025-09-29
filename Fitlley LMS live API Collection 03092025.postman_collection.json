@@ -1,0 +1,4597 @@
+{
+	"info": {
+		"_postman_id": "a0f0c2d7-ce29-4bdc-8b03-d74c25cfe912",
+		"name": "Fitlley LMS live API Collection 03092025",
+		"description": "Complete API collection for Fitlley Learning Management System",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "48161696",
+		"_collection_link": "https://digilaravelproject-7685527.postman.co/workspace/digilaravelproject's-Workspace~e253ce41-0e09-4f29-8044-1ade22ec9cab/collection/48161696-a0f0c2d7-ce29-4bdc-8b03-d74c25cfe912?action=share&source=collection_link&creator=48161696"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set('auth_token', jsonData.token);",
+									"    pm.environment.set('user_id', jsonData.user.id);",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@fitlley.com\",\n  \"password\": \"secret1234\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Firebase OTP - Send OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"+1234567890\",\n  \"action\": \"login\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/otp/send",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"otp",
+								"send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Firebase OTP - Verify OTP",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.token) {",
+									"        pm.environment.set('auth_token', jsonData.token);",
+									"        pm.environment.set('user_id', jsonData.user.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"+1234567890\",\n  \"otp\": \"123456\",\n  \"action\": \"login\",\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/otp/verify",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"otp",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Firebase OTP - Check Phone",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"+1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/otp/check-phone",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"otp",
+								"check-phone"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Community",
+			"item": [
+				{
+					"name": "Get All Posts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/posts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"This is my first community post!\",\n  \"category_id\": 1,\n  \"is_public\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/community/posts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Like Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/posts/1/like",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"posts",
+								"1",
+								"like"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Comment to Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"Great post! Thanks for sharing.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/community/posts/1/comment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"posts",
+								"1",
+								"comment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Community Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Community Groups",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/groups",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Friends",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/friends",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"friends"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Friend Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_id\": 2\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/community/friends/request",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"friends",
+								"request"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Direct Message Conversations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/messages/conversations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"messages",
+								"conversations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/profiles/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"profiles",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"bio\": \"Fitness enthusiast and health coach\",\n  \"age\": 28,\n  \"height\": 175,\n  \"weight\": 70,\n  \"fitness_goals\": [\"weight_loss\", \"muscle_gain\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/community/profiles/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"profiles",
+								"me"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Content - FitGuide",
+			"item": [
+				{
+					"name": "Get All FitGuides",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitguide",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitguide"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get FitGuide by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitguide/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitguide",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Content - FitNews",
+			"item": [
+				{
+					"name": "Get All FitNews",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitnews",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitnews"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Content - FitInsight",
+			"item": [
+				{
+					"name": "Get All FitInsights",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitinsight",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitinsight"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Subscriptions",
+			"item": [
+				{
+					"name": "Get Subscription Plans",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/plans",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"plans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current Subscription",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/subscription/current",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe to Plan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"plan_id\": 1,\n  \"payment_method\": \"stripe\",\n  \"referral_code\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/subscription/subscribe",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"subscription",
+								"subscribe"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "Create Payment Intent",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 2999,\n  \"currency\": \"usd\",\n  \"plan_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/payment/create-intent",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"payment",
+								"create-intent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payment Methods",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/payment/methods",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"payment",
+								"methods"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FitArena",
+			"item": [
+				{
+					"name": "Get All Events",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitarena",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitarena"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Featured Events",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitarena/featured",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitarena",
+								"featured"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Live Events",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitarena/live",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitarena",
+								"live"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FitLive",
+			"item": [
+				{
+					"name": "Get Live Sessions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitlive",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Live Session Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Agora Config for Session",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/1/agora-config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"1",
+								"agora-config"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "FitTalk",
+			"item": [
+				{
+					"name": "Get Instructors",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/fittalk/instructors",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"fittalk",
+								"instructors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Sessions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/fittalk/sessions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"fittalk",
+								"sessions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Book Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"instructor_id\": 1,\n  \"scheduled_at\": \"2024-01-15 14:00:00\",\n  \"duration\": 60,\n  \"notes\": \"Looking for nutrition advice\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/community/fittalk/sessions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"fittalk",
+								"sessions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Influencer",
+			"item": [
+				{
+					"name": "Get Influencer Dashboard",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/influencer",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"influencer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Apply as Influencer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"social_media_links\": {\n    \"instagram\": \"@fitness_influencer\",\n    \"youtube\": \"FitnessChannel\"\n  },\n  \"follower_count\": 50000,\n  \"niche\": \"fitness\",\n  \"bio\": \"Certified fitness trainer and nutrition coach\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/influencer/apply",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"influencer",
+								"apply"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Analytics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/influencer/analytics",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"influencer",
+								"analytics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Influencer Link",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"campaign_name\": \"Summer Fitness Challenge\",\n  \"target_url\": \"/subscription/plans\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/influencer/generate-link",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"influencer",
+								"generate-link"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Content Management - FitDoc",
+			"item": [
+				{
+					"name": "Get All FitDoc",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitdoc",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitdoc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get FitDoc by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitdoc/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitdoc",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get FitDoc Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitdoc/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitdoc",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get FitDoc Series",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitdoc/series/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitdoc",
+								"series",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Content Management - FitFlix",
+			"item": [
+				{
+					"name": "Get All FitFlix Videos",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/fitflix/videos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"fitflix",
+								"videos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get FitFlix Video by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/fitflix/videos/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"fitflix",
+								"videos",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Like FitFlix Video",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/fitflix/videos/1/like",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"fitflix",
+								"videos",
+								"1",
+								"like"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Comment on FitFlix Video",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"comment\": \"Great video!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/fitflix/videos/1/comment",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"fitflix",
+								"videos",
+								"1",
+								"comment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get FitFlix Video Comments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/fitflix/videos/1/comments",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"fitflix",
+								"videos",
+								"1",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get FitFlix Categories",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/fitflix/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"fitflix",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Content Management - Homepage",
+			"item": [
+				{
+					"name": "Get Homepage",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/homepage",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"homepage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Homepage FitSeries",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/homepage/fitseries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"homepage",
+								"fitseries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Homepage FitLive",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/homepage/fitlive",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"homepage",
+								"fitlive"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Homepage FitGuide",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/homepage/fitguide",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"homepage",
+								"fitguide"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Homepage FitCasts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/homepage/fitcasts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"homepage",
+								"fitcasts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Homepage FitNews",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/homepage/fitnews",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"homepage",
+								"fitnews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Homepage FitInsights",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/homepage/fitinsights",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"homepage",
+								"fitinsights"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Homepage FitSeries by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/homepage/fitseries/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"homepage",
+								"fitseries",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Live Sessions by Category",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/homepage/live-sessions/category/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"homepage",
+								"live-sessions",
+								"category",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Enhanced Community - Badges",
+			"item": [
+				{
+					"name": "Get All Badges",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/badges",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"badges"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Badges",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/badges/my",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"badges",
+								"my"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Badge Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/badges/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"badges",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Badges",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/community/badges/user/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"community",
+								"badges",
+								"user",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Enhanced Community - Chat",
+			"item": [
+				{
+					"name": "Get All Conversations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/conversations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"conversations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Personal Conversations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/personal",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"personal"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Group Conversations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/groups",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Personal Messages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/personal/1/messages",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"personal",
+								"1",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Group Messages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/groups/1/messages",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"groups",
+								"1",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Personal Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"Hello there!\",\n  \"message_type\": \"text\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/personal/1/send",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"personal",
+								"1",
+								"send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Group Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"Hello group!\",\n  \"message_type\": \"text\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/chat/groups/1/send",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"chat",
+								"groups",
+								"1",
+								"send"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Enhanced Profile",
+			"item": [
+				{
+					"name": "Get Enhanced Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profile/enhanced",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"enhanced"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Enhanced Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"bio\": \"Updated bio\",\n  \"fitness_goals\": [\"weight_loss\", \"muscle_gain\"],\n  \"preferences\": {\n    \"workout_time\": \"morning\",\n    \"difficulty_level\": \"intermediate\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/profile/enhanced",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"enhanced"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chat History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profile/chat-history",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"chat-history"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Activity History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/profile/activity",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"profile",
+								"activity"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "My Plans Management",
+			"item": [
+				{
+					"name": "Get My Plans",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/my-plans",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"my-plans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current Plan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/my-plans/current",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"my-plans",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Subscription Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/my-plans/subscription/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"my-plans",
+								"subscription",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Available Plans",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/my-plans/available-plans",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"my-plans",
+								"available-plans"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel Subscription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"No longer needed\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/my-plans/subscription/1/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"my-plans",
+								"subscription",
+								"1",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reactivate Subscription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/my-plans/subscription/1/reactivate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"my-plans",
+								"subscription",
+								"1",
+								"reactivate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payment History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/my-plans/payment-history",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"my-plans",
+								"payment-history"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Live Streaming & Chat - FitLive Enhanced",
+			"item": [
+				{
+					"name": "Get FitLive Sessions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/sessions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"sessions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Session Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/1/details",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"1",
+								"details"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Session Participants",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/1/participants",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"1",
+								"participants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Join Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/1/join",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"1",
+								"join"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Leave Session",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/1/leave",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"1",
+								"leave"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Live Streaming & Chat - Live Chat",
+			"item": [
+				{
+					"name": "Get Live Chat Messages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/1/chat/messages",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"1",
+								"chat",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Live Chat Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Great session!\",\n  \"type\": \"text\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/1/chat",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"1",
+								"chat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Chat Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/1/chat/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"1",
+								"chat",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Moderate Chat",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"mute\",\n  \"user_id\": 123,\n  \"reason\": \"Inappropriate content\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/1/chat/moderate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"1",
+								"chat",
+								"moderate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bulk Operations - Users",
+			"item": [
+				{
+					"name": "Bulk Create Users",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"users\": [\n    {\n      \"name\": \"John Doe\",\n      \"email\": \"john@example.com\",\n      \"phone\": \"+1234567890\"\n    },\n    {\n      \"name\": \"Jane Smith\",\n      \"email\": \"jane@example.com\",\n      \"phone\": \"+1234567891\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/bulk-create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"bulk-create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Update Users",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"updates\": [\n    {\n      \"id\": 1,\n      \"name\": \"John Updated\"\n    },\n    {\n      \"id\": 2,\n      \"email\": \"jane.updated@example.com\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/bulk-update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"bulk-update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Delete Users",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_ids\": [1, 2, 3, 4, 5]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/bulk-delete",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"bulk-delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Update User Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"user_ids\": [1, 2, 3],\n  \"status\": \"active\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/bulk-status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"bulk-status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Enhanced Influencer - Sales & Earnings",
+			"item": [
+				{
+					"name": "Get Sales Data",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/influencer/sales",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"influencer",
+								"sales"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Earnings",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/influencer/earnings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"influencer",
+								"earnings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payouts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/influencer/payouts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"influencer",
+								"payouts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request Payout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{auth_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"amount\": 500.00,\n  \"payment_method\": \"bank_transfer\",\n  \"notes\": \"Monthly payout request\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/influencer/payouts/request",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"influencer",
+								"payouts",
+								"request"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Webhooks & Integration",
+			"item": [
+				{
+					"name": "FitLive Webhook",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Webhook-Secret",
+								"value": "your-webhook-secret",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"event\": \"session.started\",\n  \"session_id\": 123,\n  \"timestamp\": \"2024-01-15T10:00:00Z\",\n  \"data\": {\n    \"instructor_id\": 1,\n    \"participants_count\": 25\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/fitlive/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"fitlive",
+								"webhook"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Stripe Webhook",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Stripe-Signature",
+								"value": "stripe-signature-header",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"evt_1234567890\",\n  \"object\": \"event\",\n  \"type\": \"payment_intent.succeeded\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"pi_1234567890\",\n      \"amount\": 2999,\n      \"currency\": \"usd\",\n      \"status\": \"succeeded\"\n    }\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/webhooks/stripe",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"webhooks",
+								"stripe"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Agora Webhook",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "X-Agora-Signature",
+								"value": "agora-signature-header",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"eventType\": \"channel-user-joined\",\n  \"channelName\": \"fitlive-session-123\",\n  \"uid\": 12345,\n  \"timestamp\": 1642248000\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/webhooks/agora",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"webhooks",
+								"agora"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Mobile APIs - tc1.md",
+			"item": [
+				{
+					"name": "Banner API",
+					"item": [
+						{
+							"name": "Get Homepage Banners",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/banners",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"banners"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Banner by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/banners/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"banners",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Enhanced Homepage API",
+					"item": [
+						{
+							"name": "Get Mobile Homepage Content",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/homepage",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"homepage"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Community Health & Posts API",
+					"item": [
+						{
+							"name": "Get Health Data",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/community/health-data",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"community",
+										"health-data"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Community Categories",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/community/categories",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"community",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Community Posts (Enhanced)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/community/posts?limit=20&category_id=",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"community",
+										"posts"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										},
+										{
+											"key": "category_id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Post Comments",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/community/posts/1/comments",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"community",
+										"posts",
+										"1",
+										"comments"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add Post Comment",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"content\": \"Great post! Thanks for sharing your experience.\",\n  \"parent_id\": null\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/community/posts/1/comments",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"community",
+										"posts",
+										"1",
+										"comments"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Enhanced FitFlix API",
+					"item": [
+						{
+							"name": "Get FitFlix Videos (Mobile)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/fitflix/videos?limit=20&category_id=",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"fitflix",
+										"videos"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20"
+										},
+										{
+											"key": "category_id",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get FitFlix Video by ID (Mobile)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/fitflix/videos/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"fitflix",
+										"videos",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Like FitFlix Video (Mobile)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/fitflix/videos/1/like",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"fitflix",
+										"videos",
+										"1",
+										"like"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Comment on FitFlix Video (Mobile)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"comment\": \"Great workout video! Really helped me with my form.\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/fitflix/videos/1/comment",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"fitflix",
+										"videos",
+										"1",
+										"comment"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Share FitFlix Video (Mobile)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/fitflix/videos/1/share",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"fitflix",
+										"videos",
+										"1",
+										"share"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Enhanced FitTalk API",
+					"item": [
+						{
+							"name": "Get FitTalk Filters",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/fittalk/filters",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"fittalk",
+										"filters"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Search Trainers",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/fittalk/trainers/search?search=&specialization=fitness&budget_min=25&budget_max=100&min_rating=4&limit=20",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"fittalk",
+										"trainers",
+										"search"
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": ""
+										},
+										{
+											"key": "specialization",
+											"value": "fitness"
+										},
+										{
+											"key": "budget_min",
+											"value": "25"
+										},
+										{
+											"key": "budget_max",
+											"value": "100"
+										},
+										{
+											"key": "min_rating",
+											"value": "4"
+										},
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Trainer Details",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/mobile/fittalk/trainers/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"mobile",
+										"fittalk",
+										"trainers",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "New Request",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "68|P1ideNVx6yrmQnaD0Duyq4MyjbzXJOzqciHH2EAsf4ee6f6a",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/community/fittalk/instructors",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"community",
+										"fittalk",
+										"instructors"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get FitTalk Instructors",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/fittalk/instructors?search=fitness&specialization=fitness&min_rating=4.0&per_page=20",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"fittalk",
+										"instructors"
+									],
+									"query": [
+										{
+											"key": "search",
+											"value": "fitness"
+										},
+										{
+											"key": "specialization",
+											"value": "fitness"
+										},
+										{
+											"key": "min_rating",
+											"value": "4.0"
+										},
+										{
+											"key": "per_page",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get My FitTalk Sessions",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/fittalk/sessions?status=scheduled&type=video&per_page=20",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"fittalk",
+										"sessions"
+									],
+									"query": [
+										{
+											"key": "status",
+											"value": "scheduled"
+										},
+										{
+											"key": "type",
+											"value": "video"
+										},
+										{
+											"key": "per_page",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Book FitTalk Session",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"instructor_id\": 1,\n  \"session_type\": \"video\",\n  \"scheduled_at\": \"2024-12-25 14:00:00\",\n  \"duration_minutes\": 60,\n  \"description\": \"Need help with workout routine\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/fittalk/sessions",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"fittalk",
+										"sessions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get FitTalk Session Details",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/fittalk/sessions/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"fittalk",
+										"sessions",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Start FitTalk Session",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/fittalk/sessions/1/start",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"fittalk",
+										"sessions",
+										"1",
+										"start"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "End FitTalk Session",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"rating\": 5,\n  \"feedback\": \"Excellent session! Very helpful and knowledgeable.\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/fittalk/sessions/1/end",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"fittalk",
+										"sessions",
+										"1",
+										"end"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Cancel FitTalk Session",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"reason\": \"Schedule conflict\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/fittalk/sessions/1/cancel",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"fittalk",
+										"sessions",
+										"1",
+										"cancel"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get FitTalk Agora Config",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{auth_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/fittalk/sessions/1/agora-config",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"fittalk",
+										"sessions",
+										"1",
+										"agora-config"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Enhanced FitSeries",
+					"item": [
+						{
+							"name": "Get fitseries by ID",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Enhanced FirLive",
+					"item": [
+						{
+							"name": "Get fitlive by ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/fitlive/1",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"fitlive",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Enhanced FitArena",
+					"item": [
+						{
+							"name": "Get fitarena by ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/fitarena/3/live",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"fitarena",
+										"3",
+										"live"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Enhanced FitGuide",
+					"item": [
+						{
+							"name": "Get fitguide by Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/fitguide/24/live",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"fitguide",
+										"24",
+										"live"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Enhanced FitNews",
+					"item": [
+						{
+							"name": "Get fitnews by ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/fitnews/17/live",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"fitnews",
+										"17",
+										"live"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Enhanced FitCast",
+					"item": [
+						{
+							"name": "Get fitcast by ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/fitnews/1/fitcast",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"fitnews",
+										"1",
+										"fitcast"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Enhanced FitInsights",
+					"item": [
+						{
+							"name": "get fitinsights by ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/fitinsight/10/live",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"fitinsight",
+										"10",
+										"live"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "69|cIpbYXU0O15KPVCRl7PW40msMGGbUtacptbtwNQb7a15fc49",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000/"
+		},
+		{
+			"key": "auth_token",
+			"value": ""
+		},
+		{
+			"key": "user_id",
+			"value": ""
+		}
+	]
+}
