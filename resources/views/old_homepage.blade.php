@@ -1,4 +1,4 @@
-@extends('layouts.home.public')
+@extends('layouts.public')
 
 @section('title', 'FITTELLY - Your Ultimate Fitness Destination')
 
@@ -96,7 +96,7 @@
 
                                 <div class="slider-container" id="fitdoc-videos-slider">
                                     @foreach ($fitDocVideos as $video)
-                                        <x-home.portrait-card :video="$video" badge="Movie" badgeClass="badge-single" url="fitdoc.single.show"/>
+                                        <x-home.portrait-card-second :video="$video" badge="Movie" badgeClass="badge-single" url="fitdoc.single.show"/>
                                     @endforeach
                                 </div>
 
@@ -178,7 +178,7 @@
                                                     :video="$subCategory"
                                                     badge="Live"
                                                     badgeClass="badge-live"
-                                                    url="fitlive.index"
+                                                    url="fitlive.daily-classes.show"
                                                 />
                                             @endif
                                         @endforeach
@@ -227,7 +227,7 @@
                                                 <x-home.landscape-card
                                                     :route="route('fitarena.show', $event)"
                                                     :title="$event->title"
-                                                    :image="$event->banner_image_path ? asset('storage/app/public' . $event->banner_image_path) : null"
+                                                    :image="$event->banner_image_path ? $event->banner_image_path : null"
                                                     :badge="$badge"
                                                     :meta="[ '<i class=\'fas fa-calendar\'></i> ' . ($event->created_at?->format('M d, Y') ?? '') ]"
                                                 />
@@ -336,7 +336,7 @@
                             <x-home.landscape-card
                                 :route="route('fitnews.show', $news)"
                                 :title="$news->title"
-                                :image="$news->thumbnail ? asset('storage/app/public' . $news->thumbnail) : null"
+                                :image="$news->thumbnail ? asset('storage/app/public/' . $news->thumbnail) : null"
                                 :badge="[
                                     'label' => $news->status === 'scheduled' ? 'Upcoming' : 'Archive',
                                     'class' => 'badge-single'

@@ -10,7 +10,7 @@
                 <div class="card bg-dark border-secondary">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h3 class="card-title text-white mb-0">
-                            <i class="fas fa-list me-2"></i>{{ $data['name'] ?? 'No Name Available' }}
+                            <i class="fas fa-list me-2"></i>{{ $subCategory->name }}
                         </h3>
                         <div class="btn-group">
                             <a href="{{ route('admin.fitlive.subcategories.index') }}" class="btn btn-secondary">
@@ -25,15 +25,15 @@
                                 <table class="table table-dark table-borderless">
                                     <tr>
                                         <th width="30%">ID:</th>
-                                        <td>{{ $data['id'] ?? 'N/A' }}</td>
+                                        <td>{{ $subCategory->id }}</td>
                                     </tr>
                                     <tr>
                                         <th>Category:</th>
                                         <td>
-                                            @if (isset($data['category']) && $data['category'] != 'No Category')
+                                            @if ($subCategory->category)
                                                 <a href="{{ route('admin.fitlive.categories.show', $subCategory->category) }}"
                                                     class="text-info text-decoration-none">
-                                                    {{ $data['category'] }}
+                                                    {{ optional($subCategory->category)->name }}
                                                 </a>
                                             @else
                                                 <span>No Category</span>
@@ -42,23 +42,23 @@
                                     </tr>
                                     <tr>
                                         <th>Name:</th>
-                                        <td>{{ $data['name'] ?? 'N/A' }}</td>
+                                        <td>{{ $subCategory->name }}</td>
                                     </tr>
                                     <tr>
                                         <th>Slug:</th>
-                                        <td><code class="text-info">{{ $data['slug'] ?? 'N/A' }}</code></td>
+                                        <td><code class="text-info">{{ $subCategory->slug }}</code></td>
                                     </tr>
                                     <tr>
                                         <th>Sort Order:</th>
-                                        <td>{{ $data['sort_order'] ?? 'N/A' }}</td>
+                                        <td>{{ $subCategory->sort_order }}</td>
                                     </tr>
                                     <tr>
                                         <th>Created:</th>
-                                        <td>{{ $data['created_at'] ?? 'N/A' }}</td>
+                                        <td>{{ $subCategory->created_at?->format('F d, Y \a\t g:i A') }}</td>
                                     </tr>
                                     <tr>
                                         <th>Updated:</th>
-                                        <td>{{ $data['updated_at'] ?? 'N/A' }}</td>
+                                        <td>{{ $subCategory->updated_at?->format('F d, Y \a\t g:i A') }}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -67,7 +67,7 @@
                             <div class="col-md-6">
                                 <div class="card bg-secondary border-primary">
                                     <div class="card-body text-center">
-                                        <h2 class="text-primary">{{ $data['sessions_count'] ?? 0 }}</h2>
+                                        <h2 class="text-primary">{{ $subCategory->fitLiveSessions->count() }}</h2>
                                         <p class="mb-0">Sessions</p>
                                     </div>
                                 </div>
@@ -80,7 +80,7 @@
         </div>
 
         <!-- Sessions Table -->
-        @if ($subCategory && $subCategory->fitLiveSessions->count())
+        @if ($subCategory->fitLiveSessions->count())
             <div class="row mt-4">
                 <div class="col-12">
                     <div class="card bg-dark border-secondary">

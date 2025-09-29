@@ -56,4 +56,4 @@ unset($__defined_vars); ?>
         </div>
     </div>
 </div>
-<?php /**PATH C:\xampp\htdocs\fittley\resources\views/components/home/portrait-card-second.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/components/home/portrait-card-second.blade.php ENDPATH**/ ?>

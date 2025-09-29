@@ -806,7 +806,8 @@
         <div class="container mx-2">
 
             <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
-                <img src="{{ asset('storage/app/public/logos/app_logo.png') }}" height="40" class="me-2 ms-3 ms-md-0">
+                <img src="{{ asset('storage/app/public/logos/app_logo.png') }}" height="40"
+                    class="me-2 ms-3 ms-md-0">
             </a>
             {{-- Mobile Auth Section (Visible only on Mobile) --}}
             <div class="d-flex d-lg-none align-items-center" style="margin-right: -1rem;">
@@ -850,12 +851,11 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('fitlive.index') ? 'active' : '' }}"
-                            href="#">
-                            <!-- <i class="fas fa-broadcast-tower me-1"></i> -->
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#communityModal">
                             Community
                         </a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link {{ Request::is('fitlive/vdo') ? 'active' : '' }}"
                             href="{{ url('/fitlive/vdo') }}">
@@ -955,7 +955,7 @@
 
 
 
-            <a href="{{ route('fitlive.index') }}"
+            <a href="#" id="showModalBtn"
                 class="bottom-nav-item {{ Request::is('fitlive.index') ? 'active' : '' }}">
                 <div class="bottom-nav-icon">
                     <img src="{{ Request::is('fitlive.index')
@@ -1002,13 +1002,60 @@
         </div>
     </nav>
 
+    <!-- Modal -->
+    <div class="modal fade" id="communityModal" tabindex="-1" aria-labelledby="communityModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="communityModalLabel">Feature Unavailable</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container d-flex justify-content-center align-items-center">
+                        <div class="card shadow p-4 text-center" style="max-width: 500px; width: 100%;">
+                            <h2 class="mb-3 text-danger">Feature Unavailable on Web</h2>
+                            <p class="mb-4">
+                                This feature isn’t accessible in the web version. <br>
+                                Download our app to unlock exclusive tools and enjoy the full experience!
+                            </p>
+
+                            <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+                                <a href="#" class="btn btn-primary" style="min-width: 150px;" disabled>
+                                    Download on App Store
+                                </a>
+                                <a href="#" class="btn btn-primary" style="min-width: 150px;" disabled>
+                                    Download on Google Play
+                                </a>
+                            </div>
+
+                            <div class="text-center">
+                                <p class="mb-2">Or scan the QR code to get the app instantly.</p>
+                                @php
+                                    $appUrl = url('/');
+                                    $qrUrl =
+                                        'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' .
+                                        urlencode($appUrl);
+                                @endphp
+
+                                <img src="{{ $qrUrl }}" alt="QR Code" class="img-fluid"
+                                    style="max-width: 180px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <!-- Footer -->
     <footer class="footer text-light pt-5 pb-3">
         <div class="container text-center">
             {{-- Logo centered --}}
             <div class="con-logo mb-3">
-                <img src="{{ asset('storage/app/public/app_logo.png') }}" alt="FITTELLY Logo" height="50" class="mb-2">
+                <img src="{{ asset('storage/app/public/app_logo.png') }}" alt="FITTELLY Logo" height="50"
+                    class="mb-2">
             </div>
 
             {{-- Social icons centered --}}
@@ -1040,6 +1087,7 @@
         {{-- Orange bar at bottom --}}
         <div class="bg-warning mt-4" style="height:7px;"></div>
     </footer>
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

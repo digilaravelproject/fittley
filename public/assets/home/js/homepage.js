@@ -130,6 +130,19 @@ document.addEventListener("DOMContentLoaded", () => {
             maxSlide = -Math.max(0, totalCards - visible) * cardWidth;
         }
 
+        // Only show controls if overflow exists (PC only)
+        if (window.innerWidth > 768) {
+            const totalCards = slider.children.length;
+            const visible = SLIDER_SETTINGS.visibleCards();
+            if (totalCards > visible) {
+                prevBtn.style.display = "flex";
+                nextBtn.style.display = "flex";
+            } else {
+                prevBtn.style.display = "none";
+                nextBtn.style.display = "none";
+            }
+        }
+
         prevBtn.disabled = currentX >= 0;
         nextBtn.disabled = currentX <= maxSlide;
     }

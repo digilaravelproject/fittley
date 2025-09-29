@@ -2875,4 +2875,4 @@
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html> 
-<?php /**PATH C:\xampp\htdocs\fittley\resources\views/layouts/admin.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/layouts/admin.blade.php ENDPATH**/ ?>

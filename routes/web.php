@@ -117,7 +117,6 @@ Route::prefix('fitlive')->name('fitlive.')->group(function () {
     });
 
     Route::get('/{id}', [FitLiveController::class, 'show'])->name('daily-classes.show');
-
 });
 
 

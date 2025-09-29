@@ -2,7 +2,7 @@
 
 <?php $__env->startPush('styles'); ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="<?php echo e(asset('public/assets/home/css/homepage.css')); ?>?v=<?php echo e(time()); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('assets/home/css/homepage.css')); ?>?v=<?php echo e(time()); ?>">
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -97,25 +97,25 @@
 
                                 <div class="slider-container" id="fitdoc-videos-slider">
                                     <?php $__currentLoopData = $fitDocVideos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $video): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php if (isset($component)) { $__componentOriginal6fb9a3a5133c0cbd1e59f8d65daeecd1 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal6fb9a3a5133c0cbd1e59f8d65daeecd1 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.home.portrait-card-second','data' => ['video' => $video,'badge' => 'Movie','badgeClass' => 'badge-single','url' => 'fitdoc.single.show']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('home.portrait-card-second'); ?>
+                                        <?php if (isset($component)) { $__componentOriginal41b15c4f427e6d22976473ee4b2336e9 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal41b15c4f427e6d22976473ee4b2336e9 = $attributes; } ?>
+<?php $component = App\View\Components\Home\PortraitCard::resolve(['video' => $video,'badge' => 'Movie','badgeClass' => 'badge-single','url' => 'fitdoc.single.show'] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('home.portrait-card'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
+<?php $attributes = $attributes->except(\App\View\Components\Home\PortraitCard::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['video' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($video),'badge' => 'Movie','badgeClass' => 'badge-single','url' => 'fitdoc.single.show']); ?>
+<?php $component->withAttributes([]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
-<?php if (isset($__attributesOriginal6fb9a3a5133c0cbd1e59f8d65daeecd1)): ?>
-<?php $attributes = $__attributesOriginal6fb9a3a5133c0cbd1e59f8d65daeecd1; ?>
-<?php unset($__attributesOriginal6fb9a3a5133c0cbd1e59f8d65daeecd1); ?>
+<?php if (isset($__attributesOriginal41b15c4f427e6d22976473ee4b2336e9)): ?>
+<?php $attributes = $__attributesOriginal41b15c4f427e6d22976473ee4b2336e9; ?>
+<?php unset($__attributesOriginal41b15c4f427e6d22976473ee4b2336e9); ?>
 <?php endif; ?>
-<?php if (isset($__componentOriginal6fb9a3a5133c0cbd1e59f8d65daeecd1)): ?>
-<?php $component = $__componentOriginal6fb9a3a5133c0cbd1e59f8d65daeecd1; ?>
-<?php unset($__componentOriginal6fb9a3a5133c0cbd1e59f8d65daeecd1); ?>
+<?php if (isset($__componentOriginal41b15c4f427e6d22976473ee4b2336e9)): ?>
+<?php $component = $__componentOriginal41b15c4f427e6d22976473ee4b2336e9; ?>
+<?php unset($__componentOriginal41b15c4f427e6d22976473ee4b2336e9); ?>
 <?php endif; ?>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </div>
@@ -203,7 +203,6 @@
                                         <?php $__currentLoopData = $allContent; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subCategory): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
                                             <?php if($category->id == 19): ?>
-
                                                 <?php if (isset($component)) { $__componentOriginal2b707d9f7bf07249f74fec5563c397f4 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal2b707d9f7bf07249f74fec5563c397f4 = $attributes; } ?>
 <?php $component = App\View\Components\Home\LandscapeCard::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -300,7 +299,7 @@
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\App\View\Components\Home\LandscapeCard::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitarena.show', $event)),'title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($event->title),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($event->banner_image_path ? $event->banner_image_path : null),'badge' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($badge),'meta' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute([ '<i class=\'fas fa-calendar\'></i> ' . ($event->created_at?->format('M d, Y') ?? '') ])]); ?>
+<?php $component->withAttributes(['route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitarena.show', $event)),'title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($event->title),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($event->banner_image_path ? asset('storage/app/public' . $event->banner_image_path) : null),'badge' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($badge),'meta' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute([ '<i class=\'fas fa-calendar\'></i> ' . ($event->created_at?->format('M d, Y') ?? '') ])]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal2b707d9f7bf07249f74fec5563c397f4)): ?>
@@ -445,7 +444,7 @@
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\App\View\Components\Home\LandscapeCard::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitnews.show', $news)),'title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($news->title),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($news->thumbnail ? asset('storage/app/public/' . $news->thumbnail) : null),'badge' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute([
+<?php $component->withAttributes(['route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitnews.show', $news)),'title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($news->title),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($news->thumbnail ? asset('storage/app/public' . $news->thumbnail) : null),'badge' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute([
                                     'label' => $news->status === 'scheduled' ? 'Upcoming' : 'Archive',
                                     'class' => 'badge-single'
                                 ]),'meta' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute([
@@ -530,7 +529,7 @@
 <?php $__env->startPush('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="<?php echo e(asset('public/assets/home/js/homepage.js')); ?>?v=<?php echo e(time()); ?>"></script>
+    <script src="<?php echo e(asset('assets/home/js/homepage.js')); ?>?v=<?php echo e(time()); ?>"></script>
 <?php $__env->stopPush(); ?>
 
-<?php echo $__env->make('layouts.home.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\fittley\resources\views/homepage.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.home.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/homepage.blade.php ENDPATH**/ ?>
