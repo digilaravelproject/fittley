@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\HomepageHeroController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\FitArenaController;
 use App\Http\Controllers\TwoFactorController;
+use Illuminate\Support\Facades\Log;
 
 // Home route
 Route::get('/', [HomepageController::class, 'index'])->name('home');
@@ -742,11 +743,11 @@ Route::get('/test-session-create', function () {
 
 // Temporary debug route for FitDoc testing
 Route::post('/debug/fitdoc', function (Request $request) {
-    \Log::info('=== DEBUG FitDoc Form Submission ===');
-    \Log::info('Method: ' . $request->method());
-    \Log::info('URL: ' . $request->url());
-    \Log::info('All Data: ', $request->all());
-    \Log::info('Files: ', $request->allFiles());
+    Log::info('=== DEBUG FitDoc Form Submission ===');
+    Log::info('Method: ' . $request->method());
+    Log::info('URL: ' . $request->url());
+    Log::info('All Data: ', $request->all());
+    Log::info('Files: ', $request->allFiles());
 
     return response()->json([
         'success' => true,

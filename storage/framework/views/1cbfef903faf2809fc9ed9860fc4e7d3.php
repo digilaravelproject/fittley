@@ -1,8 +1,6 @@
-@extends('layouts.admin')
+<?php $__env->startSection('title', 'FitLive Sub Categories'); ?>
 
-@section('title', 'FitLive Sub Categories')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="admin-dashboard">
         <!-- Page Header -->
         <div class="page-header">
@@ -15,7 +13,7 @@
                     <p class="page-subtitle">Manage subcategories for live session organization</p>
                 </div>
                 <div class="page-actions">
-                    <a href="{{ route('admin.fitlive.subcategories.create') }}" class="btn btn-primary">
+                    <a href="<?php echo e(route('admin.fitlive.subcategories.create')); ?>" class="btn btn-primary">
                         <i class="fas fa-plus me-2"></i>Add Sub Category
                     </a>
                 </div>
@@ -32,7 +30,7 @@
                                 <i class="fas fa-folder-open"></i>
                             </div>
                             <div class="stat-content">
-                                <div class="stat-number">{{ $subCategories->total() }}</div>
+                                <div class="stat-number"><?php echo e($subCategories->total()); ?></div>
                                 <div class="stat-label">Total Sub Categories</div>
                             </div>
                         </div>
@@ -45,7 +43,7 @@
                                 <i class="fas fa-video"></i>
                             </div>
                             <div class="stat-content">
-                                <div class="stat-number">{{ $subCategories->sum('fit_live_sessions_count') ?? 0 }}</div>
+                                <div class="stat-number"><?php echo e($subCategories->sum('fit_live_sessions_count') ?? 0); ?></div>
                                 <div class="stat-label">Live Sessions</div>
                             </div>
                         </div>
@@ -58,7 +56,7 @@
                                 <i class="fas fa-folder"></i>
                             </div>
                             <div class="stat-content">
-                                <div class="stat-number">{{ $subCategories->groupBy('category_id')->count() }}</div>
+                                <div class="stat-number"><?php echo e($subCategories->groupBy('category_id')->count()); ?></div>
                                 <div class="stat-label">Parent Categories</div>
                             </div>
                         </div>
@@ -72,7 +70,8 @@
                             </div>
                             <div class="stat-content">
                                 <div class="stat-number">
-                                    {{ $subCategories->avg('sort_order') ? number_format($subCategories->avg('sort_order'), 1) : '0' }}
+                                    <?php echo e($subCategories->avg('sort_order') ? number_format($subCategories->avg('sort_order'), 1) : '0'); ?>
+
                                 </div>
                                 <div class="stat-label">Avg Sort Order</div>
                             </div>
@@ -96,21 +95,23 @@
                 </div>
             </div>
             <div class="card-body">
-                @if (session('success'))
+                <?php if(session('success')): ?>
                     <div class="alert alert-success text-white alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                        <i class="fas fa-check-circle me-2"></i><?php echo e(session('success')); ?>
+
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if (session('error'))
+                <?php if(session('error')): ?>
                     <div class="alert alert-danger text-white alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
+                        <i class="fas fa-exclamation-circle me-2"></i><?php echo e(session('error')); ?>
+
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if ($subCategories->count() > 0)
+                <?php if($subCategories->count() > 0): ?>
                     <div class="table-responsive">
                         <table class="table table-modern">
                             <thead>
@@ -124,7 +125,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($subCategories as $subCategory)
+                                <?php $__currentLoopData = $subCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subCategory): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr>
                                         <td>
                                             <div class="user-info">
@@ -134,54 +135,58 @@
                                                     </div>
                                                 </div>
                                                 <div class="user-details">
-                                                    <div class="user-name">{{ @$subCategory->name }}</div>
-                                                    <div class="user-role">{{ $subCategory->slug }}</div>
+                                                    <div class="user-name"><?php echo e(@$subCategory->name); ?></div>
+                                                    <div class="user-role"><?php echo e($subCategory->slug); ?></div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
                                             <span class="parent-category-badge">
                                                 <i class="fas fa-folder me-1"></i>
-                                                {{ @$subCategory->category->name }}
+                                                <?php echo e(@$subCategory->category->name); ?>
+
                                             </span>
                                         </td>
                                         <td>
                                             <div class="badge-metric">
-                                                Order #{{ $subCategory->sort_order }}
+                                                Order #<?php echo e($subCategory->sort_order); ?>
+
                                             </div>
                                         </td>
                                         <td>
                                             <div class="sessions-count">
                                                 <span
-                                                    class="metric-value">{{ $subCategory->fit_live_sessions_count ?? 0 }}</span>
+                                                    class="metric-value"><?php echo e($subCategory->fit_live_sessions_count ?? 0); ?></span>
                                                 <span class="metric-label">Sessions</span>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="date-info">
-                                                <div class="date-primary">{{ $subCategory->created_at->format('M d, Y') }}
+                                                <div class="date-primary"><?php echo e($subCategory->created_at->format('M d, Y')); ?>
+
                                                 </div>
-                                                <div class="date-secondary">{{ $subCategory->created_at->diffForHumans() }}
+                                                <div class="date-secondary"><?php echo e($subCategory->created_at->diffForHumans()); ?>
+
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
                                             <div class="action-buttons">
-                                                <a href="{{ route('admin.fitlive.subcategories.show', $subCategory) }}"
+                                                <a href="<?php echo e(route('admin.fitlive.subcategories.show', $subCategory)); ?>"
                                                     class="btn btn-action btn-info" title="View Sub Category">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
 
-                                                <a href="{{ route('admin.fitlive.subcategories.edit', $subCategory) }}"
+                                                <a href="<?php echo e(route('admin.fitlive.subcategories.edit', $subCategory)); ?>"
                                                     class="btn btn-action btn-warning" title="Edit Sub Category">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <form
-                                                    action="{{ route('admin.fitlive.subcategories.destroy', $subCategory) }}"
+                                                    action="<?php echo e(route('admin.fitlive.subcategories.destroy', $subCategory)); ?>"
                                                     method="POST" class="d-inline"
                                                     onsubmit="return confirm('Are you sure you want to delete this sub category along with all its sessions?')">
-                                                    @csrf
-                                                    @method('DELETE')
+                                                    <?php echo csrf_field(); ?>
+                                                    <?php echo method_field('DELETE'); ?>
                                                     <button type="submit" class="btn btn-action btn-danger"
                                                         title="Delete Sub Category">
                                                         <i class="fas fa-trash"></i>
@@ -191,17 +196,18 @@
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                         </table>
                     </div>
 
-                    @if ($subCategories->hasPages())
+                    <?php if($subCategories->hasPages()): ?>
                         <div class="pagination-wrapper">
-                            {{ $subCategories->links('pagination::bootstrap-4') }}
+                            <?php echo e($subCategories->links('pagination::bootstrap-4')); ?>
+
                         </div>
-                    @endif
-                @else
+                    <?php endif; ?>
+                <?php else: ?>
                     <div class="empty-state">
                         <div class="empty-state-icon">
                             <i class="fas fa-folder-open"></i>
@@ -211,12 +217,12 @@
                             <p class="empty-state-description">
                                 Get started by creating your first sub category to organize your live sessions.
                             </p>
-                            <a href="{{ route('admin.fitlive.subcategories.create') }}" class="btn btn-primary">
+                            <a href="<?php echo e(route('admin.fitlive.subcategories.create')); ?>" class="btn btn-primary">
                                 <i class="fas fa-plus me-2"></i>Create First Sub Category
                             </a>
                         </div>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -491,4 +497,6 @@
             }
         });
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/admin/fitlive/subcategories/index.blade.php ENDPATH**/ ?>

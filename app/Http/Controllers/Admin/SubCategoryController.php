@@ -164,6 +164,23 @@ class SubCategoryController extends Controller
     public function destroy($id)
     {
         $subCategory = SubCategory::findOrFail($id);
+
+        // Check if there are any associated sessions
+        if ($subCategory->fitLiveSessions()->count() > 0) {
+            // Delete all the associated fitLiveSessions before deleting the subcategory
+            $subCategory->fitLiveSessions()->delete();
+        }
+
+        // Now delete the subcategory itself
+        $subCategory->delete();
+
+        return redirect()->route('admin.fitlive.subcategories.index')
+            ->with('success', 'Sub-category and its associated sessions deleted successfully.');
+    }
+
+    public function destroy_old($id)
+    {
+        $subCategory = SubCategory::findOrFail($id);
         if ($subCategory->fitLiveSessions()->count() > 0) {
             return redirect()->route('admin.fitlive.subcategories.index')
                 ->with('error', 'Cannot delete sub-category with existing sessions.');
