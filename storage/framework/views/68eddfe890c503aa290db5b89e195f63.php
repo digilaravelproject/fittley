@@ -360,7 +360,7 @@
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\App\View\Components\Home\PortraitCard::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes([]); ?>
+<?php $component->withAttributes(['categorySlug' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($category->slug)]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal41b15c4f427e6d22976473ee4b2336e9)): ?>

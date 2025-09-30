@@ -279,7 +279,7 @@
                                         @foreach ($allContent as $content)
                                            <x-home.portrait-card
                                                 :video="$content"
-
+                                                :categorySlug="$category->slug"
                                                 url="fitguide.index"
                                             />
 

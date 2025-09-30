@@ -1,7 +1,7 @@
 <?php $attributes ??= new \Illuminate\View\ComponentAttributeBag;
 
 $__newAttributes = [];
-$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames((['video', 'badge' => null, 'badgeClass' => null, 'url']));
+$__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames((['video', 'badge' => null, 'badgeClass' => null, 'categorySlug' => null, 'url']));
 
 foreach ($attributes->all() as $__key => $__value) {
     if (in_array($__key, $__propNames)) {
@@ -16,7 +16,7 @@ $attributes = new \Illuminate\View\ComponentAttributeBag($__newAttributes);
 unset($__propNames);
 unset($__newAttributes);
 
-foreach (array_filter((['video', 'badge' => null, 'badgeClass' => null, 'url']), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
+foreach (array_filter((['video', 'badge' => null, 'badgeClass' => null, 'categorySlug' => null, 'url']), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
     $$__key = $$__key ?? $__value;
 }
 
@@ -28,13 +28,18 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars); ?>
 
-<div class="content-card" onclick="window.location.href='<?php echo e(route($url, $video)); ?>'">
+<div class="content-card"
+    onclick="window.location.href='<?php echo e($categorySlug ? route($url, ['category' => $categorySlug]) : route($url, $video)); ?>'">
+
     <?php if($badge): ?>
-        <div class="status-badge <?php echo e($badgeClass); ?>"><?php echo e($badge); ?></div>
+        <div class="status-badge <?php echo e($badgeClass); ?>">
+            <?php echo e($badge); ?>
+
+        </div>
     <?php endif; ?>
 
     <?php
-        // $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');
+        // Determine the final image path
         $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');
         $finalImage = !empty($video->banner_image_path)
             ? asset('storage/app/public/' . $video->banner_image_path)
@@ -42,17 +47,27 @@ unset($__defined_vars); ?>
     ?>
 
     <img src="<?php echo e($finalImage); ?>" alt="<?php echo e($video->title); ?>" class="card-image" loading="lazy">
+
     <div class="card-overlay">
         <div class="play-icon">
             <i class="fas fa-play"></i>
         </div>
     </div>
+
     <div class="card-content">
         <h3 class="card-title"><?php echo e($video->title); ?></h3>
+
         <div class="card-meta">
-            <span><i class="fas fa-calendar"></i>
-                <?php echo e($video->created_at ? $video->created_at->format('Y') : 'New'); ?></span>
-            <span><i class="fas fa-clock"></i> <?php echo e($video->duration_minutes ?? 90); ?> min</span>
+            <span>
+                <i class="fas fa-calendar"></i>
+                <?php echo e($video->created_at ? $video->created_at->format('Y') : 'New'); ?>
+
+            </span>
+
+            <span>
+                <i class="fas fa-clock"></i>
+                <?php echo e($video->duration_minutes ?? 90); ?> min
+            </span>
         </div>
     </div>
 </div>

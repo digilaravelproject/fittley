@@ -16,6 +16,137 @@ class FitGuideController extends BaseApiController
     public function index(Request $request)
     {
         try {
+            // Get the selected category from the request
+            $categorySlug = $request->input('category'); // This would be passed from the frontend
+
+            // Get categories for the filter buttons
+            $categories = FgCategory::where('is_active', true)
+                ->orderBy('name')
+                ->get();
+
+            // If a category is selected, filter the content by category
+            if ($categorySlug) {
+                // Fetch the category based on the slug
+                $category = FgCategory::where('slug', $categorySlug)->first();
+
+                if ($category) {
+                    // Filter content by category
+                    $featuredSingles = FgSingle::where('is_published', true)
+                        ->where('fg_category_id', $category->id)
+                        ->with(['category', 'subCategory'])
+                        ->latest()
+                        ->take(3)
+                        ->get();
+
+                    $featuredSeries = FgSeries::where('is_published', true)
+                        ->where('fg_category_id', $category->id)
+                        ->with(['category', 'subCategory'])
+                        ->latest()
+                        ->take(3)
+                        ->get();
+
+                    // Fetch all singles and series for the selected category
+                    $allSingles = FgSingle::where('is_published', true)
+                        ->where('fg_category_id', $category->id)
+                        ->with(['category', 'subCategory'])
+                        ->latest()
+                        ->get();
+
+                    $allSeries = FgSeries::where('is_published', true)
+                        ->where('fg_category_id', $category->id)
+                        ->with(['category', 'subCategory'])
+                        ->latest()
+                        ->get();
+                } else {
+                    // If the category is not found, return all content (fallback)
+                    $featuredSingles = FgSingle::where('is_published', true)
+                        ->with(['category', 'subCategory'])
+                        ->latest()
+                        ->take(3)
+                        ->get();
+
+                    $featuredSeries = FgSeries::where('is_published', true)
+                        ->with(['category', 'subCategory'])
+                        ->latest()
+                        ->take(3)
+                        ->get();
+
+                    $allSingles = FgSingle::where('is_published', true)
+                        ->with(['category', 'subCategory'])
+                        ->latest()
+                        ->get();
+
+                    $allSeries = FgSeries::where('is_published', true)
+                        ->with(['category', 'subCategory'])
+                        ->latest()
+                        ->get();
+                }
+            } else {
+                // If no category is selected, fetch all content
+                $featuredSingles = FgSingle::where('is_published', true)
+                    ->with(['category', 'subCategory'])
+                    ->latest()
+                    ->take(3)
+                    ->get();
+
+                $featuredSeries = FgSeries::where('is_published', true)
+                    ->with(['category', 'subCategory'])
+                    ->latest()
+                    ->take(3)
+                    ->get();
+
+                $allSingles = FgSingle::where('is_published', true)
+                    ->with(['category', 'subCategory'])
+                    ->latest()
+                    ->get();
+
+                $allSeries = FgSeries::where('is_published', true)
+                    ->with(['category', 'subCategory'])
+                    ->latest()
+                    ->get();
+            }
+
+            // Check if this is an API request
+            if ($this->expectsJson($request)) {
+                return $this->successResponse([
+                    'featured_singles' => FitGuideResource::collection($featuredSingles),
+                    'featured_series' => FitGuideResource::collection($featuredSeries),
+                    'all_singles' => FitGuideResource::collection($allSingles),
+                    'all_series' => FitGuideResource::collection($allSeries),
+                    'categories' => $categories->map(function ($category) {
+                        return [
+                            'id' => $category->id,
+                            'name' => $category->name,
+                            'slug' => $category->slug ?? null,
+                            'is_active' => $category->is_active,
+                        ];
+                    }),
+                ], 'FitGuide content retrieved successfully');
+            }
+
+            // Return web view for browser requests
+            return view('public.fitguide.index', compact('featuredSingles', 'featuredSeries', 'allSingles', 'allSeries', 'categories'));
+        } catch (\Exception $e) {
+            // Handle API errors
+            if ($this->expectsJson($request)) {
+                return $this->handleException($e);
+            }
+
+            // Return web view with error for browser requests
+            return view('public.fitguide.index', [
+                'featuredSingles' => collect(),
+                'featuredSeries' => collect(),
+                'allSingles' => collect(),
+                'allSeries' => collect(),
+                'categories' => collect(),
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    public function index_old(Request $request)
+    {
+        try {
             // Get featured content for index page (limited)
             $featuredSingles = FgSingle::where('is_published', true)
                 ->with(['category', 'subCategory'])
@@ -86,10 +217,10 @@ class FitGuideController extends BaseApiController
     {
         try {
             $categories = FgCategory::where('is_active', true)
-                ->withCount(['singles' => function($query) {
+                ->withCount(['singles' => function ($query) {
                     $query->where('is_published', true);
                 }])
-                ->withCount(['series' => function($query) {
+                ->withCount(['series' => function ($query) {
                     $query->where('is_published', true);
                 }])
                 ->orderBy('name')
@@ -271,10 +402,10 @@ class FitGuideController extends BaseApiController
         try {
             // Find the episode by episode number for this series
             $episode = FgSeriesEpisode::where('fg_series_id', $fgSeries->id)
-                                     ->where('episode_number', $episodeNumber)
-                                     ->where('is_published', true)
-                                     ->first();
-            
+                ->where('episode_number', $episodeNumber)
+                ->where('is_published', true)
+                ->first();
+
             if (!$episode || !$fgSeries->is_published) {
                 if ($this->expectsJson($request)) {
                     return $this->notFoundResponse('Episode not found or not published');
@@ -314,4 +445,4 @@ class FitGuideController extends BaseApiController
             abort(404);
         }
     }
-} 
+}
