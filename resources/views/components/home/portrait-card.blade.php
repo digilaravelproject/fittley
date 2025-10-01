@@ -1,6 +1,6 @@
-@props(['video', 'badge' => null, 'badgeClass' => null, 'categorySlug' => null, 'url'])
+@props(['video', 'badge' => null, 'badgeClass' => null, 'categorySlug' => null, 'landscapeCard' => null, 'url'])
 
-<div class="content-card"
+<div class="content-card  {{ $landscapeCard }}"
     onclick="window.location.href='{{ $categorySlug ? route($url, ['category' => $categorySlug]) : route($url, $video) }}'">
 
     @if ($badge)

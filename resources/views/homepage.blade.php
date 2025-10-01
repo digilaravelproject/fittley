@@ -11,25 +11,23 @@
     <div class="homepage-container">
         <!-- Hero Section -->
         <section class="hero-section">
-            @if ($hero->youtube_video_id)
+            @if ($hero && isset($hero['play_button_link']))
+                <!-- Local Background Video -->
+                <video class="hero-video" autoplay muted loop playsinline preload="auto"
+                    controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture
+                    oncontextmenu="return false;">
+                    <source src="{{ asset(str_replace('/storage/app/public/', '/storage/app/public/', $hero['play_button_link'])) }}"
+                        type="video/mp4">
+                </video>
+            @elseif ($hero && isset($hero['youtube_video_id']))
                 <!-- YouTube Video Background -->
                 <iframe id="yt-hero-video" class="hero-video"
-                    src="https://www.youtube.com/embed/{{ $hero->youtube_video_id }}?autoplay=1&mute=1&loop=1&playlist={{ $hero->youtube_video_id }}&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0&playsinline=1&enablejsapi=1&origin={{ request()->getSchemeAndHttpHost() }}"
+                    src="https://www.youtube.com/embed/{{ $hero['youtube_video_id'] }}?autoplay=1&mute=1&loop=1&playlist={{ $hero['youtube_video_id'] }}&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0&playsinline=1&enablejsapi=1&origin={{ request()->getSchemeAndHttpHost() }}"
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen loading="lazy">
                 </iframe>
-            @else
-                <!-- Fallback Background Video -->
-                <video class="hero-video" autoplay muted loop playsinline preload="auto"
-                    controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture
-                    oncontextmenu="return false;">
-                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-                        type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
             @endif
-
 
             <!-- Video Overlay -->
             <div class="hero-overlay"></div>
@@ -96,7 +94,7 @@
 
                                 <div class="slider-container" id="fitdoc-videos-slider">
                                     @foreach ($fitDocVideos as $video)
-                                        <x-home.portrait-card :video="$video" badge="Movie" badgeClass="badge-single" url="fitdoc.single.show"/>
+                                        <x-home.portrait-card-second :video="$video"  url="fitdoc.single.show"/>
                                     @endforeach
                                 </div>
 
@@ -163,22 +161,29 @@
                                     <div class="slider-container" id="fitlive-{{ $category->id }}-slider">
                                         @foreach ($allContent as $subCategory)
 
-                                            @if ($category->id == 19)
+                                            @if ($category->id == 21)
                                                 <x-home.landscape-card
                                                     :route="route('fitlive.daily-classes.show', $category->slug)"
 
                                                     :title="$subCategory->title"
-                                                    :image="$subCategory->banner_image_path ? asset('storage/app/public/' . $subCategory->banner_image_path) : null"
+                                                    :image="$subCategory->banner_image ? asset('storage/app/public/' . $subCategory->banner_image) : null"
                                                     :badge="['label' => 'Live', 'class' => 'badge-live']"
                                                     :meta="[ '<i class=\'fas fa-calendar\'></i> ' . ($subCategory->created_at?->format('M d, Y') ?? '') ]"
                                                 />
                                             @else
                                         {{ $subCategory->title }}
+                                            @php
+                                                if ($category->id == 21) {
+                                                    $route = 'fitlive.daily-classes.show';
+                                                } else {
+                                                    $route = 'fitlive.index';
+                                                }
+                                            @endphp
                                                 <x-home.portrait-card
                                                     :video="$subCategory"
                                                     badge="Live"
                                                     badgeClass="badge-live"
-                                                    url="fitlive.index"
+                                                    :url="$route"
                                                 />
                                             @endif
                                         @endforeach
@@ -227,7 +232,7 @@
                                                 <x-home.landscape-card
                                                     :route="route('fitarena.show', $event)"
                                                     :title="$event->title"
-                                                    :image="$event->banner_image_path ? asset('storage/app/public' . $event->banner_image_path) : null"
+                                                    :image="$event->banner_image_path ? $event->banner_image_path : null"
                                                     :badge="$badge"
                                                     :meta="[ '<i class=\'fas fa-calendar\'></i> ' . ($event->created_at?->format('M d, Y') ?? '') ]"
                                                 />
@@ -277,11 +282,16 @@
                                 <div class="content-slider">
                                     <div class="slider-container" id="fitguide-{{ $category->id }}-slider">
                                         @foreach ($allContent as $content)
-                                           <x-home.portrait-card
-                                                :video="$content"
-                                                :categorySlug="$category->slug"
-                                                url="fitguide.index"
-                                            />
+                                         @php
+                                            $landscapeCard = $category->slug == "fitcast-live" ? 'content-card-landscap' : null;
+                                        @endphp
+
+                                        <x-home.portrait-card
+                                            :video="$content"
+                                            url="fitguide.index"
+                                            :categorySlug="$category->slug"
+                                            :landscapeCard="$landscapeCard"
+                                        />
 
                                         @endforeach
                                     </div>
@@ -336,7 +346,7 @@
                             <x-home.landscape-card
                                 :route="route('fitnews.show', $news)"
                                 :title="$news->title"
-                                :image="$news->thumbnail ? asset('storage/app/public' . $news->thumbnail) : null"
+                                :image="$news->thumbnail ? asset('storage/app/public/' . $news->thumbnail) : null"
                                 :badge="[
                                     'label' => $news->status === 'scheduled' ? 'Upcoming' : 'Archive',
                                     'class' => 'badge-single'
