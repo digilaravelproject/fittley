@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title><?php echo $__env->yieldContent('title', 'Fittelly - Live Fitness Sessions'); ?></title>
+    <link rel="icon" href="<?php echo e(asset('public/favicon.ico')); ?>" type="image/x-icon">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -807,7 +808,7 @@
         <div class="container mx-2">
 
             <a class="navbar-brand d-flex align-items-center" href="<?php echo e(url('/')); ?>">
-                <img src="https://fittelly.com/storage/app/public/logos/app_logo.png" height="40"
+                <img src="<?php echo e(asset('storage/app/public/logos/app_logo.png')); ?>" height="40"
                     class="me-2 ms-3 ms-md-0">
             </a>
             
@@ -849,7 +850,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link <?php echo e(request()->is('/') ? 'active' : ''); ?>" href="<?php echo e(url('/')); ?>">Home</a>
+                        <a class="nav-link <?php echo e(request()->is('/') ? 'active' : ''); ?>"
+                            href="<?php echo e(url('/')); ?>">Home</a>
                     </li>
 
                     <li class="nav-item">

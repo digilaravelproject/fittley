@@ -292,13 +292,32 @@ body {
     scroll-snap-align: start;
     margin-bottom: 0.2rem;
 }
+.content-card-wrapper {
+    flex: 0 0 25vw;
+    aspect-ratio: 9 / 16;
+    max-height: calc(57vh * 9 / 16);
+    height: 100%;
+}
 .content-card-landscap {
     flex: 0 0 25vw;
     aspect-ratio: 9 / 16;
     height: calc(50vh * 9 / 16);
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+}
+.card-caption .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .content-card:hover {
@@ -811,6 +830,12 @@ ne ke liye */
         opacity: 0.4;
         cursor: not-allowed;
     }
+    .content-card-wrapper {
+        flex: 0 0 160px;
+        aspect-ratio: 9 / 16;
+        max-height: calc(23vh * 9 / 16);
+        height: 100%;
+    }
     .content-card-landscap {
         flex: 0 0 160px;
         aspect-ratio: 9 / 16;
@@ -819,6 +844,18 @@ ne ke liye */
         flex-direction: column;
         justify-content: flex-start;
     }
+    .card-caption .card-title {
+        font-size: 0.5rem;
+        font-weight: 600;
+        margin: 0;
+        color: #fff;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .card-overlay,
     .card-content {
         display: none;

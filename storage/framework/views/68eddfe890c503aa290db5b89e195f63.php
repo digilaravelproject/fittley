@@ -355,12 +355,34 @@
                                 <h3 class="category-title"><?php echo e($category->name); ?></h3>
                                 <div class="content-slider">
                                     <div class="slider-container" id="fitguide-<?php echo e($category->id); ?>-slider">
-                                        <?php $__currentLoopData = $allContent; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $content): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                         <?php
-                                            $landscapeCard = $category->slug == "fitcast-live" ? 'content-card-landscap' : null;
+                                    <?php $__currentLoopData = $allContent; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $content): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php
+                                            $isFitcastLive = $category->slug === 'fitcast-live';
                                         ?>
 
-                                        <?php if (isset($component)) { $__componentOriginal41b15c4f427e6d22976473ee4b2336e9 = $component; } ?>
+                                        <?php if($isFitcastLive): ?>
+                                            <?php if (isset($component)) { $__componentOriginal2b707d9f7bf07249f74fec5563c397f4 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal2b707d9f7bf07249f74fec5563c397f4 = $attributes; } ?>
+<?php $component = App\View\Components\Home\LandscapeCard::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('home.landscape-card'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\Home\LandscapeCard::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitguide.index', ['category' => $category->slug])),'title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($content->title),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($content->banner_image ? asset('storage/app/public/' . $content->banner_image) : null),'badge' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(['label' => 'Live', 'class' => 'badge-live']),'meta' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute([ '<i class=\'fas fa-calendar\'></i> ' . ($content->created_at?->format('M d, Y') ?? '') ])]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal2b707d9f7bf07249f74fec5563c397f4)): ?>
+<?php $attributes = $__attributesOriginal2b707d9f7bf07249f74fec5563c397f4; ?>
+<?php unset($__attributesOriginal2b707d9f7bf07249f74fec5563c397f4); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal2b707d9f7bf07249f74fec5563c397f4)): ?>
+<?php $component = $__componentOriginal2b707d9f7bf07249f74fec5563c397f4; ?>
+<?php unset($__componentOriginal2b707d9f7bf07249f74fec5563c397f4); ?>
+<?php endif; ?>
+                                        <?php else: ?>
+                                            <?php if (isset($component)) { $__componentOriginal41b15c4f427e6d22976473ee4b2336e9 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal41b15c4f427e6d22976473ee4b2336e9 = $attributes; } ?>
 <?php $component = App\View\Components\Home\PortraitCard::resolve(['video' => $content,'url' => 'fitguide.index'] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('home.portrait-card'); ?>
@@ -369,7 +391,7 @@
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\App\View\Components\Home\PortraitCard::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['categorySlug' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($category->slug),'landscapeCard' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($landscapeCard)]); ?>
+<?php $component->withAttributes(['categorySlug' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($category->slug)]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal41b15c4f427e6d22976473ee4b2336e9)): ?>
@@ -380,8 +402,9 @@
 <?php $component = $__componentOriginal41b15c4f427e6d22976473ee4b2336e9; ?>
 <?php unset($__componentOriginal41b15c4f427e6d22976473ee4b2336e9); ?>
 <?php endif; ?>
+                                        <?php endif; ?>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
                                     <button class="slider-controls slider-prev"
                                         onclick="slideContent('fitguide-<?php echo e($category->id); ?>-slider', -1)">
