@@ -97,14 +97,14 @@
                                     <?php $__currentLoopData = $fitDocVideos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $video): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <?php if (isset($component)) { $__componentOriginal6fb9a3a5133c0cbd1e59f8d65daeecd1 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal6fb9a3a5133c0cbd1e59f8d65daeecd1 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.home.portrait-card-second','data' => ['video' => $video,'badge' => 'Movie','badgeClass' => 'badge-single','url' => 'fitdoc.single.show']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.home.portrait-card-second','data' => ['video' => $video,'url' => 'fitdoc.single.show']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('home.portrait-card-second'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['video' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($video),'badge' => 'Movie','badgeClass' => 'badge-single','url' => 'fitdoc.single.show']); ?>
+<?php $component->withAttributes(['video' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($video),'url' => 'fitdoc.single.show']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal6fb9a3a5133c0cbd1e59f8d65daeecd1)): ?>
@@ -356,8 +356,8 @@
                                 <div class="content-slider">
                                     <div class="slider-container" id="fitguide-<?php echo e($category->id); ?>-slider">
                                         <?php $__currentLoopData = $allContent; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $content): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <?php
-                                            $landscapeCard = $category->slug != "fitcast-live" ? 'content-card-landscap' : null;
+                                         <?php
+                                            $landscapeCard = $category->slug == "fitcast-live" ? 'content-card-landscap' : null;
                                         ?>
 
                                         <?php if (isset($component)) { $__componentOriginal41b15c4f427e6d22976473ee4b2336e9 = $component; } ?>
@@ -380,7 +380,6 @@
 <?php $component = $__componentOriginal41b15c4f427e6d22976473ee4b2336e9; ?>
 <?php unset($__componentOriginal41b15c4f427e6d22976473ee4b2336e9); ?>
 <?php endif; ?>
-
 
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
@@ -542,4 +541,4 @@
     <script src="<?php echo e(asset('assets/home/js/homepage.js')); ?>?v=<?php echo e(time()); ?>"></script>
 <?php $__env->stopPush(); ?>
 
-<?php echo $__env->make('layouts.home.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/homepage.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/homepage.blade.php ENDPATH**/ ?>

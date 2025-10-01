@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Fittelly - Live Fitness Sessions')</title>
+    <link rel="icon" href="{{ asset('public/favicon.ico') }}" type="image/x-icon">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -126,6 +127,7 @@
             text-decoration: none;
             text-shadow: 0 0 10px rgba(247, 163, 26, 0.3);
             transition: all 0.3s ease;
+            margin-left: -2%;
         }
 
         .navbar-brand:hover {
@@ -717,7 +719,7 @@
 
             .navbar-brand {
                 font-size: 1.5rem;
-                margin-left: -2rem;
+                margin-left: -15%;
             }
 
             .navbar-nav {
@@ -847,7 +849,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">Home</a>
+                        <a class="nav-link {{ request()->is('/') ? 'active' : '' }}"
+                            href="{{ url('/') }}">Home</a>
                     </li>
 
                     <li class="nav-item">

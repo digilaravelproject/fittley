@@ -56,10 +56,20 @@ function fallbackToDefaultBanner() {
     }
 }
 
-// === DOM READY ===
-document.addEventListener("DOMContentLoaded", () => {
-    const heroVideo = document.querySelector(".hero-video");
+// Debounce utility to prevent rapid clicks firing multiple scrolls
+function debounce(func, delay) {
+    let timer;
+    return function (...args) {
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
 
+document.addEventListener("DOMContentLoaded", () => {
+    // Setup hero video fallback and mobile inline video settings
+    const heroVideo = document.querySelector(".hero-video");
     if (heroVideo) {
         if (heroVideo.tagName === "IFRAME") {
             heroVideo.addEventListener("error", fallbackToDefaultBanner);
@@ -71,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     console.warn("Video autoplay failed:", error);
                 }
             });
-
             heroVideo.addEventListener("error", fallbackToDefaultBanner);
 
             if (window.innerWidth <= 768) {
@@ -81,186 +90,85 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // === SLIDER SETTINGS ===
-    const SLIDER_SETTINGS = {
-        cardWidth: () => {
-            const isMobile = window.innerWidth <= 768;
-            return isMobile ? (window.innerWidth <= 480 ? 168 : 212) : 296;
-        },
-        visibleCards: () => (window.innerWidth <= 768 ? 3 : 5),
-    };
+    // Initialize sliders and arrows
+    document.querySelectorAll(".content-slider").forEach((container) => {
+        const slider = container.querySelector(".slider-container");
+        const prevBtn = container.querySelector(".slider-prev");
+        const nextBtn = container.querySelector(".slider-next");
 
-    // === SLIDE FUNCTION ===
-    window.slideContent = function (sliderId, direction) {
-        const slider = document.getElementById(sliderId);
-        if (!slider) return;
+        if (!slider || !prevBtn || !nextBtn) return;
 
-        const cardWidth = SLIDER_SETTINGS.cardWidth();
-        const visible = SLIDER_SETTINGS.visibleCards();
-        const totalCards = slider.children.length;
+        // Debounced click handlers for arrows
+        const debouncedPrev = debounce(
+            () => scrollSlider("prev", container),
+            150
+        );
+        const debouncedNext = debounce(
+            () => scrollSlider("next", container),
+            150
+        );
 
-        const currentTransform = slider.style.transform || "translateX(0px)";
-        const currentX = parseInt(currentTransform.match(/-?\d+/)?.[0] || 0);
+        prevBtn.addEventListener("click", debouncedPrev);
+        nextBtn.addEventListener("click", debouncedNext);
 
-        const maxSlide = -Math.max(0, totalCards - visible) * cardWidth;
-        let newX = currentX + direction * cardWidth;
-        newX = Math.max(maxSlide, Math.min(0, newX));
+        // Update arrows on manual scroll (e.g., touch scroll)
+        slider.addEventListener("scroll", () =>
+            updateSliderControls(container)
+        );
 
-        slider.style.transform = `translateX(${newX}px)`;
-        updateSliderControls(sliderId, newX, maxSlide);
-    };
-
-    function updateSliderControls(sliderId, currentX = null, maxSlide = null) {
-        const slider = document.getElementById(sliderId);
-        if (!slider) return;
-
-        const parent = slider.closest(".content-slider");
-        const prevBtn = parent.querySelector(".slider-prev");
-        const nextBtn = parent.querySelector(".slider-next");
-
-        if (currentX === null) {
-            const transform = slider.style.transform || "translateX(0px)";
-            currentX = parseInt(transform.match(/-?\d+/)?.[0] || 0);
-        }
-
-        if (maxSlide === null) {
-            const totalCards = slider.children.length;
-            const visible = SLIDER_SETTINGS.visibleCards();
-            const cardWidth = SLIDER_SETTINGS.cardWidth();
-            maxSlide = -Math.max(0, totalCards - visible) * cardWidth;
-        }
-
-        // Only show controls if overflow exists (PC only)
-        if (window.innerWidth > 768) {
-            const totalCards = slider.children.length;
-            const visible = SLIDER_SETTINGS.visibleCards();
-            if (totalCards > visible) {
-                prevBtn.style.display = "flex";
-                nextBtn.style.display = "flex";
-            } else {
-                prevBtn.style.display = "none";
-                nextBtn.style.display = "none";
-            }
-        }
-
-        prevBtn.disabled = currentX >= 0;
-        nextBtn.disabled = currentX <= maxSlide;
-    }
-
-    // === TOUCH SUPPORT ===
-    let touchStartX = 0,
-        touchEndX = 0,
-        currentSlider = null;
-
-    document.querySelectorAll(".slider-container").forEach((slider) => {
-        slider.addEventListener("touchstart", (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-            currentSlider = slider;
-        });
-
-        slider.addEventListener("touchend", (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            const diff = touchStartX - touchEndX;
-            if (Math.abs(diff) > 50) {
-                slideContent(currentSlider.id, diff > 0 ? 1 : -1);
-            }
-            currentSlider = null;
-        });
+        // Initial arrow visibility
+        updateSliderControls(container);
     });
 
-    // === AUTO SCROLL ===
-    let autoScrollIntervals = [];
-
-    function startAutoScroll() {
-        document.querySelectorAll(".slider-container").forEach((slider, i) => {
-            if (!slider.id) return;
-            const interval = setInterval(() => {
-                if (!document.hidden) slideContent(slider.id, 1);
-            }, 5000 + i * 1000);
-            autoScrollIntervals.push(interval);
-        });
-    }
-
-    function stopAutoScroll() {
-        autoScrollIntervals.forEach(clearInterval);
-        autoScrollIntervals = [];
-    }
-
-    document.querySelectorAll(".content-slider").forEach((slider) => {
-        slider.addEventListener("mouseenter", stopAutoScroll);
-        slider.addEventListener("mouseleave", () => {
-            if (window.innerWidth > 768) startAutoScroll();
-        });
-    });
-
-    function initSliders() {
-        document.querySelectorAll(".slider-container").forEach((slider) => {
-            updateSliderControls(slider.id);
-            slider.style.transform = "translateX(0px)";
-        });
-    }
-
+    // Update arrows on window resize
     window.addEventListener("resize", () => {
-        initSliders();
-        stopAutoScroll();
-        if (window.innerWidth > 768) startAutoScroll();
-    });
-
-    initSliders();
-    if (window.innerWidth > 768) startAutoScroll();
-
-    // === CARD CLICK SUPPORT ===
-    document.querySelectorAll(".content-card").forEach((card) => {
-        card.addEventListener("click", function () {
-            const href = this.getAttribute("onclick");
-            if (href?.includes("window.location.href")) {
-                const match = href.match(/window\.location\.href='([^']+)'/);
-                if (match?.[1] && match[1] !== "#") {
-                    window.location.href = match[1];
-                }
-            }
-        });
-    });
-
-    // === HERO VIDEO CONTROL ON TAB CHANGE ===
-    document.addEventListener("visibilitychange", () => {
-        const heroVideo = document.querySelector(".hero-video");
-        if (!heroVideo) return;
-
-        if (document.hidden) {
-            stopAutoScroll();
-            if (
-                heroVideo.tagName === "IFRAME" &&
-                typeof player !== "undefined"
-            ) {
-                try {
-                    player.getCurrentTime().then((time) => {
-                        lastPlaybackTime = time;
-                        player.pauseVideo();
-                    });
-                } catch (e) {
-                    console.warn("Failed to pause YouTube:", e);
-                }
-            } else if (heroVideo.tagName === "VIDEO") {
-                lastPlaybackTime = heroVideo.currentTime;
-                heroVideo.pause();
-            }
-        } else {
-            if (window.innerWidth > 768) startAutoScroll();
-            if (
-                heroVideo.tagName === "IFRAME" &&
-                typeof player !== "undefined"
-            ) {
-                try {
-                    player.seekTo(lastPlaybackTime, true);
-                    player.playVideo();
-                } catch (e) {
-                    console.warn("Failed to resume YouTube:", e);
-                }
-            } else if (heroVideo.tagName === "VIDEO") {
-                heroVideo.currentTime = lastPlaybackTime;
-                heroVideo.play();
-            }
-        }
+        document
+            .querySelectorAll(".content-slider")
+            .forEach(updateSliderControls);
     });
 });
+
+// Scroll the slider container left/right
+function scrollSlider(direction, container) {
+    const slider = container.querySelector(".slider-container");
+    if (!slider) return;
+
+    // Calculate scroll amount dynamically — scroll ~80% visible width or min 100px for small containers
+    const visibleWidth = slider.clientWidth;
+    const scrollAmount = Math.max(visibleWidth * 0.8, 100);
+
+    // Scroll left or right smoothly
+    slider.scrollBy({
+        left: direction === "next" ? scrollAmount : -scrollAmount,
+        behavior: "smooth",
+    });
+
+    // Update arrows after smooth scroll settles (adjust delay if needed)
+    setTimeout(() => updateSliderControls(container), 350);
+}
+
+// Show/hide arrows based on scroll position & only on desktop
+function updateSliderControls(container) {
+    const slider = container.querySelector(".slider-container");
+    const prevBtn = container.querySelector(".slider-prev");
+    const nextBtn = container.querySelector(".slider-next");
+
+    if (!slider || !prevBtn || !nextBtn) return;
+
+    // Hide arrows on mobile
+    if (window.innerWidth < 769) {
+        prevBtn.style.display = "none";
+        nextBtn.style.display = "none";
+        return;
+    }
+
+    // Use Math.ceil/floor to avoid fractional errors
+    const scrollLeft = Math.ceil(slider.scrollLeft);
+    const maxScrollLeft = Math.floor(slider.scrollWidth - slider.clientWidth);
+
+    // Show prev if scrolled right from start
+    prevBtn.style.display = scrollLeft > 0 ? "flex" : "none";
+
+    // Show next if not at end (allow a small 5px buffer for floating point)
+    nextBtn.style.display = scrollLeft < maxScrollLeft - 5 ? "flex" : "none";
+}

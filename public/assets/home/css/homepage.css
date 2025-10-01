@@ -37,6 +37,12 @@ body {
 .slider-controls {
     display: none; /* Hide controls on smaller screens */
 }
+/* Desktop Only */
+@media (min-width: 769px) {
+    .slider-controls {
+        display: flex;
+    }
+}
 /* Hero Section - Full Screen */
 .hero-section {
     height: 100vh;
@@ -823,17 +829,19 @@ ne ke liye */
     .content-slider {
         overflow: hidden !important;
         position: relative;
-        width: 100%; /* Ensure parent takes full width */
+        width: 100%;
     }
     .slider-container {
         display: flex;
-        /* Remove any width: 100% or width: auto if present */
-        /* The width will be determined by the number of cards */
         will-change: transform;
         transition: transform 0.3s ease;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
     }
     .content-card {
+        display: inline-block;
         flex: 0 0 280px;
-        /* Already present, ensures fixed card width */
     }
 }

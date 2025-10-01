@@ -126,6 +126,7 @@
             text-decoration: none;
             text-shadow: 0 0 10px rgba(247, 163, 26, 0.3);
             transition: all 0.3s ease;
+            margin-left: -2%;
         }
 
         .navbar-brand:hover {
@@ -717,7 +718,7 @@
 
             .navbar-brand {
                 font-size: 1.5rem;
-                margin-left: -2rem;
+                margin-left: -15%;
             }
 
             .navbar-nav {
@@ -806,7 +807,7 @@
         <div class="container mx-2">
 
             <a class="navbar-brand d-flex align-items-center" href="<?php echo e(url('/')); ?>">
-                <img src="<?php echo e(asset('storage/app/public/logos/app_logo.png')); ?>" height="40"
+                <img src="https://fittelly.com/storage/app/public/logos/app_logo.png" height="40"
                     class="me-2 ms-3 ms-md-0">
             </a>
             

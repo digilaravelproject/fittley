@@ -28,7 +28,7 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars); ?>
 
-<div class="content-card <?php echo e($landscapeCard); ?>"
+<div class="content-card  <?php echo e($landscapeCard); ?>"
     onclick="window.location.href='<?php echo e($categorySlug ? route($url, ['category' => $categorySlug]) : route($url, $video)); ?>'">
 
     <?php if($badge): ?>

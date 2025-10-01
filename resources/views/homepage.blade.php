@@ -1,4 +1,4 @@
-@extends('layouts.home.public')
+@extends('layouts.public')
 
 @section('title', 'FITTELLY - Your Ultimate Fitness Destination')
 
