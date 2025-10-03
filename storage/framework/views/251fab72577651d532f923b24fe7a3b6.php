@@ -719,7 +719,7 @@
 
             .navbar-brand {
                 font-size: 1.5rem;
-                margin-left: -15%;
+                margin-left: -3rem;
             }
 
             .navbar-nav {

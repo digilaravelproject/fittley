@@ -298,6 +298,13 @@ body {
     max-height: calc(57vh * 9 / 16);
     height: 100%;
 }
+.content-card-wrapper.ccw-portrait {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 0 0 18.5vw;
+    max-height: calc(33vh * 3 / 2);
+}
 .content-card-landscap {
     flex: 0 0 25vw;
     aspect-ratio: 9 / 16;
@@ -306,6 +313,17 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+}
+.content-card-portrait {
+    flex: 0 0 25vw;
+    aspect-ratio: 3 / 2;
+    height: calc(280px * 3 / 2); /* You can adjust this */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+    position: relative;
 }
 .card-caption .card-title {
     font-size: 16px;
@@ -766,10 +784,10 @@ ne ke liye */
     }
     /* Even smaller cards for very small screens */
     .content-card {
-        flex: 0 0 105px;
+        flex: 0 0 30.5vw;
         aspect-ratio: 3 / 2;
-        height: calc(110px * 3 / 2);
-        border-radius: 6px;
+        height: calc(16vh * 3 / 2);
+        border-radius: 5px;
     }
 
     .card-image {
@@ -831,22 +849,29 @@ ne ke liye */
         cursor: not-allowed;
     }
     .content-card-wrapper {
-        flex: 0 0 160px;
+        flex: 0 0 46.5vw;
         aspect-ratio: 9 / 16;
-        max-height: calc(23vh * 9 / 16);
+        max-height: calc(28vh * 9 / 16);
         height: 100%;
+    }
+    .content-card-wrapper.ccw-portrait {
+        gap: 0.1rem;
+        max-height: calc(17vh * 3 / 2);
+    }
+    .content-card-portrait {
+        flex: 0 0 50vw;
     }
     .content-card-landscap {
         flex: 0 0 160px;
         aspect-ratio: 9 / 16;
-        height: calc(180px * 9 / 16);
+        height: calc(210px * 9 / 16);
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
     }
     .card-caption .card-title {
-        font-size: 0.5rem;
-        font-weight: 600;
+        font-size: 0.68rem;
+        font-weight: 400;
         margin: 0;
         color: #fff;
         display: -webkit-box;
@@ -879,6 +904,6 @@ ne ke liye */
     }
     .content-card {
         display: inline-block;
-        flex: 0 0 280px;
+        flex: 0 0 25vw;
     }
 }

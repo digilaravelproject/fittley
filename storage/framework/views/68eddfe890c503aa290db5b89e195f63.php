@@ -210,7 +210,7 @@
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\App\View\Components\Home\LandscapeCard::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitlive.daily-classes.show', $category->slug)),'title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($subCategory->title),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($subCategory->banner_image ? asset('storage/app/public/' . $subCategory->banner_image) : null),'badge' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(['label' => 'Live', 'class' => 'badge-live']),'meta' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute([ '<i class=\'fas fa-calendar\'></i> ' . ($subCategory->created_at?->format('M d, Y') ?? '') ])]); ?>
+<?php $component->withAttributes(['route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitlive.daily-classes.show', $category->slug)),'title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($subCategory->name),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($subCategory->banner_image ? asset('storage/app/public/' . $subCategory->banner_image) : null),'badge' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(['label' => 'Live', 'class' => 'badge-live']),'meta' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute([ '<i class=\'fas fa-calendar\'></i> ' . ($subCategory->created_at?->format('M d, Y') ?? '') ])]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal2b707d9f7bf07249f74fec5563c397f4)): ?>
@@ -346,7 +346,9 @@
                     </div>
                     </a>
 
-                    <?php $__currentLoopData = $fitGuideCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php $__currentLoopData = $fitGuideCategories->sortBy(function($category) {
+                            return $category->slug === 'fitcast-live' ? 1 : 0;
+                        }); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <?php
                             $allContent = $category->singles->merge($category->series);
                         ?>
@@ -370,7 +372,7 @@
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\App\View\Components\Home\LandscapeCard::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitguide.index', ['category' => $category->slug])),'title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($content->title),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($content->banner_image ? asset('storage/app/public/' . $content->banner_image) : null),'badge' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(['label' => 'Live', 'class' => 'badge-live']),'meta' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute([ '<i class=\'fas fa-calendar\'></i> ' . ($content->created_at?->format('M d, Y') ?? '') ])]); ?>
+<?php $component->withAttributes(['route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitguide.index', ['category' => $category->slug])),'title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($content->title),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($content->banner_image ? asset('storage/app/public/' . $content->banner_image) : null),'meta' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute([ '<i class=\'fas fa-calendar\'></i> ' . ($content->created_at?->format('M d, Y') ?? '') ])]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal2b707d9f7bf07249f74fec5563c397f4)): ?>

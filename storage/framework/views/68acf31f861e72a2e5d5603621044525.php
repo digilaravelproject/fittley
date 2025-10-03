@@ -27,48 +27,37 @@ foreach ($attributes->all() as $__key => $__value) {
 }
 
 unset($__defined_vars); ?>
+<div class="content-card-wrapper ccw-portrait">
+    <div class="content-card content-card-portrait"
+        onclick="window.location.href='<?php echo e($categorySlug ? route($url, ['category' => $categorySlug]) : route($url, $video)); ?>'">
 
-<div class="content-card  <?php echo e($landscapeCard); ?>"
-    onclick="window.location.href='<?php echo e($categorySlug ? route($url, ['category' => $categorySlug]) : route($url, $video)); ?>'">
+        <?php if($badge): ?>
+            <div class="status-badge <?php echo e($badgeClass); ?>">
+                <?php echo e($badge); ?>
 
-    <?php if($badge): ?>
-        <div class="status-badge <?php echo e($badgeClass); ?>">
-            <?php echo e($badge); ?>
+            </div>
+        <?php endif; ?>
 
-        </div>
-    <?php endif; ?>
+        <?php
+            // Determine the final image path
+            $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');
+            $finalImage = !empty($video->banner_image_path)
+                ? asset('storage/app/public/' . $video->banner_image_path)
+                : $fallbackImage;
+        ?>
 
-    <?php
-        // Determine the final image path
-        $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');
-        $finalImage = !empty($video->banner_image_path)
-            ? asset('storage/app/public/' . $video->banner_image_path)
-            : $fallbackImage;
-    ?>
+        <img src="<?php echo e($finalImage); ?>" alt="<?php echo e($video->title); ?>" class="card-image" loading="lazy">
 
-    <img src="<?php echo e($finalImage); ?>" alt="<?php echo e($video->title); ?>" class="card-image" loading="lazy">
-
-    <div class="card-overlay">
-        <div class="play-icon">
-            <i class="fas fa-play"></i>
+        <div class="card-overlay">
+            <div class="play-icon">
+                <i class="fas fa-play"></i>
+            </div>
         </div>
     </div>
 
-    <div class="card-content">
+    
+    <div class="card-caption">
         <h3 class="card-title"><?php echo e($video->title); ?></h3>
-
-        <div class="card-meta">
-            <span>
-                <i class="fas fa-calendar"></i>
-                <?php echo e($video->created_at ? $video->created_at->format('Y') : 'New'); ?>
-
-            </span>
-
-            <span>
-                <i class="fas fa-clock"></i>
-                <?php echo e($video->duration_minutes ?? 90); ?> min
-            </span>
-        </div>
     </div>
 </div>
 <?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/components/home/portrait-card.blade.php ENDPATH**/ ?>

@@ -18,7 +18,7 @@
             </div>
         </section>
 
-        <div class="container px-3 mt-1 mb-5">
+        <div class="container px-2 mt-1 mb-5">
             <!-- Filter Buttons for Categories -->
             <div class="filter-buttons">
                 <button class="filter-btn <?php echo e(request('category') == null ? 'active' : ''); ?>" data-filter="all"

@@ -164,7 +164,7 @@
                                             @if ($category->id == 21)
                                                 <x-home.landscape-card
                                                     :route="route('fitlive.daily-classes.show', $category->slug)"
-                                                    :title="$subCategory->title"
+                                                    :title="$subCategory->name"
                                                     :image="$subCategory->banner_image ? asset('storage/app/public/' . $subCategory->banner_image) : null"
                                                     :badge="['label' => 'Live', 'class' => 'badge-live']"
                                                     :meta="[ '<i class=\'fas fa-calendar\'></i> ' . ($subCategory->created_at?->format('M d, Y') ?? '') ]"
@@ -271,7 +271,9 @@
                     </div>
                     </a>
 
-                    @foreach ($fitGuideCategories as $category)
+                        @foreach ($fitGuideCategories->sortBy(function($category) {
+                            return $category->slug === 'fitcast-live' ? 1 : 0;
+                        }) as $category)
                         @php
                             $allContent = $category->singles->merge($category->series);
                         @endphp
@@ -290,7 +292,6 @@
                                                 :route="route('fitguide.index', ['category' => $category->slug])"
                                                 :title="$content->title"
                                                 :image="$content->banner_image ? asset('storage/app/public/' . $content->banner_image) : null"
-                                                :badge="['label' => 'Live', 'class' => 'badge-live']"
                                                 :meta="[ '<i class=\'fas fa-calendar\'></i> ' . ($content->created_at?->format('M d, Y') ?? '') ]"
                                             />
                                         @else
