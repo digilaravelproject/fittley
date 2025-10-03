@@ -25,6 +25,8 @@
     --netflix-white: #ffffff;
     --fittelly-orange: #f7a31a;
     --fittelly-orange-hover: #e8941a;
+    --body-fonts: "Roboto", sans-serif;
+    --title-fonts: "Jost", sans-serif;
 }
 
 body {
@@ -326,6 +328,7 @@ body {
     position: relative;
 }
 .card-caption .card-title {
+    font-family: var(--title-fonts);
     font-size: 16px;
     font-weight: 600;
     margin: 0;
@@ -342,6 +345,7 @@ body {
     transform: scale(1.05);
     z-index: 10;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+    border-radius: 6px;
 }
 
 .card-image {
@@ -849,17 +853,18 @@ ne ke liye */
         cursor: not-allowed;
     }
     .content-card-wrapper {
-        flex: 0 0 46.5vw;
+        flex: 0 0 10.67rem;
         aspect-ratio: 9 / 16;
-        max-height: calc(28vh * 9 / 16);
+        max-height: calc(15.5rem * 9 / 16);
         height: 100%;
     }
     .content-card-wrapper.ccw-portrait {
         gap: 0.1rem;
-        max-height: calc(17vh * 3 / 2);
+        max-height: calc(8.2rem * 3 / 2);
+        flex: 0 0 7rem;
     }
     .content-card-portrait {
-        flex: 0 0 50vw;
+        flex: 0 0 11rem;
     }
     .content-card-landscap {
         flex: 0 0 160px;
