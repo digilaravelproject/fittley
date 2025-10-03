@@ -6,6 +6,7 @@
     $finalImage = !empty($video->banner_image_path) ? $video->banner_image_path : $fallbackImage;
 @endphp
 
+
 <div class="content-card-wrapper ccw-portrait">
     {{-- Main Card --}}
     <div class="content-card content-card-portrait" onclick="window.location.href='{{ route($url, $video) }}'">

@@ -5,74 +5,60 @@
 @section('content')
     <div class="shorts-container row justify-content-center align-items-center">
         <div class="shorts-wrapper">
-            @foreach ($shorts as $short)
+            @foreach ($shorts->shuffle() as $short)
                 <div class="shorts-item">
-
                     <!-- Video -->
                     <video class="shorts-video" src="{{ asset('storage/app/public/' . $short->video_path) }}"
                         poster="{{ asset('storage/app/public/' . $short->thumbnail_path) }}" playsinline autoplay loop>
                     </video>
-
                     <!-- Top Left: User Info -->
                     <div class="shorts-user-info">
                         <img src="{{ asset('storage/app/public/default-profile1.png') }}" alt="{{ $short->uploader->name }}"
                             class="user-avatar">
-                        <span class="username">{{ '@' . $short->title }}</span><br>
+                        <span class="username">{{ '@ ' . $short->title }}</span><br>
                     </div>
-
                     <!-- <div class="shorts-description1">
-                            <p class="description-text1 line-clamp1">
-                                {{ $short->category->name }}
-                            </p>
-                        </div> -->
-
+                                            <p class="description-text1 line-clamp1">
+                                                {{ $short->category->name }}
+                                            </p>
+                                        </div> -->
                     <!-- Bottom Left: Description -->
                     <div class="shorts-description">
                         <p class="description-text line-clamp" data-full="{{ $short->description }}">
                             {{ $short->description }}
                         </p>
                         <button class="read-more-btn">Read more</button>
-                    </div>
 
-                    <!-- Right Side Actions -->
-                    <div class="shorts-actions-overlay">
-                        <!-- Views -->
-                        {{-- <button class="action-btn views-btn" disabled>
+                        <!-- Right Side Actions -->
+                        <div class="shorts-actions-overlay">
+                            <!-- Views -->
+                            {{-- <button class="action-btn views-btn" disabled>
                             <i class="fas fa-eye"></i>
                             <span class="count">{{ $short->views_count ?? 0 }}</span>
                         </button> --}}
-
-                        <button class="action-btn like-btn {{ $short->isLiked ? 'active' : '' }}"
-                            data-id="{{ $short->id }}">
-                            <i class="far fa-thumbs-up"></i>
-
-                            <span class="count">{{ $short->likes_count }}</span>
-                        </button>
-                        <!-- <button class="action-btn like-btn {{ $short->isUnLiked ? 'active' : '' }}"
+                            <button class="action-btn like-btn {{ $short->isLiked ? 'active' : '' }}"
                                 data-id="{{ $short->id }}">
-                                <i class="far fa-thumbs-down"></i>
-
-
-                                <span class="count">{{ $short->unlikes_count }}</span>
-                            </button> -->
-                        <!-- <button class="action-btn like-btn" data-id="{{ $short->id }}">
-                                <i class="fa-regular fa-comment"></i>
-
-
-                                <span class="count">{{ $short->comments }}</span>
-                            </button> -->
-
-                        <button class="action-btn share-btn" data-id="{{ $short->id }}">
-                            <i class="far fa-share-from-square"></i>
-                            <span class="count">{{ $short->shares_count }}</span>
-                        </button>
+                                <i class="far fa-thumbs-up"></i>
+                                <span class="count">{{ $short->likes_count }}</span>
+                            </button>
+                            <!-- <button class="action-btn like-btn {{ $short->isUnLiked ? 'active' : '' }}"
+                                                data-id="{{ $short->id }}">
+                                                <i class="far fa-thumbs-down"></i>
+                                                <span class="count">{{ $short->unlikes_count }}</span>
+                                            </button> -->
+                            <!-- <button class="action-btn like-btn" data-id="{{ $short->id }}">
+                                                <i class="fa-regular fa-comment"></i>
+                                                <span class="count">{{ $short->comments }}</span>
+                                            </button> -->
+                            <button class="action-btn share-btn" data-id="{{ $short->id }}">
+                                <i class="far fa-share-from-square"></i>
+                                <span class="count">{{ $short->shares_count }}</span>
+                            </button>
+                        </div>
                     </div>
-
-                </div>
             @endforeach
         </div>
     </div>
-
     <style>
         navbar-expand-lg {
             display: none;
@@ -128,6 +114,7 @@
             position: absolute;
             bottom: 8rem;
             left: 16px;
+            right: 3.9rem;
             display: flex;
             align-items: center;
             z-index: 10;
@@ -146,11 +133,17 @@
             color: white;
             margin-left: 10px;
             font-weight: 600;
+            font-size: .78rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
         }
 
         .shorts-description {
             position: absolute;
-            bottom: 2rem;
+            bottom: 3.8rem;
             left: 16px;
             right: 80px;
             z-index: 10;
@@ -160,16 +153,25 @@
 
         .description-text {
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             /* show only 3 lines */
             -webkit-box-orient: vertical;
             overflow: hidden;
+            margin-bottom: -0.5rem;
+            font-size: .78rem;
         }
 
         .description-text.expanded {
             -webkit-line-clamp: unset;
-            /* remove line clamp */
             overflow: visible;
+            z-index: 99999;
+            position: relative;
+            background: #f19d1a45;
+            padding: 0 5rem 0px 6px;
+            border-radius: 10px;
+            max-width: 425px;
+            width: 100%;
+
         }
 
 

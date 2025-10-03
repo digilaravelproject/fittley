@@ -4,7 +4,7 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="{{ asset('assets/home/css/homepage.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('public/assets/home/css/homepage.css') }}?v={{ time() }}">
 @endpush
 
 @section('content')
@@ -159,31 +159,35 @@
                                 <h3 class="category-title">{{ $category->name }}</h3>
                                 <div class="content-slider">
                                     <div class="slider-container" id="fitlive-{{ $category->id }}-slider">
+
                                         @foreach ($allContent as $subCategory)
 
                                             @if ($category->id == 21)
                                                 <x-home.landscape-card
                                                     :route="route('fitlive.daily-classes.show', $category->slug)"
+
                                                     :title="$subCategory->name"
                                                     :image="$subCategory->banner_image ? asset('storage/app/public/' . $subCategory->banner_image) : null"
                                                     :badge="['label' => 'Live', 'class' => 'badge-live']"
                                                     :meta="[ '<i class=\'fas fa-calendar\'></i> ' . ($subCategory->created_at?->format('M d, Y') ?? '') ]"
                                                 />
                                             @else
-                                        {{ $subCategory->title }}
-                                            @php
-                                                if ($category->id == 21) {
-                                                    $route = 'fitlive.daily-classes.show';
-                                                } else {
-                                                    $route = 'fitlive.index';
-                                                }
-                                            @endphp
-                                                <x-home.portrait-card
-                                                    :video="$subCategory"
-                                                    badge="Live"
-                                                    badgeClass="badge-live"
-                                                    :url="$route"
-                                                />
+                                                @foreach ($subCategory->fitLiveSessions as $data)
+                                                    @php
+                                                        if ($category->id == 21) {
+                                                            $route = 'fitlive.daily-classes.show';
+                                                        } else {
+                                                            $route = 'fitlive.index';
+                                                        }
+                                                    @endphp
+                                                    <!--{{print_r($subCategory)}}-->
+                                                        <x-home.portrait-card-second
+                                                            :video="$data"
+                                                            badge="Live"
+                                                            badgeClass="badge-live"
+                                                            :url="$route"
+                                                        />
+                                                @endforeach
                                             @endif
                                         @endforeach
                                     </div>
@@ -291,7 +295,7 @@
                                             <x-home.landscape-card
                                                 :route="route('fitguide.index', ['category' => $category->slug])"
                                                 :title="$content->title"
-                                                :image="$content->banner_image ? asset('storage/app/public/' . $content->banner_image) : null"
+                                                :image="$content->banner_image_path ? asset('storage/app/public/' . $content->banner_image_path) : null"
                                                 :meta="[ '<i class=\'fas fa-calendar\'></i> ' . ($content->created_at?->format('M d, Y') ?? '') ]"
                                             />
                                         @else
@@ -302,7 +306,6 @@
                                             />
                                         @endif
                                     @endforeach
-
                                     </div>
                                     <button class="slider-controls slider-prev"
                                         onclick="slideContent('fitguide-{{ $category->id }}-slider', -1)">
@@ -419,5 +422,5 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="{{ asset('assets/home/js/homepage.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('public/assets/home/js/homepage.js') }}?v={{ time() }}"></script>
 @endpush

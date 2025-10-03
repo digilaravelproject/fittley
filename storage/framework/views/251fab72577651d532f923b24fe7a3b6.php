@@ -811,6 +811,21 @@
                 <img src="<?php echo e(asset('storage/app/public/logos/app_logo.png')); ?>" height="40"
                     class="me-2 ms-3 ms-md-0">
             </a>
+            <!-- Desktop search input (hidden on mobile) -->
+            <div class="flex-grow-1 mx-3 position-relative d-none d-md-block"
+                style="min-width: 200px; max-width: 500px;">
+                <input type="text" id="live-search" class="form-control" placeholder="Search..." autocomplete="off"
+                    style="width: 100%;" />
+                <div id="search-results" class="bg-white border rounded"
+                    style="position: absolute; top: 100%; left: 0; right: 0; z-index: 999; display: none;"></div>
+            </div>
+
+            <!-- Mobile search icon button (visible on mobile only) -->
+            <button class="btn btn-outline-light d-block d-md-none ms-3" type="button" data-bs-toggle="modal"
+                data-bs-target="#searchModal" aria-label="Open search">
+                <i class="fas fa-search"></i>
+            </button>
+
             
             <div class="d-flex d-lg-none align-items-center" style="margin-right: -1rem;">
                 <?php if(auth()->guard()->check()): ?>
@@ -932,6 +947,19 @@
 
         </div>
     </nav>
+
+    <!-- Search Modal for Mobile -->
+    <div class="modal fade" id="searchModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen-sm-down" style="height:0">
+            <div class="modal-content p-3" style="background: none;">
+                <input type="text" id="mobile-live-search" class="form-control" placeholder="Search..."
+                    autocomplete="off" autofocus />
+                <div id="mobile-search-results" class="bg-white border rounded mt-2"
+                    style="max-height: 300px; overflow-y: auto; display: none;"></div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Main Content -->
     <main class="main-content">
