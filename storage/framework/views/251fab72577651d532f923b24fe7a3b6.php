@@ -77,6 +77,12 @@
             box-sizing: border-box;
         }
 
+        html,
+        body {
+            scroll-behavior: auto !important;
+        }
+
+
         body {
             /* font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; */
             font-family: 'Roboto', sans-serif !important;
@@ -632,6 +638,11 @@
             z-index: 1000;
         }
 
+        /* Only apply safe area padding on iOS devices */
+        body.is-ios .bottom-navbar {
+            padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+        }
+
         .bottom-nav-items {
             display: flex;
             justify-content: space-around;
@@ -746,12 +757,34 @@
                 margin-bottom: 0.25rem
             }
 
+            /*.bottom-navbar {*/
+            /*    display: block;*/
+            /*    border: none;*/
+            /*    padding: 0 0 0.5rem 0;*/
+            /*    bottom: -0.2rem;*/
+            /*    backdrop-filter: blur(35px);*/
+            /*}*/
             .bottom-navbar {
                 display: block;
                 border: none;
-                padding: 0 0 0.5rem 0;
+                padding: 0 0 0.9rem 0;
                 bottom: -0.2rem;
                 backdrop-filter: blur(35px);
+                position: fixed;
+                width: 100%;
+                left: 0;
+            }
+
+            /* Only apply extra safe area padding on iOS devices */
+            body.is-ios .bottom-navbar {
+                padding-bottom: calc(0.9rem + env(safe-area-inset-bottom));
+            }
+
+            /* Optional older iOS fallback */
+            @supports (padding-bottom: constant(safe-area-inset-bottom)) {
+                body.is-ios .bottom-navbar {
+                    padding-bottom: calc(0.9rem + constant(safe-area-inset-bottom));
+                }
             }
 
             .bottom-nav-icon {
@@ -851,8 +884,7 @@
                     </a>
                 <?php else: ?>
                     <a href="<?php echo e(route('login')); ?>" class="btn btn-outline-light btn-sm me-2">Login</a>
-                    <a href="<?php echo e(route('register')); ?>" class="btn btn-outline-warning btn-sm"
-                        style="padding: 0.25rem 0.5rem;border-radius: 0.25rem;">Sign Up</a>
+                    
                 <?php endif; ?>
             </div>
 
@@ -865,8 +897,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link <?php echo e(request()->is('/') ? 'active' : ''); ?>"
-                            href="<?php echo e(url('/')); ?>">Home</a>
+                        <a class="nav-link <?php echo e(request()->is('/') ? 'active' : ''); ?>" href="<?php echo e(url('/')); ?>">Home</a>
                     </li>
 
                     <li class="nav-item">
@@ -938,9 +969,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="<?php echo e(route('login')); ?>">Login</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="btn btn-primary ms-2" href="<?php echo e(route('register')); ?>">Sign Up</a>
-                        </li>
+                        
                     <?php endif; ?>
                 </ul>
             </div>
@@ -1121,9 +1150,39 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-
     <script>
-        // Header scroll effect
+        // Function to get all horizontally scrollable elements
+        function getXScrollableElements() {
+            return Array.from(document.querySelectorAll('body *')).filter(el => {
+                const style = getComputedStyle(el);
+                const hasXScroll = el.scrollWidth > el.clientWidth;
+                const overflowX = style.overflowX;
+                return hasXScroll && (overflowX === 'auto' || overflowX === 'scroll');
+            });
+        }
+
+        window.addEventListener('beforeunload', function() {
+            const scrollables = getXScrollableElements();
+            scrollables.forEach((el, index) => {
+                sessionStorage.setItem(`xScroll-${index}`, el.scrollLeft);
+            });
+        });
+
+        window.addEventListener('load', function() {
+            const scrollables = getXScrollableElements();
+            setTimeout(() => {
+                scrollables.forEach((el, index) => {
+                    const saved = sessionStorage.getItem(`xScroll-${index}`);
+                    if (saved !== null) {
+                        el.scrollLeft = parseInt(saved, 10);
+                    }
+                });
+            }, 10);
+        });
+    </script>
+
+    <!-- Keep this for header scroll effect -->
+    <script>
         $(window).on('scroll', function() {
             if ($(window).scrollTop() > 50) {
                 $('.navbar').addClass('scrolled');
@@ -1132,6 +1191,18 @@
             }
         });
     </script>
+
+    <!-- Keep this for iOS safe-area inset handling -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const ua = navigator.userAgent;
+            const isIOS = /iPhone|iPad|iPod/i.test(ua);
+            if (isIOS) {
+                document.body.classList.add('is-ios');
+            }
+        });
+    </script>
+
 
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>

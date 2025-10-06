@@ -1,9 +1,7 @@
-@extends('layouts.public')
-
-@section('title', $selectedSubcategory->name)
+<?php $__env->startSection('title', $selectedSubcategory->name); ?>
 
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
     <style>
         /* ============================ CSS Variables & Reset  ============================ */
         :root {
@@ -379,21 +377,21 @@
             }
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="py-3">
         <!-- Top Activity Buttons -->
         <div class="container mb-4">
             <div class="activity-btn-container">
 
-                @foreach ($subcategories as $subcategory)
-                    <a href="{{ route('fitlive.daily-classes.show', $subcategory->slug) }}"
-                        class="activity-btn {{ request()->is('fitlive/' . $subcategory->slug) ? 'active' : '' }}">
+                <?php $__currentLoopData = $subcategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subcategory): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <a href="<?php echo e(route('fitlive.daily-classes.show', $subcategory->slug)); ?>"
+                        class="activity-btn <?php echo e(request()->is('fitlive/' . $subcategory->slug) ? 'active' : ''); ?>">
                         <i class="fas fa-dumbbell"></i>
-                        <span>{{ $subcategory->name }}</span>
+                        <span><?php echo e($subcategory->name); ?></span>
                     </a>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
 
@@ -409,7 +407,7 @@
         <!-- Title, Meta & Description -->
         <div class="container mb-4">
             <div class="gen-single-movie-info">
-                <h1 class="text-white mb-2">{{ $selectedSubcategory->name }}</h1>
+                <h1 class="text-white mb-2"><?php echo e($selectedSubcategory->name); ?></h1>
                 <div class="gen-single-meta-holder">
                     <ul>
                         <li class="gen-sen-rating">TV-PG</li>
@@ -433,44 +431,44 @@
                         <li><span>Language :</span><span>English</span></li>
                         <li>
                             <span>Instructor Name :</span>
-                            <span>{{ $instructor ? $instructor->name : 'N/A' }}</span>
+                            <span><?php echo e($instructor ? $instructor->name : 'N/A'); ?></span>
                         </li>
                         <li>
                             <span>Session Type :</span>
-                            <span>{{ $activeSession?->type ?? 'Live' }}</span>
+                            <span><?php echo e($activeSession?->type ?? 'Live'); ?></span>
                         </li>
                         <li>
                             <span>Run Time :</span>
-                            <span>{{ $activeSession?->duration ?? 'N/A' }}</span>
+                            <span><?php echo e($activeSession?->duration ?? 'N/A'); ?></span>
                         </li>
                         <li>
                             <span>Release Date :</span>
-                            <span>{{ $activeSession ? \Carbon\Carbon::parse($activeSession->scheduled_at)->format('d M, Y') : 'N/A' }}</span>
+                            <span><?php echo e($activeSession ? \Carbon\Carbon::parse($activeSession->scheduled_at)->format('d M, Y') : 'N/A'); ?></span>
                         </li>
                     </ul>
                 </div>
 
                 <div class="gen-social-share">
-                    @forelse($liveSlots as $slot)
+                    <?php $__empty_1 = true; $__currentLoopData = $liveSlots; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $slot): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <div class="live-card">
-                            <div class="{{ $slot['is_live'] ? 'live-indicator-green' : 'live-indicator' }}"></div>
+                            <div class="<?php echo e($slot['is_live'] ? 'live-indicator-green' : 'live-indicator'); ?>"></div>
 
                             <div class="session-info">
-                                <p class="session-time">{{ $slot['time'] }}</p>
+                                <p class="session-time"><?php echo e($slot['time']); ?></p>
 
-                                @if ($slot['is_live'])
-                                    <a href="{{ route('fitlive.session', $slot['id']) }}"
+                                <?php if($slot['is_live']): ?>
+                                    <a href="<?php echo e(route('fitlive.session', $slot['id'])); ?>"
                                         class="btn-outline-warning text-decoration-none">Join Now</a>
-                                @else
+                                <?php else: ?>
                                     <span class="btn-outline-warning disabled">Upcoming</span>
-                                @endif
+                                <?php endif; ?>
 
 
                             </div>
                         </div>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <p class="text-muted">No live sessions today.</p>
-                    @endforelse
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -480,34 +478,39 @@
         <div class="container mb-5 archived-section">
             <h3 class="fw-bold text-white mb-3">Archived Sessions</h3>
 
-            @forelse ($groupedArchived as $date => $sessions)
+            <?php $__empty_1 = true; $__currentLoopData = $groupedArchived; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $date => $sessions): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <h5 class=" --text-muteds mb-3">
-                    {{ \Carbon\Carbon::parse($date)->isToday() ? 'Today' : \Carbon\Carbon::parse($date)->format('d M Y') }}
+                    <?php echo e(\Carbon\Carbon::parse($date)->isToday() ? 'Today' : \Carbon\Carbon::parse($date)->format('d M Y')); ?>
+
                 </h5>
 
                 <div class="row g-3 mb-4">
-                    @foreach ($sessions as $arch)
+                    <?php $__currentLoopData = $sessions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $arch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="card h-100">
-                                <img src="{{ $arch->banner_image }}" class="card-img-top" alt="{{ $arch->title }}">
+                                <img src="<?php echo e($arch->banner_image); ?>" class="card-img-top" alt="<?php echo e($arch->title); ?>">
                                 <div class="p-2">
-                                    <h6 class="fw-bold text-white mb-1">{{ $arch->title ?? 'Untitled Session' }}</h6>
+                                    <h6 class="fw-bold text-white mb-1"><?php echo e($arch->title ?? 'Untitled Session'); ?></h6>
                                     <p class="small  --text-muted mb-0">
-                                        Duration: {{ $arch->duration ?? 'N/A' }}
+                                        Duration: <?php echo e($arch->duration ?? 'N/A'); ?>
+
                                     </p>
                                     <p class="small text-warning mb-0">
-                                        {{ \Carbon\Carbon::parse($arch->scheduled_at)->format('h:i A') }}
+                                        <?php echo e(\Carbon\Carbon::parse($arch->scheduled_at)->format('h:i A')); ?>
+
                                     </p>
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <p class=" --text-muted">No archived sessions found.</p>
-            @endforelse
+            <?php endif; ?>
         </div>
 
 
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/tools/active-session.blade.php ENDPATH**/ ?>

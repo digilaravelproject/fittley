@@ -2,15 +2,15 @@
 
 $__newAttributes = [];
 $__propNames = \Illuminate\View\ComponentAttributeBag::extractPropNames(([
-    'title',
-    'image' => 'https://via.placeholder.com/300x450?text=No+Image',
-    'type' => 'movie', // or 'series'
-    'url' => '#',
-    'duration' => null,
-    'year' => null,
-    'rating' => null,
-    'description' => null,
-    'badgeClass' => null,
+'title',
+'image' => 'https://via.placeholder.com/300x450?text=No+Image',
+'type' => 'movie', // or 'series'
+'url' => '#',
+'duration' => null,
+'year' => null,
+'rating' => null,
+'description' => null,
+'badgeClass' => null,
 ]));
 
 foreach ($attributes->all() as $__key => $__value) {
@@ -27,15 +27,15 @@ unset($__propNames);
 unset($__newAttributes);
 
 foreach (array_filter(([
-    'title',
-    'image' => 'https://via.placeholder.com/300x450?text=No+Image',
-    'type' => 'movie', // or 'series'
-    'url' => '#',
-    'duration' => null,
-    'year' => null,
-    'rating' => null,
-    'description' => null,
-    'badgeClass' => null,
+'title',
+'image' => 'https://via.placeholder.com/300x450?text=No+Image',
+'type' => 'movie', // or 'series'
+'url' => '#',
+'duration' => null,
+'year' => null,
+'rating' => null,
+'description' => null,
+'badgeClass' => null,
 ]), 'is_string', ARRAY_FILTER_USE_KEY) as $__key => $__value) {
     $$__key = $$__key ?? $__value;
 }
@@ -50,35 +50,23 @@ unset($__defined_vars); ?>
 
 
 <?php
-    $typeText = ucfirst($type);
-    // $badgeClass = $type === 'series' ? 'series-badge' : '';
+$typeText = ucfirst($type);
+// $badgeClass = $type === 'series' ? 'series-badge' : '';
 ?>
+<div class="content-card-wrapper ccw-portrait">
+    <div class="content-card" onclick="window.location.href='<?php echo e($url); ?>'">
+        <div class="type-badge <?php echo e($badgeClass); ?>">
+            <?php echo e(ucfirst($type)); ?>
 
-<div class="content-card" onclick="window.location.href='<?php echo e($url); ?>'">
-    <div class="type-badge <?php echo e($badgeClass); ?>">
-        <?php echo e(ucfirst($type)); ?>
-
-    </div>
-    <img src="<?php echo e($image); ?>" alt="<?php echo e($title); ?>" class="card-image" loading="lazy">
-    <div class="card-overlay">
-        <div class="play-icon"><i class="fas fa-play"></i></div>
-    </div>
-    <div class="card-content">
-        <h3 class="card-title"><?php echo e($title); ?></h3>
-        <div class="card-meta">
-            <?php if($type === 'movie' && $duration): ?>
-                <span><i class="fas fa-clock"></i> <?php echo e($duration); ?> min</span>
-            <?php elseif($type === 'series'): ?>
-                <span><i class="fas fa-list"></i> <?php echo e($duration ?? 'Multiple'); ?> Episodes</span>
-            <?php endif; ?>
-            <?php if($year): ?>
-                <span><i class="fas fa-calendar"></i> <?php echo e($year); ?></span>
-            <?php endif; ?>
-            <?php if($rating): ?>
-                <span><i class="fas fa-star"></i> <?php echo e(number_format($rating, 1)); ?></span>
-            <?php endif; ?>
         </div>
-        <p class="card-description"><?php echo e(Str::limit($description, 100)); ?></p>
+        <img src="<?php echo e($image); ?>" alt="<?php echo e($title); ?>" class="card-image" loading="lazy">
+        <div class="card-overlay">
+            <div class="play-icon"><i class="fas fa-play"></i></div>
+        </div>
     </div>
-</div>
-<?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/components/home/media-grid.blade.php ENDPATH**/ ?>
+    <div class="card-caption">
+        <h3 class="card-title"><?php echo e($title); ?></h3>
+        
+    </div>
+
+</div><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/components/home/media-grid.blade.php ENDPATH**/ ?>

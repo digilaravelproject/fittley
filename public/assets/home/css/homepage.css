@@ -216,6 +216,7 @@ body {
 .content-section {
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: -1rem;
 }
 
 .section-header {
@@ -233,6 +234,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    margin-bottom: 0;
 }
 
 .section-title i {
@@ -297,7 +299,7 @@ body {
 .content-card-wrapper {
     flex: 0 0 25vw;
     aspect-ratio: 9 / 16;
-    max-height: calc(57vh * 9 / 16);
+    max-height: calc(31.6rem * 9 / 16);
     height: 100%;
 }
 .content-card-wrapper.ccw-portrait {
@@ -305,7 +307,7 @@ body {
     flex-direction: column;
     gap: 0.3rem;
     flex: 0 0 18.5vw;
-    max-height: calc(33vh * 3 / 2);
+    max-height: calc(18rem * 3 / 2);
 }
 .content-card-landscap {
     flex: 0 0 25vw;
@@ -328,7 +330,6 @@ body {
     position: relative;
 }
 .card-caption .card-title {
-    font-family: var(--title-fonts);
     font-size: 16px;
     font-weight: 600;
     margin: 0;
@@ -557,7 +558,7 @@ body {
         height: 70vh;
         min-width: 100vw;
         min-height: 70vh;
-        scale: 2;
+        /*scale: 2;*/
     }
 
     .hero-overlay {
@@ -724,7 +725,7 @@ body {
     .hero-video {
         height: 70vh;
         min-height: 70vh;
-        scale: 3;
+        /*scale: 3;*/
     }
 
     .hero-content {
@@ -785,6 +786,8 @@ ne ke liye */
         justify-content: space-between;
         padding: 0 0.5rem;
         margin-bottom: 0.5rem;
+        margin-top: 0.7rem;
+        margin-bottom: 0;
     }
     /* Even smaller cards for very small screens */
     .content-card {
@@ -805,7 +808,7 @@ ne ke liye */
     .card-title {
         font-size: 0.4rem;
         line-height: 1;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
     }
 
     .card-meta {
@@ -822,14 +825,14 @@ ne ke liye */
     }
 
     .category-title {
-        font-size: 1rem;
+        font-size: 0.9rem;
         margin-bottom: 0.5rem;
         opacity: 75%;
     }
 
     .section-title,
     .view-all-btn {
-        font-size: 0.9rem;
+        font-size: 0.95rem;
         letter-spacing: 0.8px;
         font-weight: 500;
     }
@@ -875,8 +878,8 @@ ne ke liye */
         justify-content: flex-start;
     }
     .card-caption .card-title {
-        font-size: 0.68rem;
-        font-weight: 400;
+        font-size: 0.688rem;
+        font-weight: 500;
         margin: 0;
         color: #fff;
         display: -webkit-box;

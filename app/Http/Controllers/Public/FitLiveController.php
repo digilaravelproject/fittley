@@ -61,14 +61,14 @@ class FitLiveController extends Controller
 
         return view('public.fitlive.index', compact(
             'liveSessions',
-            'upcomingSessions', 
+            'upcomingSessions',
             'recentSessions',
             'categories',
             'liveSession'
         ));
     }
 
-    public function show($id)
+    public function show($slug)
     {
         // Fetch subcategories
         $subcategories = SubCategory::where('category_id', 21)
@@ -76,10 +76,10 @@ class FitLiveController extends Controller
             ->orderBy('sort_order')
             ->get(['id', 'name', 'slug']);
 
-        $selectedSubcategory = $subcategories->firstWhere('id', $id);
-            if (!$selectedSubcategory) {
-                abort(404);
-            }
+        $selectedSubcategory = $subcategories->firstWhere('slug', $slug);
+        if (!$selectedSubcategory) {
+            abort(404);
+        }
 
         $now = Carbon::now();
 
@@ -180,7 +180,7 @@ class FitLiveController extends Controller
     {
         $query = FitFlixShorts::with(['category', 'uploader'])->latest();
         $shorts = $query->get();
-        
+
         return view('public.fitlive.vdo-shorts', compact('shorts'));
     }
 
@@ -191,13 +191,13 @@ class FitLiveController extends Controller
         $shorts = FitFlixShorts::with(['category', 'uploader'])
             ->latest()
             ->get()
-            ->map(function($short) use ($user) {
+            ->map(function ($short) use ($user) {
                 // Check if current user liked this short
-                $short->isLiked = $user 
+                $short->isLiked = $user
                     ? PostLike::where('post_type', 'fit_flix_video')
-                        ->where('post_id', $short->id)
-                        ->where('user_id', $user->id)
-                        ->exists()
+                    ->where('post_id', $short->id)
+                    ->where('user_id', $user->id)
+                    ->exists()
                     : false;
 
                 // Count likes and shares
@@ -218,7 +218,7 @@ class FitLiveController extends Controller
         $streamingConfig = null;
         if ($session->isLive()) {
             $viewerId = auth()->check() ? auth()->id() : rand(100000, 999999);
-            
+
             $streamingConfig = [
                 'app_id' => config('agora.app_id'),
                 'channel' => 'fitlive_' . $session->id,
@@ -250,19 +250,19 @@ class FitLiveController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+                    ->orWhere('description', 'like', '%' . $request->search . '%');
             });
         }
 
         // Order by status priority and then by scheduled time
         $query->orderByRaw("
-            CASE status 
-                WHEN 'live' THEN 1 
-                WHEN 'scheduled' THEN 2 
-                WHEN 'ended' THEN 3 
+            CASE status
+                WHEN 'live' THEN 1
+                WHEN 'scheduled' THEN 2
+                WHEN 'ended' THEN 3
             END
         ")
-        ->orderBy('scheduled_at', 'desc');
+            ->orderBy('scheduled_at', 'desc');
 
         $sessions = $query->paginate(12);
 
@@ -318,7 +318,7 @@ class FitLiveController extends Controller
 
             // Increment share count
             $short->increment('shares_count');
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -340,4 +340,4 @@ class FitLiveController extends Controller
     {
         return url("/fitflix/videos/{$video->id}");
     }
-} 
+}

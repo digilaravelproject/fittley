@@ -34,6 +34,7 @@ unset($__defined_vars); ?>
     $finalImage = !empty($video->banner_image_path) ? $video->banner_image_path : $fallbackImage;
 ?>
 
+
 <div class="content-card-wrapper ccw-portrait">
     
     <div class="content-card content-card-portrait" onclick="window.location.href='<?php echo e(route($url, $video)); ?>'">

@@ -117,7 +117,7 @@ Route::prefix('fitlive')->name('fitlive.')->group(function () {
         Route::get('/category/{category}', [FitLiveController::class, 'category'])->name('category');
     });
 
-    Route::get('/{id}', [FitLiveController::class, 'show'])->name('daily-classes.show');
+    Route::get('/{slug}', [FitLiveController::class, 'show'])->name('daily-classes.show');
 });
 
 

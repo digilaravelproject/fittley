@@ -132,8 +132,34 @@ body {
     background: var(--netflix-dark-gray);
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 0.5rem;
 }
-
+.card-caption .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+@media (max-width: 480px) {
+    .card-caption .card-title {
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin: 0;
+        color: #fff;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
 @media (hover: hover) {
     .content-card:hover {
         transform: scale(1.03);
