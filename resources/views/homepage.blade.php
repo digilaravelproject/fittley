@@ -377,9 +377,8 @@
 
             <div class="content-slider">
                 <div class="slider-container" id="fitinsights-slider">
-                    @foreach ($fitInsights as $insight)
-                    <x-home.portrait-card :video="$insight" badge="Article" badgeClass="badge-single"
-                        url="fitinsight.index" />
+                    @foreach ($fitInsights->sortBy('created_at') as $insight)
+                    <x-home.portrait-card :video="$insight" url="fitinsight.index" />
                     @endforeach
                 </div>
                 <button class="slider-controls slider-prev" onclick="slideContent('fitinsights-slider', -1)">

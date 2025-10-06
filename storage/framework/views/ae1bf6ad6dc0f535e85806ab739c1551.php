@@ -1,12 +1,10 @@
-@extends('layouts.public')
+<?php $__env->startSection('title', 'FitInsight - Fitness Blog'); ?>
 
-@section('title', 'FitInsight - Fitness Blog')
+<?php $__env->startPush('styles'); ?>
+<link rel="stylesheet" href="<?php echo e(asset('assets/home/css/fitinsight.css')); ?>?v=<?php echo e(time()); ?>">
+<?php $__env->stopPush(); ?>
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('assets/home/css/fitinsight.css') }}?v={{ time() }}">
-@endpush
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="fitinsight-page">
 
     <!-- Hero Section -->
@@ -16,27 +14,28 @@
             <h1>FitInsight</h1>
             <p>Get the latest articles on health, fitness, nutrition, workouts, and wellness.</p>
             <div class="hero-search">
-                <input type="text" id="search-input" placeholder="Search articles..." value="{{ request('search') }}">
+                <input type="text" id="search-input" placeholder="Search articles..." value="<?php echo e(request('search')); ?>">
                 <i class="fas fa-search search-icon"></i>
             </div>
         </div>
     </section>
 
     <!-- Categories -->
-    @if ($categories->count() > 0)
+    <?php if($categories->count() > 0): ?>
     <section class="categories-section">
         <div class="categories-wrapper">
-            <a href="{{ route('fitinsight.index') }}" class="cat-btn {{ !request('category') ? 'active' : '' }}">All</a>
-            @foreach ($categories as $category)
-            <a href="{{ route('fitinsight.category', $category) }}"
-                class="cat-btn {{ request('category') == $category->id ? 'active' : '' }}">
-                @if ($category->icon) <i class="{{ $category->icon }} me-1"></i> @endif
-                {{ $category->name }}
+            <a href="<?php echo e(route('fitinsight.index')); ?>" class="cat-btn <?php echo e(!request('category') ? 'active' : ''); ?>">All</a>
+            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <a href="<?php echo e(route('fitinsight.category', $category)); ?>"
+                class="cat-btn <?php echo e(request('category') == $category->id ? 'active' : ''); ?>">
+                <?php if($category->icon): ?> <i class="<?php echo e($category->icon); ?> me-1"></i> <?php endif; ?>
+                <?php echo e($category->name); ?>
+
             </a>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </section>
-    @endif
+    <?php endif; ?>
 
     <!-- Main Content -->
     <section class="content-section">
@@ -44,75 +43,73 @@
             <div class="row">
                 <!-- Articles Column -->
                 <div class="col-lg-8 col-md-12" id="articles-wrapper">
-                    @if ($blogs->count() > 0)
+                    <?php if($blogs->count() > 0): ?>
                     <div class="row">
-                        @foreach ($blogs as $blog)
+                        <?php $__currentLoopData = $blogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $blog): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="col-md-6 mb-4">
-                            <div class="content-card" onclick="window.location='{{ route('fitinsight.show', $blog) }}'">
-                                <img src="{{ $blog->featured_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b' }}"
-                                    alt="{{ $blog->title }}" class="card-image">
-                                <div class="type-badge">{{ $blog->category->name }}</div>
+                            <div class="content-card" onclick="window.location='<?php echo e(route('fitinsight.show', $blog)); ?>'">
+                                <img src="<?php echo e($blog->featured_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b'); ?>"
+                                    alt="<?php echo e($blog->title); ?>" class="card-image">
+                                <div class="type-badge"><?php echo e($blog->category->name); ?></div>
                                 <div class="card-content">
-                                    <h3 class="card-title">{{ $blog->title }}</h3>
+                                    <h3 class="card-title"><?php echo e($blog->title); ?></h3>
                                     <div class="card-meta">
-                                        <span><i class="fas fa-eye"></i> {{ number_format($blog->views_count) }}</span>
-                                        <span><i class="fas fa-heart"></i> {{ number_format($blog->likes_count)
-                                            }}</span>
+                                        <span><i class="fas fa-eye"></i> <?php echo e(number_format($blog->views_count)); ?></span>
+                                        <span><i class="fas fa-heart"></i> <?php echo e(number_format($blog->likes_count)); ?></span>
                                     </div>
-                                    <p class="card-description">{{ $blog->excerpt_or_content }}</p>
+                                    <p class="card-description"><?php echo e($blog->excerpt_or_content); ?></p>
                                 </div>
                             </div>
                         </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                     <div class="pagination-wrapper mt-4">
-                        {{ $blogs->links() }}
+                        <?php echo e($blogs->links()); ?>
+
                     </div>
-                    @else
+                    <?php else: ?>
                     <div class="no-articles">
                         <h4>No articles found</h4>
                         <p>Try searching with different keywords or check back later.</p>
                     </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
 
                 <!-- Sidebar Column -->
                 <div class="col-lg-4 col-md-12">
-                    @if ($featuredBlogs->count() > 0)
+                    <?php if($featuredBlogs->count() > 0): ?>
                     <div class="sidebar-card">
                         <div class="card-header">Featured Articles</div>
                         <div class="card-body">
-                            @foreach ($featuredBlogs as $feat)
+                            <?php $__currentLoopData = $featuredBlogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $feat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="sidebar-item">
-                                <img src="{{ $feat->featured_image_url }}" alt="{{ $feat->title }}"
+                                <img src="<?php echo e($feat->featured_image_url); ?>" alt="<?php echo e($feat->title); ?>"
                                     class="sidebar-thumb">
                                 <div>
-                                    <a href="{{ route('fitinsight.show', $feat) }}">{{ Str::limit($feat->title, 50)
-                                        }}</a>
+                                    <a href="<?php echo e(route('fitinsight.show', $feat)); ?>"><?php echo e(Str::limit($feat->title, 50)); ?></a>
                                 </div>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
-                    @endif
+                    <?php endif; ?>
 
-                    @if ($trendingBlogs->count() > 0)
+                    <?php if($trendingBlogs->count() > 0): ?>
                     <div class="sidebar-card">
                         <div class="card-header">Trending Now</div>
                         <div class="card-body">
-                            @foreach ($trendingBlogs as $trend)
+                            <?php $__currentLoopData = $trendingBlogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trend): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="sidebar-item">
-                                <img src="{{ $trend->featured_image_url }}" alt="{{ $trend->title }}"
+                                <img src="<?php echo e($trend->featured_image_url); ?>" alt="<?php echo e($trend->title); ?>"
                                     class="sidebar-thumb">
                                 <div>
-                                    <a href="{{ route('fitinsight.show', $trend) }}">{{ Str::limit($trend->title, 50)
-                                        }}</a>
+                                    <a href="<?php echo e(route('fitinsight.show', $trend)); ?>"><?php echo e(Str::limit($trend->title, 50)); ?></a>
                                 </div>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
-                    @endif
+                    <?php endif; ?>
 
                     <div class="newsletter-card">
                         <h5>Subscribe</h5>
@@ -127,9 +124,9 @@
         </div>
     </section>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('search-input');
@@ -166,4 +163,5 @@
         });
     });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/public/fitinsight/index.blade.php ENDPATH**/ ?>

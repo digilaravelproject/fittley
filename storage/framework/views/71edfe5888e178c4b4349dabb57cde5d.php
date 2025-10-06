@@ -1,8 +1,6 @@
-@extends('layouts.public')
+<?php $__env->startSection('title', $category->name . ' - FitInsight'); ?>
 
-@section('title', $category->name . ' - FitInsight')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     :root {
         --primary-color: #f7a31a;
@@ -33,7 +31,7 @@
     /* Hero Section */
     .hero {
         background: linear-gradient(rgba(18, 18, 18, 0.7), rgba(18, 18, 18, 0.9)),
-        url('{{ $category->banner_image_url ?: "https://images.unsplash.com/photo-1571019613914-85f342c75c29?ixlib=rb-4.0.3" }}') center center/cover no-repeat;
+        url('<?php echo e($category->banner_image_url ?: "https://images.unsplash.com/photo-1571019613914-85f342c75c29?ixlib=rb-4.0.3"); ?>') center center/cover no-repeat;
         min-height: 40vh;
         display: flex;
         align-items: center;
@@ -265,20 +263,20 @@
         }
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <!-- Hero Section -->
 <section class="hero">
     <div>
-        <h1>{{ $category->name }}</h1>
-        @if($category->description)
-        <p>{{ $category->description }}</p>
-        @endif
+        <h1><?php echo e($category->name); ?></h1>
+        <?php if($category->description): ?>
+        <p><?php echo e($category->description); ?></p>
+        <?php endif; ?>
         <div class="stats" aria-label="Category statistics">
-            <div><i class="fas fa-newspaper"></i> {{ $blogs->total() }} Articles</div>
-            <div><i class="fas fa-eye"></i> {{ number_format($blogs->sum('views_count')) }} Views</div>
-            <div><i class="fas fa-heart"></i> {{ number_format($blogs->sum('likes_count')) }} Likes</div>
+            <div><i class="fas fa-newspaper"></i> <?php echo e($blogs->total()); ?> Articles</div>
+            <div><i class="fas fa-eye"></i> <?php echo e(number_format($blogs->sum('views_count'))); ?> Views</div>
+            <div><i class="fas fa-heart"></i> <?php echo e(number_format($blogs->sum('likes_count'))); ?> Likes</div>
         </div>
     </div>
 </section>
@@ -290,87 +288,89 @@
         <div class="col-lg-8">
             <!-- Filter Bar -->
             <form method="GET" class="filter-bar" role="search" aria-label="Search and sort articles">
-                <input type="text" name="search" id="search" value="{{ request('search') }}"
+                <input type="text" name="search" id="search" value="<?php echo e(request('search')); ?>"
                     placeholder="Search articles..." aria-label="Search articles" autocomplete="off">
 
                 <select name="sort" id="sort" aria-label="Sort articles">
-                    <option value="latest" {{ request('sort')=='latest' ? 'selected' : '' }}>Latest</option>
-                    <option value="popular" {{ request('sort')=='popular' ? 'selected' : '' }}>Most Popular</option>
-                    <option value="oldest" {{ request('sort')=='oldest' ? 'selected' : '' }}>Oldest</option>
+                    <option value="latest" <?php echo e(request('sort')=='latest' ? 'selected' : ''); ?>>Latest</option>
+                    <option value="popular" <?php echo e(request('sort')=='popular' ? 'selected' : ''); ?>>Most Popular</option>
+                    <option value="oldest" <?php echo e(request('sort')=='oldest' ? 'selected' : ''); ?>>Oldest</option>
                 </select>
             </form>
 
-            @if($blogs->count() > 0)
+            <?php if($blogs->count() > 0): ?>
             <div class="articles" role="list">
-                @foreach($blogs as $blog)
+                <?php $__currentLoopData = $blogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $blog): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <article role="listitem" tabindex="0" class="card-article"
-                    onclick="window.location.href='{{ route('fitinsight.show', $blog) }}'"
-                    onkeypress="if(event.key === 'Enter') window.location.href='{{ route('fitinsight.show', $blog) }}'">
-                    @if($blog->featured_image_path)
-                    <img src="{{ $blog->featured_image_url }}" alt="{{ $blog->featured_image_alt ?: $blog->title }}"
+                    onclick="window.location.href='<?php echo e(route('fitinsight.show', $blog)); ?>'"
+                    onkeypress="if(event.key === 'Enter') window.location.href='<?php echo e(route('fitinsight.show', $blog)); ?>'">
+                    <?php if($blog->featured_image_path): ?>
+                    <img src="<?php echo e($blog->featured_image_url); ?>" alt="<?php echo e($blog->featured_image_alt ?: $blog->title); ?>"
                         class="card-img" loading="lazy">
-                    @else
+                    <?php else: ?>
                     <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3"
                         alt="Placeholder Image" class="card-img" loading="lazy">
-                    @endif
+                    <?php endif; ?>
                     <div class="card-body">
-                        <h2 class="card-title">{{ Str::limit($blog->title, 60) }}</h2>
+                        <h2 class="card-title"><?php echo e(Str::limit($blog->title, 60)); ?></h2>
                         <div class="card-meta">
-                            <span><i class="fas fa-user"></i> {{ $blog->author->name }}</span>
-                            <span><i class="fas fa-calendar-alt"></i> {{ $blog->published_at->format('M d, Y') }}</span>
-                            <span><i class="fas fa-eye"></i> {{ number_format($blog->views_count) }}</span>
+                            <span><i class="fas fa-user"></i> <?php echo e($blog->author->name); ?></span>
+                            <span><i class="fas fa-calendar-alt"></i> <?php echo e($blog->published_at->format('M d, Y')); ?></span>
+                            <span><i class="fas fa-eye"></i> <?php echo e(number_format($blog->views_count)); ?></span>
                         </div>
-                        <p class="card-description">{{ Str::limit(strip_tags($blog->content), 150) }}</p>
+                        <p class="card-description"><?php echo e(Str::limit(strip_tags($blog->content), 150)); ?></p>
                     </div>
                 </article>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
             <nav aria-label="Page navigation" class="mt-4">
-                {{ $blogs->links() }}
+                <?php echo e($blogs->links()); ?>
+
             </nav>
 
-            @else
+            <?php else: ?>
             <p class="text-muted mt-4">No articles found for your search.</p>
-            @endif
+            <?php endif; ?>
         </div>
 
         <!-- Sidebar Column -->
         <aside class="col-lg-4 sidebar" aria-label="Sidebar with latest and popular posts">
             <section>
                 <h3>Latest Posts</h3>
-                @foreach($latestBlogs as $latest)
-                <a href="{{ route('fitinsight.show', $latest) }}" class="sidebar-item">
-                    <img src="{{ $latest->featured_image_url ?: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3' }}"
-                        alt="{{ $latest->featured_image_alt ?: $latest->title }}" loading="lazy">
+                <?php $__currentLoopData = $latestBlogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $latest): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <a href="<?php echo e(route('fitinsight.show', $latest)); ?>" class="sidebar-item">
+                    <img src="<?php echo e($latest->featured_image_url ?: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'); ?>"
+                        alt="<?php echo e($latest->featured_image_alt ?: $latest->title); ?>" loading="lazy">
                     <div class="sidebar-item-content">
-                        <div class="sidebar-item-title">{{ Str::limit($latest->title, 50) }}</div>
-                        <div class="sidebar-item-date">{{ $latest->published_at->format('M d, Y') }}</div>
+                        <div class="sidebar-item-title"><?php echo e(Str::limit($latest->title, 50)); ?></div>
+                        <div class="sidebar-item-date"><?php echo e($latest->published_at->format('M d, Y')); ?></div>
                     </div>
                 </a>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </section>
 
             <section class="mt-4">
                 <h3>Popular Posts</h3>
-                @foreach($popularBlogs as $popular)
-                <a href="{{ route('fitinsight.show', $popular) }}" class="sidebar-item">
-                    <img src="{{ $popular->featured_image_url ?: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3' }}"
-                        alt="{{ $popular->featured_image_alt ?: $popular->title }}" loading="lazy">
+                <?php $__currentLoopData = $popularBlogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $popular): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <a href="<?php echo e(route('fitinsight.show', $popular)); ?>" class="sidebar-item">
+                    <img src="<?php echo e($popular->featured_image_url ?: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'); ?>"
+                        alt="<?php echo e($popular->featured_image_alt ?: $popular->title); ?>" loading="lazy">
                     <div class="sidebar-item-content">
-                        <div class="sidebar-item-title">{{ Str::limit($popular->title, 50) }}</div>
-                        <div class="sidebar-item-date">{{ $popular->published_at->format('M d, Y') }}</div>
+                        <div class="sidebar-item-title"><?php echo e(Str::limit($popular->title, 50)); ?></div>
+                        <div class="sidebar-item-date"><?php echo e($popular->published_at->format('M d, Y')); ?></div>
                     </div>
                 </a>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </section>
         </aside>
     </div>
 </section>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <!-- FontAwesome for icons -->
 <script src="https://kit.fontawesome.com/a2d4d76d9a.js" crossorigin="anonymous"></script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/public/fitinsight/category.blade.php ENDPATH**/ ?>

@@ -2,7 +2,7 @@
 
 <?php $__env->startPush('styles'); ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
-<link rel="stylesheet" href="<?php echo e(asset('public/assets/home/css/homepage.css')); ?>?v=<?php echo e(time()); ?>">
+<link rel="stylesheet" href="<?php echo e(asset('assets/home/css/homepage.css')); ?>?v=<?php echo e(time()); ?>">
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -532,10 +532,10 @@
 
             <div class="content-slider">
                 <div class="slider-container" id="fitinsights-slider">
-                    <?php $__currentLoopData = $fitInsights; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $insight): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php $__currentLoopData = $fitInsights->sortBy('created_at'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $insight): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <?php if (isset($component)) { $__componentOriginal41b15c4f427e6d22976473ee4b2336e9 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal41b15c4f427e6d22976473ee4b2336e9 = $attributes; } ?>
-<?php $component = App\View\Components\Home\PortraitCard::resolve(['video' => $insight,'badge' => 'Article','badgeClass' => 'badge-single','url' => 'fitinsight.index'] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = App\View\Components\Home\PortraitCard::resolve(['video' => $insight,'url' => 'fitinsight.index'] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('home.portrait-card'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
@@ -573,6 +573,6 @@
 <?php $__env->startPush('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
 <script src="https://www.youtube.com/iframe_api"></script>
-<script src="<?php echo e(asset('public/assets/home/js/homepage.js')); ?>?v=<?php echo e(time()); ?>"></script>
+<script src="<?php echo e(asset('assets/home/js/homepage.js')); ?>?v=<?php echo e(time()); ?>"></script>
 <?php $__env->stopPush(); ?>
 <?php echo $__env->make('layouts.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/homepage.blade.php ENDPATH**/ ?>
