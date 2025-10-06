@@ -3,7 +3,7 @@
 @section('title', 'FitGuide - Fitness Training Guides & Programs')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('assets/home/css/fitdoc.index.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('public/assets/home/css/fitdoc.index.css') }}?v={{ time() }}">
 @endpush
 
 @section('content')
