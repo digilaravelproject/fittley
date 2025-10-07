@@ -93,6 +93,23 @@
             overflow-x: hidden;
         }
 
+        /* Highlight style */
+        .highlight {
+            background-color: yellow;
+            color: black;
+            border-radius: 3px;
+        }
+
+        /* Active match style (current word being focused) */
+        .highlight.active {
+            background-color: var(--primary-color-dark);
+            /* You can choose any color */
+            color: white;
+            /* Change text color if needed */
+        }
+
+
+
         .container {
             max-width: 1400px;
         }
@@ -781,7 +798,7 @@
             }
 
             /* Optional older iOS fallback */
-            @supports (padding-bottom: constant(safe-area-inset-bottom)) {
+            @supports(padding-bottom: constant(safe-area-inset-bottom)) {
                 body.is-ios .bottom-navbar {
                     padding-bottom: calc(0.9rem + constant(safe-area-inset-bottom));
                 }
@@ -841,8 +858,7 @@
         <div class="container mx-2">
 
             <a class="navbar-brand d-flex align-items-center" href="<?php echo e(url('/')); ?>">
-                <img src="<?php echo e(asset('storage/app/public/logos/app_logo.png')); ?>" height="40"
-                    class="me-2 ms-3 ms-md-0">
+                <img src="<?php echo e(asset('storage/app/public/logos/app_logo.png')); ?>" height="40" class="me-2 ms-3 ms-md-0">
             </a>
             <!-- Desktop search input (hidden on mobile) -->
             <div class="flex-grow-1 mx-3 position-relative d-none d-md-block"
@@ -1007,9 +1023,8 @@
             <a href="<?php echo e(url('/')); ?>" class="bottom-nav-item <?php echo e(Request::is('/') ? 'active' : ''); ?>">
                 <div class="bottom-nav-icon">
                     <img src="<?php echo e(Request::is('/')
-                        ? asset('storage/app/public/navigation-icon/home filled.png')
-                        : asset('storage/app/public/navigation-icon/home_stroke_grey.png')); ?>"
-                        alt="Home Icon" class="nav-icon-img">
+    ? asset('storage/app/public/navigation-icon/home filled.png')
+    : asset('storage/app/public/navigation-icon/home_stroke_grey.png')); ?>" alt="Home Icon" class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">Home</span>
             </a>
@@ -1018,9 +1033,8 @@
             <a class="bottom-nav-item" href="#" data-bs-toggle="modal" data-bs-target="#communityModal">
                 <div class="bottom-nav-icon">
                     <img src="<?php echo e(Request::is('fitlive.index')
-                        ? asset('storage/app/public/navigation-icon/community filled.png')
-                        : asset('storage/app/public/navigation-icon/community_grey.png')); ?>"
-                        alt="Home Icon" class="nav-icon-img">
+    ? asset('storage/app/public/navigation-icon/community filled.png')
+    : asset('storage/app/public/navigation-icon/community_grey.png')); ?>" alt="Home Icon" class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">Community</span>
             </a>
@@ -1030,27 +1044,24 @@
                 class="bottom-nav-item <?php echo e(Request::is('fitlive/vdo') ? 'active' : ''); ?>">
                 <div class="bottom-nav-icon">
                     <img src="<?php echo e(Request::is('fitlive/vdo')
-                        ? asset('storage/app/public/navigation-icon/fitflix filled.png')
-                        : asset('storage/app/public/navigation-icon/fitflix_stroke_grey.png')); ?>"
-                        alt="Home Icon" class="nav-icon-img">
+    ? asset('storage/app/public/navigation-icon/fitflix filled.png')
+    : asset('storage/app/public/navigation-icon/fitflix_stroke_grey.png')); ?>" alt="Home Icon" class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">FitFlix</span>
             </a>
             <a class="bottom-nav-item" href="#" data-bs-toggle="modal" data-bs-target="#communityModal">
                 <div class="bottom-nav-icon">
                     <img src="<?php echo e(Request::is('fitarena.index')
-                        ? asset('storage/app/public/navigation-icon/fittalk new filled.png')
-                        : asset('storage/app/public/navigation-icon/FitTalk new.png')); ?>"
-                        alt="Home Icon" class="nav-icon-img">
+    ? asset('storage/app/public/navigation-icon/fittalk new filled.png')
+    : asset('storage/app/public/navigation-icon/FitTalk new.png')); ?>" alt="Home Icon" class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">FitTalk</span>
             </a>
             <a href="<?php echo e(url('/tools')); ?>" class="bottom-nav-item <?php echo e(Request::is('tools') ? 'active' : ''); ?>">
                 <div class="bottom-nav-icon">
                     <img src="<?php echo e(Request::is('tools')
-                        ? asset('storage/app/public/navigation-icon/Tool filled.png')
-                        : asset('storage/app/public/navigation-icon/Tool_grey.png')); ?>"
-                        alt="Home Icon" class="nav-icon-img">
+    ? asset('storage/app/public/navigation-icon/Tool filled.png')
+    : asset('storage/app/public/navigation-icon/Tool_grey.png')); ?>" alt="Home Icon" class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">Tools</span>
             </a>
@@ -1061,8 +1072,7 @@
     </nav>
 
     <!-- Modal -->
-    <div class="modal fade" id="communityModal" tabindex="-1" aria-labelledby="communityModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="communityModal" tabindex="-1" aria-labelledby="communityModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1096,8 +1106,7 @@
                                         urlencode($appUrl);
                                 ?>
 
-                                <img src="<?php echo e($qrUrl); ?>" alt="QR Code" class="img-fluid"
-                                    style="max-width: 180px;">
+                                <img src="<?php echo e($qrUrl); ?>" alt="QR Code" class="img-fluid" style="max-width: 180px;">
                             </div>
                         </div>
                     </div>
@@ -1112,8 +1121,7 @@
         <div class="container text-center">
             
             <div class="con-logo mb-3">
-                <img src="<?php echo e(asset('storage/app/public/app_logo.png')); ?>" alt="FITTELLY Logo" height="50"
-                    class="mb-2">
+                <img src="<?php echo e(asset('storage/app/public/app_logo.png')); ?>" alt="FITTELLY Logo" height="50" class="mb-2">
             </div>
 
             
@@ -1150,6 +1158,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <script>
         // Function to get all horizontally scrollable elements
         function getXScrollableElements() {
@@ -1161,14 +1170,14 @@
             });
         }
 
-        window.addEventListener('beforeunload', function() {
+        window.addEventListener('beforeunload', function () {
             const scrollables = getXScrollableElements();
             scrollables.forEach((el, index) => {
                 sessionStorage.setItem(`xScroll-${index}`, el.scrollLeft);
             });
         });
 
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             const scrollables = getXScrollableElements();
             setTimeout(() => {
                 scrollables.forEach((el, index) => {
@@ -1183,7 +1192,7 @@
 
     <!-- Keep this for header scroll effect -->
     <script>
-        $(window).on('scroll', function() {
+        $(window).on('scroll', function () {
             if ($(window).scrollTop() > 50) {
                 $('.navbar').addClass('scrolled');
             } else {
@@ -1194,7 +1203,7 @@
 
     <!-- Keep this for iOS safe-area inset handling -->
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const ua = navigator.userAgent;
             const isIOS = /iPhone|iPad|iPod/i.test(ua);
             if (isIOS) {
@@ -1203,9 +1212,103 @@
         });
     </script>
 
+    <script>
+        $(document).ready(function () {
+            var currentMatchIndex = -1;  // Track which match we're currently on
+
+            // Show the search input and focus it when Ctrl + F is pressed
+            $(document).keydown(function (e) {
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();  // Prevent the browser's default find behavior
+                    $('#live-search').focus();  // Focus on the search input
+                    return false;
+                }
+            });
+
+            // Handle live search input
+            $('#live-search').on('input', function () {
+                var query = $(this).val().toLowerCase();
+
+                // If the search box is empty, clear highlights
+                if (query.length === 0) {
+                    removeHighlights();
+                    return;
+                }
+
+                // Perform the search and highlight matches
+                highlightText(query);
+            });
+
+            // Handle Enter key to scroll to the next highlighted match
+            $('#live-search').keydown(function (e) {
+                var query = $(this).val().toLowerCase();
+                if (e.key === 'Enter' && query.length > 0) {
+                    e.preventDefault();
+                    scrollToNextMatch(query, 1); // Scroll forward
+                }
+                // Handle Shift + Enter for backward navigation
+                else if (e.key === 'Enter' && e.shiftKey && query.length > 0) {
+                    e.preventDefault();
+                    scrollToNextMatch(query, -1); // Scroll backward
+                }
+            });
+
+            // Function to highlight all occurrences of the search query
+            function highlightText(query) {
+                // Remove previous highlights first
+                removeHighlights();
+
+                currentMatchIndex = -1;  // Reset match index
+
+                // Find all text nodes in the body
+                $('body *').each(function () {
+                    if ($(this).children().length === 0 && $(this).text().toLowerCase().indexOf(query) !== -1) {
+                        // For each text node, wrap the matching text with a highlight
+                        var regex = new RegExp('(' + query + ')', 'gi');
+                        $(this).html($(this).html().replace(regex, '<span class="highlight">$1</span>'));
+                    }
+                });
+
+                // If there are highlights, immediately scroll to the first match
+                if ($('.highlight').length > 0) {
+                    scrollToNextMatch(query, 1);
+                }
+            }
+
+            // Function to remove all highlights and active classes
+            function removeHighlights() {
+                $('span.highlight').each(function () {
+                    var text = $(this).text();
+                    $(this).replaceWith(text);  // Replace the span with plain text
+                });
+            }
+
+            // Function to scroll to the next or previous match and highlight it as the active match
+            function scrollToNextMatch(query, direction) {
+                var highlighted = $('span.highlight');
+
+                // If there are no highlighted elements, return
+                if (highlighted.length === 0) return;
+
+                // Increment/decrement currentMatchIndex based on direction
+                currentMatchIndex = (currentMatchIndex + direction + highlighted.length) % highlighted.length;
+
+                // Remove active class from all highlighted elements
+                highlighted.removeClass('active');
+
+                // Add active class to the current match
+                $(highlighted[currentMatchIndex]).addClass('active');
+
+                // Scroll to the current match with a smooth transition
+                $('html, body').animate({
+                    scrollTop: $(highlighted[currentMatchIndex]).offset().top - 100
+                }, 500);
+            }
+        });
+    </script>
+
 
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 
-</html>
-<?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/layouts/public.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/layouts/public.blade.php ENDPATH**/ ?>

@@ -575,4 +575,5 @@
 <script src="https://www.youtube.com/iframe_api"></script>
 <script src="<?php echo e(asset('assets/home/js/homepage.js')); ?>?v=<?php echo e(time()); ?>"></script>
 <?php $__env->stopPush(); ?>
+
 <?php echo $__env->make('layouts.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/homepage.blade.php ENDPATH**/ ?>

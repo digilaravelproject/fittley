@@ -1,57 +1,54 @@
-@extends('layouts.public')
+<?php $__env->startSection('title', $episode->title . ' - ' . $fgSeries->title . ' - FitGuide'); ?>
 
-@section('title', $episode->title . ' - ' . $fgSeries->title . ' - FitGuide')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="container min-vh-100">
     <!-- Hero Section -->
     <div class="hero-section py-5"
-        style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('{{ $fgSeries->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3' }}') center/cover;">
+        style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('<?php echo e($fgSeries->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'); ?>') center/cover;">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-8">
                     <!-- Breadcrumb -->
                     <nav aria-label="breadcrumb" class="mb-3">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('fitguide.index') }}"
+                            <li class="breadcrumb-item"><a href="<?php echo e(route('fitguide.index')); ?>"
                                     class="text-light">FitGuide</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('fitguide.series.show', $fgSeries->slug) }}"
-                                    class="text-light">{{ $fgSeries->title }}</a></li>
-                            <li class="breadcrumb-item active text-warning" aria-current="page">Episode {{
-                                $episode->episode_number }}</li>
+                            <li class="breadcrumb-item"><a href="<?php echo e(route('fitguide.series.show', $fgSeries->slug)); ?>"
+                                    class="text-light"><?php echo e($fgSeries->title); ?></a></li>
+                            <li class="breadcrumb-item active text-warning" aria-current="page">Episode <?php echo e($episode->episode_number); ?></li>
                         </ol>
                     </nav>
 
                     <div class="d-flex align-items-center mb-3">
-                        <span class="badge bg-primary me-3 px-3 py-2">Episode {{ $episode->episode_number }}</span>
-                        <span class="badge bg-secondary">{{ $fgSeries->title }}</span>
+                        <span class="badge bg-primary me-3 px-3 py-2">Episode <?php echo e($episode->episode_number); ?></span>
+                        <span class="badge bg-secondary"><?php echo e($fgSeries->title); ?></span>
                     </div>
 
-                    <h1 class="display-4 fw-bold mb-3">{{ $episode->title }}</h1>
-                    @if($episode->description)
-                    <p class="lead mb-4">{{ $episode->description }}</p>
-                    @endif
+                    <h1 class="display-4 fw-bold mb-3"><?php echo e($episode->title); ?></h1>
+                    <?php if($episode->description): ?>
+                    <p class="lead mb-4"><?php echo e($episode->description); ?></p>
+                    <?php endif; ?>
 
                     <!-- Episode Info -->
                     <div class="row g-3 mb-4">
-                        @if($episode->duration_minutes)
+                        <?php if($episode->duration_minutes): ?>
                         <div class="col-auto">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-clock me-2 text-primary"></i>
                                 <div>
                                     <small class="text-muted d-block">Duration</small>
-                                    <span>{{ $episode->formatted_duration }}</span>
+                                    <span><?php echo e($episode->formatted_duration); ?></span>
                                 </div>
                             </div>
                         </div>
-                        @endif
+                        <?php endif; ?>
 
                         <div class="col-auto">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-list me-2 text-primary"></i>
                                 <div>
                                     <small class="text-muted d-block">Episode</small>
-                                    <span>{{ $episode->episode_number }}</span>
+                                    <span><?php echo e($episode->episode_number); ?></span>
                                 </div>
                             </div>
                         </div>
@@ -59,12 +56,12 @@
 
                     <!-- Action Buttons -->
                     <div class="d-flex gap-3 flex-wrap">
-                        @if($episode->video_url || $episode->video_file_path)
+                        <?php if($episode->video_url || $episode->video_file_path): ?>
                         <button class="btn btn-primary btn-lg" onclick="startEpisode()">
                             <i class="fas fa-play me-2"></i>Watch Episode
                         </button>
-                        @endif
-                        <a href="{{ route('fitguide.series.show', $fgSeries->slug) }}"
+                        <?php endif; ?>
+                        <a href="<?php echo e(route('fitguide.series.show', $fgSeries->slug)); ?>"
                             class="btn btn-outline-light btn-lg">
                             <i class="fas fa-list me-2"></i>All Episodes
                         </a>
@@ -75,8 +72,8 @@
                 </div>
                 <div class="col-lg-4 text-center">
                     <div class="episode-poster">
-                        <img src="{{ $fgSeries->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3' }}"
-                            alt="{{ $episode->title }}" class="img-fluid rounded shadow-lg" style="max-height: 400px;">
+                        <img src="<?php echo e($fgSeries->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'); ?>"
+                            alt="<?php echo e($episode->title); ?>" class="img-fluid rounded shadow-lg" style="max-height: 400px;">
                     </div>
                 </div>
             </div>
@@ -88,7 +85,7 @@
         <div class="container-fluid p-0">
             <div class="video-container position-relative" style="height: 70vh; background: #000;">
 
-                @php
+                <?php
                 $videoType = null;
                 $videoSource = null;
                 $youtubeId = null;
@@ -110,13 +107,13 @@
                 $videoType = 'direct';
                 $videoSource = $episode->video_url;
                 }
-                @endphp
+                ?>
 
-                @if($videoType === 'youtube' && $youtubeId)
+                <?php if($videoType === 'youtube' && $youtubeId): ?>
                 <!-- YouTube Player -->
                 <div id="youtubePlayerContainer" class="w-100 h-100">
                     <iframe id="youtubePlayer" width="100%" height="100%"
-                        src="https://www.youtube.com/embed/{{ $youtubeId }}?enablejsapi=1&rel=0&modestbranding=1"
+                        src="https://www.youtube.com/embed/<?php echo e($youtubeId); ?>?enablejsapi=1&rel=0&modestbranding=1"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen>
@@ -135,10 +132,10 @@
                         </button>
                     </div>
                 </div>
-                @elseif($videoSource)
+                <?php elseif($videoSource): ?>
                 <!-- HTML5 Video Player (for S3, Upload, Direct URLs) -->
                 <video id="episodeVideo" class="w-100 h-100" controls style="object-fit: cover;" preload="metadata">
-                    <source src="{{ $videoSource }}" type="video/mp4">
+                    <source src="<?php echo e($videoSource); ?>" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>
 
@@ -149,16 +146,16 @@
                             <button class="btn btn-outline-light" onclick="toggleVideo()">
                                 <i id="playPauseIcon" class="fas fa-play"></i>
                             </button>
-                            @if($videoType === 's3')
+                            <?php if($videoType === 's3'): ?>
                             <i class="fab fa-aws text-warning me-2"></i>
                             <span class="text-white">AWS S3 Video</span>
-                            @elseif($videoType === 'upload')
+                            <?php elseif($videoType === 'upload'): ?>
                             <i class="fas fa-upload text-success me-2"></i>
                             <span class="text-white">Uploaded Video</span>
-                            @else
+                            <?php else: ?>
                             <i class="fas fa-video text-info me-2"></i>
                             <span class="text-white">Direct Video</span>
-                            @endif
+                            <?php endif; ?>
                         </div>
                         <div class="flex-grow-1 mx-3">
                             <input type="range" class="form-range" id="progressBar" min="0" max="100" value="0">
@@ -168,7 +165,7 @@
                         </button>
                     </div>
                 </div>
-                @else
+                <?php else: ?>
                 <!-- No Video Available -->
                 <div class="d-flex align-items-center justify-content-center h-100 text-center">
                     <div>
@@ -177,59 +174,60 @@
                         <p class="text-muted">This episode doesn't have a video configured.</p>
                     </div>
                 </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
     <!-- Episode Description -->
-    @if($episode->description)
+    <?php if($episode->description): ?>
     <div class="description-section py-5">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8">
                     <h3 class="mb-4">About This Episode</h3>
                     <div class="description-content">
-                        {!! nl2br(e($episode->description)) !!}
+                        <?php echo nl2br(e($episode->description)); ?>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Series Episodes -->
     <div class="related-section py-3">
         <div class="container">
             <h2 class="section-title mb-4">
-                {{ $fgSeries->title }} - All Episodes
+                <?php echo e($fgSeries->title); ?> - All Episodes
             </h2>
             <div class="row">
-                @foreach($fgSeries->episodes->where('is_published', true) as $ep)
+                <?php $__currentLoopData = $fgSeries->episodes->where('is_published', true); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div
-                        class="content-card bg-dark rounded overflow-hidden {{ $ep->id === $episode->id ? 'border border-primary' : '' }}">
-                        <img src="{{ $fgSeries->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3' }}"
+                        class="content-card bg-dark rounded overflow-hidden <?php echo e($ep->id === $episode->id ? 'border border-primary' : ''); ?>">
+                        <img src="<?php echo e($fgSeries->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'); ?>"
                             class="card-img-top" style="height: 200px; object-fit: cover;"
-                            alt="Episode {{ $ep->episode_number }}">
+                            alt="Episode <?php echo e($ep->episode_number); ?>">
                         <div class="card-body">
-                            <h6 class="card-title">Episode {{ $ep->episode_number }}: {{ $ep->title }}</h6>
-                            <p class="card-text small text-muted">{{ Str::limit($ep->description ?? 'Episode
-                                description', 80) }}</p>
-                            @if($ep->id === $episode->id)
+                            <h6 class="card-title">Episode <?php echo e($ep->episode_number); ?>: <?php echo e($ep->title); ?></h6>
+                            <p class="card-text small text-muted"><?php echo e(Str::limit($ep->description ?? 'Episode
+                                description', 80)); ?></p>
+                            <?php if($ep->id === $episode->id): ?>
                             <span class="btn btn-primary btn-sm w-75 d-flex m-auto">
                                 <i class="fas fa-play me-1"></i>Currently Watching
                             </span>
-                            @else
-                            <a href="{{ route('fitguide.series.episode', [$fgSeries->slug, $ep->episode_number]) }}"
+                            <?php else: ?>
+                            <a href="<?php echo e(route('fitguide.series.episode', [$fgSeries->slug, $ep->episode_number])); ?>"
                                 class="btn btn-outline-primary btn-sm w-75 d-flex m-auto">
                                 <i class="fas fa-play me-1"></i>Watch Episode
                             </a>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
     </div>
@@ -282,7 +280,7 @@
 
     // Function to start the episode
     function startEpisode() {
-        const videoType = @json($videoType); // Get the video type from Blade to JavaScript
+        const videoType = <?php echo json_encode($videoType, 15, 512) ?>; // Get the video type from Blade to JavaScript
 
         if (videoType) {
             $('#videoSection').fadeIn().scrollIntoView({ behavior: 'smooth' });
@@ -381,4 +379,5 @@
 </script>
 
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/public/fitguide/episode.blade.php ENDPATH**/ ?>

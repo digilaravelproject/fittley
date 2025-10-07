@@ -1,51 +1,50 @@
-@extends('layouts.public')
+<?php $__env->startSection('title', $fgSeries->title . ' - FitGuide Series'); ?>
 
-@section('title', $fgSeries->title . ' - FitGuide Series')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="container min-vh-100 ">
 
     <!-- Hero Section -->
     <div class="hero-section py-5"
-        style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)), url('{{ $fgSeries->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3' }}') center/cover;">
+        style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.8)), url('<?php echo e($fgSeries->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'); ?>') center/cover;">
         <div class="container position-relative">
             <div class="row align-items-center">
                 <div class="col-lg-8 text-white">
                     <!-- Series Header -->
                     <h1 class="display-4 fw-bold mb-4"
                         style="font-family: 'Jost', sans-serif; background: linear-gradient(90deg, #ff6f61, #f4a261); -webkit-background-clip: text; background-clip: text;">
-                        {{ $fgSeries->title }}
+                        <?php echo e($fgSeries->title); ?>
+
                     </h1>
-                    <p class="lead mb-4">{{ $fgSeries->description ?? 'No description available' }}</p>
+                    <p class="lead mb-4"><?php echo e($fgSeries->description ?? 'No description available'); ?></p>
 
                     <!-- Genre and Info -->
                     <div class="d-flex flex-wrap mb-4">
-                        @if($fgSeries->category)
-                        <span class="badge bg-netflix-dark-gray me-3">{{ $fgSeries->category->name }}</span>
-                        @endif
-                        @if($fgSeries->subCategory)
-                        <span class="badge bg-outline-light">{{ $fgSeries->subCategory->name }}</span>
-                        @endif
+                        <?php if($fgSeries->category): ?>
+                        <span class="badge bg-netflix-dark-gray me-3"><?php echo e($fgSeries->category->name); ?></span>
+                        <?php endif; ?>
+                        <?php if($fgSeries->subCategory): ?>
+                        <span class="badge bg-outline-light"><?php echo e($fgSeries->subCategory->name); ?></span>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Buttons: Start Series & Watch Trailer -->
                     <div class="d-flex align-items-center">
-                        @if($episodes->count() > 0)
+                        <?php if($episodes->count() > 0): ?>
                         <button class="btn btn-lg btn-netflix-orange me-3" onclick="playEpisode(1)">
                             <i class="fas fa-play me-2"></i>Start Series
                         </button>
-                        @endif
-                        @if($fgSeries->trailer_url)
+                        <?php endif; ?>
+                        <?php if($fgSeries->trailer_url): ?>
                         <button class="btn btn-outline-light btn-lg" onclick="playTrailer()">
                             <i class="fas fa-video me-2"></i>Watch Trailer
                         </button>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="col-lg-4 text-center">
                     <div class="series-poster">
-                        <img src="{{ $fgSeries->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3' }}"
-                            alt="{{ $fgSeries->title }}" class="img-fluid rounded shadow-lg" style="max-height: 400px;">
+                        <img src="<?php echo e($fgSeries->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'); ?>"
+                            alt="<?php echo e($fgSeries->title); ?>" class="img-fluid rounded shadow-lg" style="max-height: 400px;">
                     </div>
                 </div>
             </div>
@@ -58,43 +57,42 @@
             Episodes
         </h2>
 
-        @if($episodes->count() > 0)
+        <?php if($episodes->count() > 0): ?>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            @foreach($episodes as $episode)
+            <?php $__currentLoopData = $episodes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $episode): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="col">
-                <div class="episode-card" onclick="playEpisode({{ $episode->episode_number }})">
+                <div class="episode-card" onclick="playEpisode(<?php echo e($episode->episode_number); ?>)">
                     <div class="episode-thumbnail">
-                        <img src="{{ $episode->thumbnail_path ? asset('storage/app/public/' . $episode->thumbnail_path) : $fgSeries->banner_image_url }}"
-                            alt="Episode {{ $episode->episode_number }}" class="img-fluid rounded">
+                        <img src="<?php echo e($episode->thumbnail_path ? asset('storage/app/public/' . $episode->thumbnail_path) : $fgSeries->banner_image_url); ?>"
+                            alt="Episode <?php echo e($episode->episode_number); ?>" class="img-fluid rounded">
                         <div class="play-overlay">
                             <i class="fas fa-play"></i>
                         </div>
-                        <div class="episode-number">{{ $episode->episode_number }}</div>
+                        <div class="episode-number"><?php echo e($episode->episode_number); ?></div>
                     </div>
                     <div class="episode-info p-3">
-                        <h5 class="episode-title">{{ $episode->title }}</h5>
-                        <p class="text-muted">{{ Str::limit($episode->description, 100) }}</p>
+                        <h5 class="episode-title"><?php echo e($episode->title); ?></h5>
+                        <p class="text-muted"><?php echo e(Str::limit($episode->description, 100)); ?></p>
                         <div class="episode-meta">
-                            @if($episode->duration_minutes)
-                            <span><i class="fas fa-clock me-1"></i>{{ $episode->duration_minutes }} min</span>
-                            @endif
-                            @if($episode->release_date)
-                            <span><i class="fas fa-calendar me-1"></i>{{ $episode->release_date->format('M d, Y')
-                                }}</span>
-                            @endif
+                            <?php if($episode->duration_minutes): ?>
+                            <span><i class="fas fa-clock me-1"></i><?php echo e($episode->duration_minutes); ?> min</span>
+                            <?php endif; ?>
+                            <?php if($episode->release_date): ?>
+                            <span><i class="fas fa-calendar me-1"></i><?php echo e($episode->release_date->format('M d, Y')); ?></span>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
             </div>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
-        @else
+        <?php else: ?>
         <div class="text-center py-5">
             <i class="fas fa-video fa-3x text-muted mb-3"></i>
             <h4 class="text-muted">No Episodes Available</h4>
             <p class="text-muted">Episodes for this series will be available soon.</p>
         </div>
-        @endif
+        <?php endif; ?>
     </div>
 
     <!-- Similar Series Section -->
@@ -260,14 +258,16 @@
 </style>
 <script>
     function playEpisode(episodeNumber) {
-        const episodeUrl = `{{ route('fitguide.series.episode', ['fgSeries' => $fgSeries->slug, 'episode' => '__EPISODE__']) }}`.replace('__EPISODE__', episodeNumber);
+        const episodeUrl = `<?php echo e(route('fitguide.series.episode', ['fgSeries' => $fgSeries->slug, 'episode' => '__EPISODE__'])); ?>`.replace('__EPISODE__', episodeNumber);
         window.location.href = episodeUrl;
     }
 
     function playTrailer() {
-        @if($fgSeries->trailer_url)
-            window.open('{{ $fgSeries->trailer_url }}', '_blank');
-        @endif
+        <?php if($fgSeries->trailer_url): ?>
+            window.open('<?php echo e($fgSeries->trailer_url); ?>', '_blank');
+        <?php endif; ?>
     }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/public/fitguide/series.blade.php ENDPATH**/ ?>

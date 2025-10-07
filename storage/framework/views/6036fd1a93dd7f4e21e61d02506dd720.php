@@ -1,8 +1,6 @@
-@extends('layouts.public')
+<?php $__env->startSection('title', $fitDoc->title . ' - FitDoc'); ?>
 
-@section('title', $fitDoc->title . ' - FitDoc')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     :root {
         --netflix-black: #000000;
@@ -324,23 +322,23 @@
         }
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="single-video-page">
     <div class="video-container">
         <div class="video-player">
-            @auth
-            @if(auth()->user()->hasActiveSubscription('fitdoc'))
+            <?php if(auth()->guard()->check()): ?>
+            <?php if(auth()->user()->hasActiveSubscription('fitdoc')): ?>
             <video class="video-element" id="mainVideo"
-                poster="{{ $fitDoc->banner_image_url ?? 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?ixlib=rb-4.0.3' }}"
+                poster="<?php echo e($fitDoc->banner_image_url ?? 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?ixlib=rb-4.0.3'); ?>"
                 controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture
                 oncontextmenu="return false;">
                 <source
-                    src="{{ $fitDoc->video_path ? asset('storage/app/public/' . $fitDoc->video_path) : 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }}"
+                    src="<?php echo e($fitDoc->video_path ? asset('storage/app/public/' . $fitDoc->video_path) : 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'); ?>"
                     type="video/mp4">
                 <source
-                    src="{{ $fitDoc->video_path ? asset('storage/app/public/' . $fitDoc->video_path) : 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }}"
+                    src="<?php echo e($fitDoc->video_path ? asset('storage/app/public/' . $fitDoc->video_path) : 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'); ?>"
                     type="video/webm">
                 Your browser does not support the video tag.
             </video>
@@ -368,31 +366,33 @@
                     <span id="currentTime">00:00</span> / <span id="durationTime">00:00</span>
                 </div>
             </div>
-            @endif
-            @endauth
+            <?php endif; ?>
+            <?php endif; ?>
         </div>
     </div>
 
     <div class="content-details">
         <div class="details-header">
             <div class="details-main">
-                <div class="movie-title">{{ $fitDoc->title }}</div>
+                <div class="movie-title"><?php echo e($fitDoc->title); ?></div>
                 <div class="movie-meta">
                     <div class="meta-item">
                         <i class="fas fa-star"></i>
                         <span class="rating">HD</span>
                     </div>
                     <div class="meta-item">
-                        <i class="fas fa-calendar-alt"></i>{{ $fitDoc->created_at->format('Y') }}
+                        <i class="fas fa-calendar-alt"></i><?php echo e($fitDoc->created_at->format('Y')); ?>
+
                     </div>
                     <div class="meta-item">
-                        <i class="fas fa-clock"></i> {{ $fitDoc->duration_minutes ?? 90 }} min
+                        <i class="fas fa-clock"></i> <?php echo e($fitDoc->duration_minutes ?? 90); ?> min
                     </div>
                     <div class="meta-item">
-                        <i class="fas fa-tags"></i> {{ $fitDoc->category->name ?? 'N/A' }}
+                        <i class="fas fa-tags"></i> <?php echo e($fitDoc->category->name ?? 'N/A'); ?>
+
                     </div>
                 </div>
-                <p class="description">{{ $fitDoc->description }}</p>
+                <p class="description"><?php echo e($fitDoc->description); ?></p>
                 <div class="action-buttons">
                     <button class="btn-primary" id="playPauseButton" onclick="togglePlayPause()">Play Now</button>
                     <button class="btn-secondary">Add to Watchlist</button>
@@ -400,49 +400,49 @@
             </div>
             <div class="details-sidebar">
                 <div class="details-grid">
-                    @if($fitDoc->director)
+                    <?php if($fitDoc->director): ?>
                     <div class="detail-item">
                         <div class="detail-label">Director</div>
-                        <div class="detail-value">{{ $fitDoc->director }}</div>
+                        <div class="detail-value"><?php echo e($fitDoc->director); ?></div>
                     </div>
-                    @endif
+                    <?php endif; ?>
 
-                    @if($fitDoc->cast)
+                    <?php if($fitDoc->cast): ?>
                     <div class="detail-item">
                         <div class="detail-label">Cast</div>
-                        <div class="detail-value">{{ $fitDoc->cast }}</div>
+                        <div class="detail-value"><?php echo e($fitDoc->cast); ?></div>
                     </div>
-                    @endif
+                    <?php endif; ?>
 
-                    @if($fitDoc->genre)
+                    <?php if($fitDoc->genre): ?>
                     <div class="detail-item">
                         <div class="detail-label">Genre</div>
-                        <div class="detail-value">{{ $fitDoc->genre }}</div>
+                        <div class="detail-value"><?php echo e($fitDoc->genre); ?></div>
                     </div>
-                    @endif
+                    <?php endif; ?>
 
                     <div class="detail-item">
                         <div class="detail-label">Release Year</div>
-                        <div class="detail-value">{{ $fitDoc->created_at->format('Y') }}</div>
+                        <div class="detail-value"><?php echo e($fitDoc->created_at->format('Y')); ?></div>
                     </div>
 
                     <div class="detail-item">
                         <div class="detail-label">Duration</div>
-                        <div class="detail-value">{{ $fitDoc->duration_minutes ?? 90 }} min</div>
+                        <div class="detail-value"><?php echo e($fitDoc->duration_minutes ?? 90); ?> min</div>
                     </div>
 
                     <div class="detail-item">
                         <div class="detail-label">Language</div>
-                        <div class="detail-value">{{ $fitDoc->language ?? 'English' }}</div>
+                        <div class="detail-value"><?php echo e($fitDoc->language ?? 'English'); ?></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     let video = $('#mainVideo')[0];
@@ -624,4 +624,6 @@
         togglePlayPause(); // Call the toggle function to play or pause
     });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/public/fitdoc/single.blade.php ENDPATH**/ ?>
