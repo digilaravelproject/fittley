@@ -1,7 +1,7 @@
 <?php $__env->startSection('title', 'FitLive - Live Fitness Sessions'); ?>
 
 <?php $__env->startPush('styles'); ?>
-    <link rel="stylesheet" href="<?php echo e(asset('assets/home/css/fitdoc.index.css')); ?>?v=<?php echo e(time()); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('public/assets/home/css/fitdoc.index.css')); ?>?v=<?php echo e(time()); ?>">
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -10,7 +10,7 @@
         <section class="hero-section">
             <div class="container-fluid">
                 <div class="hero-content">
-                    <h1>FitLive</h1>
+                    <h1>Fit Expert live</h1>
                     <p>Join live fitness sessions with expert instructors</p>
 
                     <?php if($liveSession): ?>
@@ -29,7 +29,7 @@
 
             
             <?php if($liveSessions->count() > 0): ?>
-                <section class="content-section d-none" data-type="live">
+                <section class="content-section " data-type="live">
                     <h2 class="section-title">
                         Live Now
                     </h2>
@@ -63,25 +63,18 @@
             <?php endif; ?>
 
             
-            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                <?php
-                    $categoryUpcoming = $upcomingSessions->where('category_id', $category->id);
-                    $categoryRecent = $recentSessions->where('category_id', $category->id);
-                ?>
+            <?php if($dailylive->count() > 0 || $fitexpert->count() > 0): ?>
+                <section class="content- ">
+                    <h3 class="section-title">
+                        Fit Daily Live
+                    </h3>
 
-                <?php if($categoryUpcoming->count() > 0 || $categoryRecent->count() > 0): ?>
-                    <section class="content- d-none">
-                        <h3 class="section-title">
-                            <?php echo e($category->name); ?>
-
-                        </h3>
-
-                        
-                        <?php if($categoryUpcoming->count() > 0): ?>
-                            <h5 class="text-warning mb-3">Upcoming Sessions</h5>
-                            <div class="media-grid-wrapper mb-4">
-                                <?php $__currentLoopData = $categoryUpcoming; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $session): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <?php if (isset($component)) { $__componentOriginal3a8c1a2d94b1c50e899eb326aa5eda61 = $component; } ?>
+                    
+                    <?php if($dailylive->count() > 0): ?>
+                        <h5 class="text-warning mb-3">Upcoming Sessions</h5>
+                        <div class="media-grid-wrapper mb-4">
+                            <?php $__currentLoopData = $dailylive; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $session): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php if (isset($component)) { $__componentOriginal3a8c1a2d94b1c50e899eb326aa5eda61 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal3a8c1a2d94b1c50e899eb326aa5eda61 = $attributes; } ?>
 <?php $component = App\View\Components\Home\MediaGrid::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('home.media-grid'); ?>
@@ -90,12 +83,9 @@
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\App\View\Components\Home\MediaGrid::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($session->title),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($session->banner_image
-                                        ? asset('storage/app/public/' . $session->banner_image)
-                                        : null),'url' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitlive.session', $session)),'type' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute('upcoming'),'duration' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(null),'year' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($session->scheduled_at->format('Y')),'rating' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(null),'badgeClass' => 'upcoming-badge','description' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute('By ' .
-                                            $session->instructor->name .
-                                            ' | ' .
-                                            $session->scheduled_at->format('M d, g:i A'))]); ?>
+<?php $component->withAttributes(['title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($session->name),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($session->banner_image
+                                    ? asset('storage/app/public/' . $session->banner_image)
+                                    : null),'route' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitlive.daily-classes.show', $session->id)),'type' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute('upcoming'),'duration' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(null),'rating' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(null),'badgeClass' => 'upcoming-badge']); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal3a8c1a2d94b1c50e899eb326aa5eda61)): ?>
@@ -106,49 +96,14 @@
 <?php $component = $__componentOriginal3a8c1a2d94b1c50e899eb326aa5eda61; ?>
 <?php unset($__componentOriginal3a8c1a2d94b1c50e899eb326aa5eda61); ?>
 <?php endif; ?>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </div>
-                        <?php endif; ?>
-
-                        
-                        <?php if($categoryRecent->count() > 0): ?>
-                            <h5 class="text-secondary mb-3">Recently Ended</h5>
-                            <div class="media-grid-wrapper">
-                                <?php $__currentLoopData = $categoryRecent; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $session): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <?php if (isset($component)) { $__componentOriginal3a8c1a2d94b1c50e899eb326aa5eda61 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal3a8c1a2d94b1c50e899eb326aa5eda61 = $attributes; } ?>
-<?php $component = App\View\Components\Home\MediaGrid::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('home.media-grid'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\App\View\Components\Home\MediaGrid::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($session->title),'image' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($session->banner_image
-                                        ? asset('storage/app/public/' . $session->banner_image)
-                                        : null),'url' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(route('fitlive.session', $session)),'type' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute('ended'),'duration' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(null),'year' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($session->updated_at->format('Y')),'rating' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(null),'badgeClass' => 'ended-badge','description' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute('By ' .
-                                            $session->instructor->name .
-                                            ' | Ended on ' .
-                                            $session->updated_at->format('M d'))]); ?>
-<?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal3a8c1a2d94b1c50e899eb326aa5eda61)): ?>
-<?php $attributes = $__attributesOriginal3a8c1a2d94b1c50e899eb326aa5eda61; ?>
-<?php unset($__attributesOriginal3a8c1a2d94b1c50e899eb326aa5eda61); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal3a8c1a2d94b1c50e899eb326aa5eda61)): ?>
-<?php $component = $__componentOriginal3a8c1a2d94b1c50e899eb326aa5eda61; ?>
-<?php unset($__componentOriginal3a8c1a2d94b1c50e899eb326aa5eda61); ?>
-<?php endif; ?>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                            </div>
-                        <?php endif; ?>
-                    </section>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
                     <?php endif; ?>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <h3 class="section-title">
+                        FitExpert
+                    </h3>
                     
                     <?php if($fitexpert->count() > 0): ?>
-                        <h5 class="text-secondary mb-3">Fit expert live</h5>
                         <div class="media-grid-wrapper">
                             <?php $__currentLoopData = $fitexpert; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $session): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <?php if (isset($component)) { $__componentOriginal3a8c1a2d94b1c50e899eb326aa5eda61 = $component; } ?>
@@ -179,6 +134,9 @@
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     <?php endif; ?>
+                </section>
+            <?php endif; ?>
+
 
         </div>
     </div>

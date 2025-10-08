@@ -33,6 +33,45 @@ class FitLiveController extends Controller
             ->orderBy('scheduled_at', 'desc')
             ->get();
 
+
+        $dailylive = SubCategory::where('category_id', 21)
+            ->where('id', '!=', 17)
+            ->orderBy('sort_order')
+            ->get();
+
+        // Get recent ended sessions
+        $fitexpert = FitLiveSession::with(['category', 'subCategory', 'instructor'])
+            ->where('sub_category_id', 21)
+            ->where('visibility', 'public')
+            ->get();
+
+
+        // Get categories with session counts
+        $categories = Category::withCount('fitLiveSessions')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+        // Get first live session for hero section
+        $liveSession = $liveSessions->first();
+
+        return view('public.fitlive.index', compact(
+            'liveSessions',
+            'dailylive',
+            'categories',
+            'fitexpert',
+            'liveSession'
+        ));
+    }
+    public function index_old()
+    {
+        // Get live sessions
+        $liveSessions = FitLiveSession::with(['category', 'subCategory', 'instructor'])
+            ->where('status', 'live')
+            ->where('visibility', 'public')
+            ->orderBy('scheduled_at', 'desc')
+            ->get();
+
         // Get upcoming sessions
         $upcomingSessions = FitLiveSession::with(['category', 'subCategory', 'instructor'])
             ->where('status', 'scheduled')
@@ -49,10 +88,7 @@ class FitLiveController extends Controller
             ->orderBy('updated_at', 'desc')
             ->take(6)
             ->get();
-        $fitexpert = FitLiveSession::with(['category', 'subCategory', 'instructor'])
-            ->where('sub_category_id', 21)
-            ->where('visibility', 'public')
-            ->get();
+
 
         // Get categories with session counts
         $categories = Category::withCount('fitLiveSessions')
@@ -68,7 +104,25 @@ class FitLiveController extends Controller
             'upcomingSessions',
             'recentSessions',
             'categories',
-            'liveSession',
+            'liveSession'
+        ));
+    }
+    public function fitexpert()
+    {
+        $fitexpert = FitLiveSession::with(['category', 'subCategory', 'instructor'])
+            ->where('sub_category_id', 21)
+            ->where('visibility', 'public')
+            ->get();
+
+        // Get categories with session counts
+        $categories = Category::withCount('fitLiveSessions')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+
+        return view('public.fitlive.fitexpert', compact(
+            'categories',
             'fitexpert'
         ));
     }

@@ -12,7 +12,7 @@
         <section class="hero-section">
             <div class="container-fluid">
                 <div class="hero-content">
-                    <h1>Fit Expert live</h1>
+                    <h1>Fit live</h1>
                     <p>Join live fitness sessions with expert instructors</p>
 
                     @if ($liveSession)
@@ -31,7 +31,7 @@
 
             {{-- LIVE NOW --}}
             @if ($liveSessions->count() > 0)
-                <section class="content-section d-none" data-type="live">
+                <section class="content-section " data-type="live">
                     <h2 class="section-title">
                         Live Now
                     </h2>
@@ -47,56 +47,30 @@
                 </section>
             @endif
 
-            {{-- CATEGORIES: UPCOMING + RECENT --}}
-            @foreach ($categories as $category)
-                @php
-                    $categoryUpcoming = $upcomingSessions->where('category_id', $category->id);
-                    $categoryRecent = $recentSessions->where('category_id', $category->id);
-                @endphp
+            {{-- CATEGORIES: daily-live, fitflix --}}
+            @if ($dailylive->count() > 0 || $fitexpert->count() > 0)
+                <section class="content- ">
+                    <h3 class="section-title">
+                        Fit Daily Live
+                    </h3>
 
-                @if ($categoryUpcoming->count() > 0 || $categoryRecent->count() > 0)
-                    <section class="content- d-none">
-                        <h3 class="section-title">
-                            {{ $category->name }}
-                        </h3>
+                    {{-- Daily-Live --}}
+                    @if ($dailylive->count() > 0)
 
-                        {{-- Upcoming --}}
-                        @if ($categoryUpcoming->count() > 0)
-                            <h5 class="text-warning mb-3">Upcoming Sessions</h5>
-                            <div class="media-grid-wrapper mb-4">
-                                @foreach ($categoryUpcoming as $session)
-                                    <x-home.media-grid :title="$session->title" :image="$session->banner_image
-                                        ? asset('storage/app/public/' . $session->banner_image)
-                                        : null" :url="route('fitlive.session', $session)"
-                                        :type="'upcoming'" :duration="null" :year="$session->scheduled_at->format('Y')" :rating="null"
-                                        badgeClass="upcoming-badge" :description="'By ' .
-                                            $session->instructor->name .
-                                            ' | ' .
-                                            $session->scheduled_at->format('M d, g:i A')" />
-                                @endforeach
-                            </div>
-                        @endif
-
-                        {{-- Recently Ended --}}
-                        @if ($categoryRecent->count() > 0)
-                            <h5 class="text-secondary mb-3">Recently Ended</h5>
-                            <div class="media-grid-wrapper">
-                                @foreach ($categoryRecent as $session)
-                                    <x-home.media-grid :title="$session->title" :image="$session->banner_image
-                                        ? asset('storage/app/public/' . $session->banner_image)
-                                        : null" :url="route('fitlive.session', $session)"
-                                        :type="'ended'" :duration="null" :year="$session->updated_at->format('Y')" :rating="null"
-                                        badgeClass="ended-badge" :description="'By ' .
-                                            $session->instructor->name .
-                                            ' | Ended on ' .
-                                            $session->updated_at->format('M d')" />
-                                @endforeach
-                            </div>
-                        @endif
-                    </section>
+                        <div class="media-grid-wrapper mb-4">
+                            @foreach ($dailylive as $session)
+                                <x-home.media-grid :title="$session->name" :image="$session->banner_image
+                                    ? asset('storage/app/public/' . $session->banner_image)
+                                    : null" :route="route('fitlive.daily-classes.show', $session->id)" :type="'live'"
+                                    :duration="null"  :rating="null" badgeClass="live-badge"
+                                    />
+                            @endforeach
+                        </div>
                     @endif
-                    @endforeach
-                    {{-- All --}}
+                    <h3 class="section-title">
+                        FitExpert
+                    </h3>
+                    {{-- FitExpert --}}
                     @if ($fitexpert->count() > 0)
                         <div class="media-grid-wrapper">
                             @foreach ($fitexpert as $session)
@@ -111,6 +85,9 @@
                             @endforeach
                         </div>
                     @endif
+                </section>
+            @endif
+
 
         </div>
     </div>

@@ -97,7 +97,7 @@
         .highlight {
             background-color: yellow;
             color: black;
-            border-radius: 3px;
+            border-radius: 16px;
         }
 
         /* Active match style (current word being focused) */

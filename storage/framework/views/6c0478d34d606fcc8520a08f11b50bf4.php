@@ -1,8 +1,6 @@
-@extends('layouts.public')
+<?php $__env->startSection('title', $blog->title . ' - FitInsight'); ?>
 
-@section('title', $blog->title . ' - FitInsight')
-
-@push('styles')
+<?php $__env->startPush('styles'); ?>
     <style>
         :root {
             --fittelly-orange: #f7a31a;
@@ -23,7 +21,7 @@
 
         .article-header {
             /* background: url('https://fittelly.com/storage/app/public/fitinsight/blogs/featured/8rWZnU453WG7kEHZwiZKOr6WCUHLx85PNOXAX0me.jpg') center/cover; */
-            background: url('{{ $blog->featured_image_url ?: "https://images.unsplash.com/photo-1571019613914-85f342c75c29?ixlib=rb-4.0.3" }}') center/cover;
+            background: url('<?php echo e($blog->featured_image_url ?: "https://images.unsplash.com/photo-1571019613914-85f342c75c29?ixlib=rb-4.0.3"); ?>') center/cover;
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
@@ -435,41 +433,41 @@
 
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <!-- Article Header -->
     <section class="article-header">
         <div class="container">
             <div class="article-header-content">
-                <h1 class="article-title">{{ $blog->title }}</h1>
+                <h1 class="article-title"><?php echo e($blog->title); ?></h1>
 
                 <div class="article-meta">
                     <div class="meta-item">
                         <i class="fas fa-user"></i>
-                        <span>{{ $blog->author ? $blog->author->name : 'Admin' }}</span>
+                        <span><?php echo e($blog->author ? $blog->author->name : 'Admin'); ?></span>
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-calendar"></i>
-                        <span>{{ $blog->published_at_formatted }}</span>
+                        <span><?php echo e($blog->published_at_formatted); ?></span>
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-eye"></i>
-                        <span>{{ number_format($blog->views_count) }} views</span>
+                        <span><?php echo e(number_format($blog->views_count)); ?> views</span>
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-clock"></i>
-                        <span>{{ $blog->reading_time ?? 5 }} min read</span>
+                        <span><?php echo e($blog->reading_time ?? 5); ?> min read</span>
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-tag"></i>
-                        <span>{{ $blog->category ? $blog->category->name : 'General' }}</span>
+                        <span><?php echo e($blog->category ? $blog->category->name : 'General'); ?></span>
                     </div>
                 </div>
 
-                @if($blog->excerpt)
-                    <p class="article-excerpt">{{ $blog->excerpt }}</p>
-                @endif
+                <?php if($blog->excerpt): ?>
+                    <p class="article-excerpt"><?php echo e($blog->excerpt); ?></p>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -482,44 +480,36 @@
                 <div class="col-lg-8 p-0">
                     <!-- Article Body -->
                     <div class="article-body">
-                        <h1 class="article-title">{{ $blog->title }}</h1>
-                        {!! $blog->content !!}
+                        <h1 class="article-title"><?php echo e($blog->title); ?></h1>
+                        <?php echo $blog->content; ?>
+
                     </div>
 
                     <!-- Article Actions -->
                     <div class="article-actions">
                         <!-- Save Button with Share Icon -->
-                        <button class="action-btn action-btn-share" id="shareBtn" onclick="saveBlog({{ $blog->id }})">
+                        <button class="action-btn action-btn-share" id="shareBtn" onclick="saveBlog(<?php echo e($blog->id); ?>)">
                             <i class="far fa-heart"></i>
                             <span>Save</span>
                         </button>
                         <!-- Like Button with Thumbs Up Icon -->
-                        <button class="action-btn action-btn-like" id="likeBtn" onclick="likeBlog({{ $blog->id }})">
+                        <button class="action-btn action-btn-like" id="likeBtn" onclick="likeBlog(<?php echo e($blog->id); ?>)">
                             <i class="far fa-thumbs-up"></i> <!-- Outline thumbs-up icon -->
-                            <span>Like ({{ $blog->likes_count }})</span>
+                            <span>Like (<?php echo e($blog->likes_count); ?>)</span>
                         </button>
 
                         <!-- Share Button with Share Icon -->
-                        <button class="action-btn action-btn-share" id="shareBtn" onclick="shareBlog({{ $blog->id }})">
+                        <button class="action-btn action-btn-share" id="shareBtn" onclick="shareBlog(<?php echo e($blog->id); ?>)">
                             <i class="fas fa-share"></i>
-                            <span>Share ({{ $blog->shares_count }})</span>
+                            <span>Share (<?php echo e($blog->shares_count); ?>)</span>
                         </button>
                     </div>
 
 
-                    {{-- <div class="article-actions">
-                        <button class="action-btn action-btn-like" onclick="likeBlog({{ $blog->id }})">
-                            <i class="fas fa-heart"></i>
-                            <span>Like ({{ $blog->likes_count }})</span>
-                        </button>
-                        <button class="action-btn action-btn-share" onclick="shareBlog({{ $blog->id }})">
-                            <i class="fas fa-share"></i>
-                            <span>Share ({{ $blog->shares_count }})</span>
-                        </button>
-                    </div> --}}
+                    
 
                     <!-- Author Section -->
-                    @if($blog->author)
+                    <?php if($blog->author): ?>
                         <div class="author-section d-none d-lg-block">
                             <h3 class="section-title">
                                 <i class="fas fa-user"></i>
@@ -527,103 +517,102 @@
                             </h3>
                             <div class="author-info">
                                 <div class="author-avatar">
-                                    {{ substr($blog->author->name, 0, 1) }}
+                                    <?php echo e(substr($blog->author->name, 0, 1)); ?>
+
                                 </div>
                                 <div class="author-details">
-                                    <h4>{{ $blog->author->name }}</h4>
+                                    <h4><?php echo e($blog->author->name); ?></h4>
                                     <p>Fitness expert and wellness advocate with years of experience in helping people achieve
                                         their health goals.</p>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Related Articles -->
-                    @if($relatedBlogs->count() > 0)
+                    <?php if($relatedBlogs->count() > 0): ?>
                         <div class="related-section d-none d-lg-block">
                             <h3 class="section-title">
                                 <i class="fas fa-newspaper"></i>
                                 Related Articles
                             </h3>
                             <div class="row">
-                                @foreach($relatedBlogs as $related)
+                                <?php $__currentLoopData = $relatedBlogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $related): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <div class="col-md-6 mb-4">
                                         <div class="related-card"
-                                            onclick="window.location.href='{{ route('fitinsight.show', $related) }}'">
-                                            @if($related->featured_image_path)
-                                                <img src="{{ $related->featured_image_url }}" alt="{{ $related->title }}">
-                                            @else
+                                            onclick="window.location.href='<?php echo e(route('fitinsight.show', $related)); ?>'">
+                                            <?php if($related->featured_image_path): ?>
+                                                <img src="<?php echo e($related->featured_image_url); ?>" alt="<?php echo e($related->title); ?>">
+                                            <?php else: ?>
                                                 <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3"
-                                                    alt="{{ $related->title }}">
-                                            @endif
+                                                    alt="<?php echo e($related->title); ?>">
+                                            <?php endif; ?>
                                             <div class="related-card-content">
-                                                <h5 class="related-card-title">{{ $related->title }}</h5>
+                                                <h5 class="related-card-title"><?php echo e($related->title); ?></h5>
                                                 <div class="related-card-meta">
                                                     <span><i class="fas fa-eye"></i>
-                                                        {{ number_format($related->views_count)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }}</span>
+                                                        <?php echo e(number_format($related->views_count)); ?></span>
                                                     <span><i class="fas fa-calendar"></i>
-                                                        {{ $related->published_at_formatted
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }}</span>
+                                                        <?php echo e($related->published_at_formatted); ?></span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
 
                 <!-- Sidebar -->
                 <div class="col-lg-4 d-none d-lg-block">
                     <!-- Author's Other Articles -->
-                    @if($authorBlogs->count() > 0)
+                    <?php if($authorBlogs->count() > 0): ?>
                         <div class="sidebar-card">
                             <div class="card-header">
                                 <i class="fas fa-user-edit me-2"></i>More from
-                                {{ $blog->author ? $blog->author->name : 'Author'
-                                                                                                                                                                                                                                                                                                                                                                                                        }}
+                                <?php echo e($blog->author ? $blog->author->name : 'Author'); ?>
+
                             </div>
                             <div class="card-body">
-                                @foreach($authorBlogs as $authorBlog)
+                                <?php $__currentLoopData = $authorBlogs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $authorBlog): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <div class="sidebar-item"
-                                        onclick="window.location.href='{{ route('fitinsight.show', $authorBlog) }}'">
-                                        @if($authorBlog->featured_image_path)
-                                            <img src="{{ $authorBlog->featured_image_url }}" alt="{{ $authorBlog->title }}">
-                                        @else
+                                        onclick="window.location.href='<?php echo e(route('fitinsight.show', $authorBlog)); ?>'">
+                                        <?php if($authorBlog->featured_image_path): ?>
+                                            <img src="<?php echo e($authorBlog->featured_image_url); ?>" alt="<?php echo e($authorBlog->title); ?>">
+                                        <?php else: ?>
                                             <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3"
-                                                alt="{{ $authorBlog->title }}">
-                                        @endif
+                                                alt="<?php echo e($authorBlog->title); ?>">
+                                        <?php endif; ?>
                                         <div class="sidebar-item-content">
-                                            <h6>{{ Str::limit($authorBlog->title, 60) }}</h6>
-                                            <small>{{ $authorBlog->published_at_formatted }}</small>
+                                            <h6><?php echo e(Str::limit($authorBlog->title, 60)); ?></h6>
+                                            <small><?php echo e($authorBlog->published_at_formatted); ?></small>
                                         </div>
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Categories -->
-                    @if($categories->count() > 0)
+                    <?php if($categories->count() > 0): ?>
                         <div class="sidebar-card d-none d-lg-block">
                             <div class="card-header">
                                 <i class="fas fa-folder me-2"></i>Categories
                             </div>
                             <div class="card-body">
-                                @foreach($categories as $category)
-                                    <a href="{{ route('fitinsight.category', $category) }}"
+                                <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <a href="<?php echo e(route('fitinsight.category', $category)); ?>"
                                         class="d-block text-decoration-none mb-2">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <span class="text-light">{{ $category->name }}</span>
-                                            <span class="badge bg-secondary">{{ $category->published_blogs_count }}</span>
+                                            <span class="text-light"><?php echo e($category->name); ?></span>
+                                            <span class="badge bg-secondary"><?php echo e($category->published_blogs_count); ?></span>
                                         </div>
                                     </a>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Newsletter -->
                     <div class="sidebar-card">
@@ -646,9 +635,9 @@
             </div>
         </div>
     </section>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
     <script>
         function saveBlog(blogId) {
             showNotification('Blog saved successfully!', 'success');
@@ -764,4 +753,5 @@
             }, 3000);
         }
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.public', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/public/fitinsight/show.blade.php ENDPATH**/ ?>

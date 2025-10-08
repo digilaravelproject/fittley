@@ -105,6 +105,7 @@ Route::middleware(['auth', 'role:instructor'])->prefix('instructor')->name('inst
 // Public FitLive Routes
 Route::prefix('fitlive')->name('fitlive.')->group(function () {
     Route::get('/', [FitLiveController::class, 'index'])->name('index');
+    Route::get('/fitexpert', [FitLiveController::class, 'fitexpert'])->name('fitexpert');
     // Scroll the fitflix vdo
     Route::get('/vdo', [FitLiveController::class, 'fitflixShortsVdo'])->name('vdo');
 
