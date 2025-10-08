@@ -23,10 +23,11 @@ use App\Http\Controllers\Admin\HomepageHeroController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\FitArenaController;
 use App\Http\Controllers\TwoFactorController;
-use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\SearchController;
 
 // Home route
 Route::get('/', [HomepageController::class, 'index'])->name('home');
+Route::get('/search', [SearchController::class, 'search']);
 
 Route::get('/tools', [ToolsController::class, 'index'])->name('tools.index');
 Route::get('/progress-insights', [ToolsController::class, 'progress_insights'])->name('progress-insights');
@@ -118,7 +119,7 @@ Route::prefix('fitlive')->name('fitlive.')->group(function () {
         Route::get('/category/{category}', [FitLiveController::class, 'category'])->name('category');
     });
 
-    Route::get('/{slug}', [FitLiveController::class, 'show'])->name('daily-classes.show');
+    Route::get('/{id}', [FitLiveController::class, 'show'])->name('daily-classes.show');
 });
 
 
@@ -190,7 +191,7 @@ Route::prefix('fitarena')->name('fitarena.')->group(function () {
     // Protected content - requires subscription
     Route::middleware(['auth', 'subscription:fitarena'])->group(function () {
         Route::get('/event/{event}', [\App\Http\Controllers\Public\FitArenaController::class, 'event'])->name('event');
-        Route::get('/{event}', [\App\Http\Controllers\Public\FitArenaController::class, 'show'])->name('show');
+        Route::get('/{event}', [\App\Http\Controllers\Public\FitArenaController::class, 'event'])->name('show');
         Route::get('/{event}/stages/{stage}', [\App\Http\Controllers\Public\FitArenaController::class, 'stage'])->name('stage');
         Route::get('/{event}/sessions/{session}', [\App\Http\Controllers\Public\FitArenaController::class, 'session'])->name('session');
         Route::post('/{event}/join', [\App\Http\Controllers\Public\FitArenaController::class, 'joinEvent'])->name('join');
@@ -579,7 +580,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
                 [\App\Http\Controllers\Admin\FitFlixShortsCategoryController::class, 'toggleStatus']
             )
                 ->name('categories.toggle-status');
-            Route::put('/{id}', [\App\Http\Controllers\Admin\FitFlixShortsController::class, 'update'])->name('updates');
+            Route::put('/{id}', [\App\Http\Controllers\Admin\FitFlixShortsController::class, 'update'])->name('update');
         });
 
         // FitFlix Shorts
@@ -744,11 +745,11 @@ Route::get('/test-session-create', function () {
 
 // Temporary debug route for FitDoc testing
 Route::post('/debug/fitdoc', function (Request $request) {
-    Log::info('=== DEBUG FitDoc Form Submission ===');
-    Log::info('Method: ' . $request->method());
-    Log::info('URL: ' . $request->url());
-    Log::info('All Data: ', $request->all());
-    Log::info('Files: ', $request->allFiles());
+    \Log::info('=== DEBUG FitDoc Form Submission ===');
+    \Log::info('Method: ' . $request->method());
+    \Log::info('URL: ' . $request->url());
+    \Log::info('All Data: ', $request->all());
+    \Log::info('Files: ', $request->allFiles());
 
     return response()->json([
         'success' => true,

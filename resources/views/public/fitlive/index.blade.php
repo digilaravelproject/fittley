@@ -12,7 +12,7 @@
         <section class="hero-section">
             <div class="container-fluid">
                 <div class="hero-content">
-                    <h1>Fit live</h1>
+                    <h1>FitLive</h1>
                     <p>Join live fitness sessions with expert instructors</p>
 
                     @if ($liveSession)
@@ -51,7 +51,7 @@
             @if ($dailylive->count() > 0 || $fitexpert->count() > 0)
                 <section class="content- ">
                     <h3 class="section-title">
-                        Fit Daily Live
+                        Daily Live Classes
                     </h3>
 
                     {{-- Daily-Live --}}
@@ -61,7 +61,7 @@
                             @foreach ($dailylive as $session)
                                 <x-home.media-grid :title="$session->name" :image="$session->banner_image
                                     ? asset('storage/app/public/' . $session->banner_image)
-                                    : null" :route="route('fitlive.daily-classes.show', $session->id)" :type="'live'"
+                                    : null" :url="route('fitlive.daily-classes.show', $session->id)" :type="'live'"
                                     :duration="null"  :rating="null" badgeClass="live-badge"
                                     />
                             @endforeach

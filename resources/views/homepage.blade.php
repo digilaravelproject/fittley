@@ -152,7 +152,18 @@
                         @endphp
                         @if ($allContent->count() > 0)
                             <div class="category-section mb-1">
+                            @if ($category->id == 21)
+                                @php
+                                    $route = route('fitlive.daily-classes.show', 19);
+                                @endphp
+                            @else
+                                @php
+                                    $route = route('fitlive.fitexpert');
+                                @endphp
+                            @endif
+                            <a href="{{ $route }}" class="text-decoration-none">
                                 <h3 class="category-title">{{ $category->name }}</h3>
+                            </a>
                                 <div class="content-slider">
                                     <div class="slider-container" id="fitlive-{{ $category->id }}-slider">
 
@@ -206,7 +217,9 @@
                     </a>
 
                     <div class="category-section mb-1">
-                        <h3 class="category-title">Live Events</h3>
+                        <a href="{{ route('fitarena.index') }}" class="text-decoration-none">
+                            <h3 class="category-title">Live Events</h3>
+                        </a>
                         <div class="content-slider">
                             <div class="slider-container" id="fitarena-live-slider">
                                 @php

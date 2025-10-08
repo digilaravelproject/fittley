@@ -62,7 +62,7 @@ class HomepageController extends Controller
                 //     $query->where('visibility', 'public');
                 // })
                 ->where('id', '!=', 17)
-                ->orderBy('sort_order')
+                ->orderByDesc('sort_order')
                 ->get();
         }
 
