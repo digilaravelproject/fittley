@@ -579,7 +579,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
                 [\App\Http\Controllers\Admin\FitFlixShortsCategoryController::class, 'toggleStatus']
             )
                 ->name('categories.toggle-status');
-            Route::put('/{id}', [\App\Http\Controllers\Admin\FitFlixShortsController::class, 'update'])->name('update');
+            Route::put('/{id}', [\App\Http\Controllers\Admin\FitFlixShortsController::class, 'update'])->name('updates');
         });
 
         // FitFlix Shorts

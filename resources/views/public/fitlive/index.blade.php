@@ -73,7 +73,7 @@
                     {{-- FitExpert --}}
                     @if ($fitexpert->count() > 0)
                         <div class="media-grid-wrapper">
-                            @foreach ($fitexpert as $session)
+                            @foreach ($fitexpert->sortByDesc('id') as $session)
                                 <x-home.media-grid :title="$session->title" :image="$session->banner_image
                                     ? asset('storage/app/public/' . $session->banner_image)
                                     : null" :url="route('fitlive.session', $session)"

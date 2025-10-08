@@ -22,14 +22,6 @@
                 $finalImage = $fallbackImage;
             }
         @endphp
-        <!--@php-->
-                <!--    // Determine the final image path-->
-                <!--    $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');-->
-                <!--    $finalImage = !empty($video->banner_image_path)-->
-                <!--        ? asset('storage/app/public/' . $video->banner_image_path)-->
-                <!--        : $fallbackImage;-->
-            <!--@endphp ?>-->
-
         <img src="{{ $finalImage }}" alt="{{ $video->title }}" class="card-image" loading="lazy">
 
         <div class="card-overlay">

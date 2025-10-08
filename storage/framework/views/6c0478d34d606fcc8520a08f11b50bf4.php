@@ -21,7 +21,7 @@
 
         .article-header {
             /* background: url('https://fittelly.com/storage/app/public/fitinsight/blogs/featured/8rWZnU453WG7kEHZwiZKOr6WCUHLx85PNOXAX0me.jpg') center/cover; */
-            background: url('<?php echo e($blog->featured_image_url ?: "https://images.unsplash.com/photo-1571019613914-85f342c75c29?ixlib=rb-4.0.3"); ?>') center/cover;
+            background: url('<?php echo e($blog->featured_image_url ?: 'https://images.unsplash.com/photo-1571019613914-85f342c75c29?ixlib=rb-4.0.3'); ?>') center/cover;
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
@@ -432,6 +432,42 @@
 
 
         }
+
+        .article-comments .comment {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 1rem;
+        }
+
+        .article-comments .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: .5rem;
+            color: var(--netflix-white);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .article-comments .comment-author {
+            font-weight: bold;
+            color: #6c757d;
+        }
+
+        .article-comments .comment-time {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .article-comments .comment-text {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .article-comments .comment {
+                padding-bottom: 0.5rem;
+            }
+        }
     </style>
 <?php $__env->stopPush(); ?>
 
@@ -507,10 +543,64 @@
 
 
                     
+                    <section class="article-comments mt-2">
+                        <div class="container p-0">
+                            <h3 class="section-title">Comments</h3>
+
+                            <!-- Comment Form -->
+                            <div class="comment-form mb-2">
+                                <form action="#" method="POST">
+                                    <?php echo csrf_field(); ?>
+                                    <div class="input-group">
+                                        <textarea name="comment" class="form-control" rows="1"
+                                            placeholder="Write a comment..." required></textarea>
+                                        <button type="submit" class="btn btn-primary ms-2"
+                                            style="padding: 0 7px;">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <?php
+                                // Temporary random data generation
+                                $comments = collect([
+                                    (object) [
+                                        'user' => (object) ['name' => 'John Doe'],
+                                        'created_at' => now()->subMinutes(rand(1, 120)), // Random time between 1 minute to 2 hours ago
+                                        'comment' => 'This is a random comment ' . rand(1, 100)
+                                    ],
+                                    (object) [
+                                        'user' => (object) ['name' => 'Jane Smith'],
+                                        'created_at' => now()->subMinutes(rand(1, 120)),
+                                        'comment' => 'Another random comment here ' . rand(101, 200)
+                                    ],
+                                    (object) [
+                                        'user' => (object) ['name' => 'Alice Brown'],
+                                        'created_at' => now()->subMinutes(rand(1, 120)),
+                                        'comment' => 'Random comment generated using PHP Faker ' . rand(201, 300)
+                                    ]
+                                ]);
+                            ?>
+
+                            <!-- Displaying Comments -->
+                            <div class="comments-list">
+                                <?php $__currentLoopData = $comments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $comment): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="comment">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="comment-author"><?php echo e($comment->user->name); ?></span>
+                                            <span class="comment-time"><?php echo e($comment->created_at->diffForHumans()); ?></span>
+                                        </div>
+                                        <p class="comment-text"><?php echo e($comment->comment); ?></p>
+                                    </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Add this to your CSS file or within a <style> tag -->
+
 
                     <!-- Author Section -->
                     <?php if($blog->author): ?>
-                        <div class="author-section d-none d-lg-block">
+                        <div class="author-section mt-2 d-none d-lg-block">
                             <h3 class="section-title">
                                 <i class="fas fa-user"></i>
                                 About the Author
@@ -522,7 +612,8 @@
                                 </div>
                                 <div class="author-details">
                                     <h4><?php echo e($blog->author->name); ?></h4>
-                                    <p>Fitness expert and wellness advocate with years of experience in helping people achieve
+                                    <p>Fitness expert and wellness advocate with years of experience in helping people
+                                        achieve
                                         their health goals.</p>
                                 </div>
                             </div>
@@ -642,6 +733,7 @@
         function saveBlog(blogId) {
             showNotification('Blog saved successfully!', 'success');
         }
+
         function likeBlog(blogId) {
             fetch(`/fitinsight/${blogId}/like`, {
                 method: 'POST',
@@ -658,8 +750,8 @@
                         const icon = likeBtn.querySelector('i');
 
                         // Toggle between outline and filled thumbs up icon
-                        icon.classList.toggle('far');  // Toggle outline class
-                        icon.classList.toggle('fas');  // Toggle filled class
+                        icon.classList.toggle('far'); // Toggle outline class
+                        icon.classList.toggle('fas'); // Toggle filled class
 
                         // Optionally update like count here
                         const likeBtnText = likeBtn.querySelector('span');
@@ -716,7 +808,8 @@
                     fetch(`/fitinsight/${blogId}/share`, {
                         method: 'POST',
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content'),
                             'Content-Type': 'application/json',
                         },
                     });
@@ -730,7 +823,8 @@
                     fetch(`/fitinsight/${blogId}/share`, {
                         method: 'POST',
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content'),
                             'Content-Type': 'application/json',
                         },
                     });

@@ -94,7 +94,7 @@
                             <div class="content-slider">
 
                                 <div class="slider-container" id="fitdoc-videos-slider">
-                                    @foreach ($fitDocVideos as $video)
+                                    @foreach ($fitDocVideos->sortByDesc('id') as $video)
                                         <x-home.portrait-card-second :video="$video" url="fitdoc.single.show" />
                                     @endforeach
                                 </div>
@@ -163,7 +163,7 @@
                                                     :title="$subCategory->name" :image="$subCategory->banner_image ? asset('storage/app/public/' . $subCategory->banner_image) : null" :badge="['label' => 'Live', 'class' => 'badge-live']"
                                                     :meta="['<i class=\'fas fa-calendar\'></i> ' . ($subCategory->created_at?->format('M d, Y') ?? '')]" />
                                             @else
-                                                @foreach ($subCategory->fitLiveSessions as $data)
+                                                @foreach ($subCategory->fitLiveSessions->sortByDesc('id') as $data)
                                                     @php
                                                         if ($category->id == 21) {
                                                             $route = 'fitlive.daily-classes.show';
@@ -171,7 +171,7 @@
                                                             $route = 'fitlive.fitexpert';
                                                         }
                                                     @endphp
-                                                    <!--{{print_r($subCategory)}}-->
+
                                                     <x-home.portrait-card :video="$data" badge="Live" badgeClass="badge-live" :url="$route" />
                                                 @endforeach
                                             @endif
@@ -284,7 +284,7 @@
                                 @endif
                                 <div class="content-slider">
                                     <div class="slider-container" id="fitguide-{{ $category->id }}-slider">
-                                        @foreach ($allContent as $content)
+                                        @foreach ($allContent->sortByDesc('id') as $content)
 
                                             @if ($isFitcastLive)
                                                 <x-home.landscape-card :route="route('fitguide.index', ['category' => $category->slug])"
@@ -338,12 +338,13 @@
                             @endforeach
 
                             @php
-                                $today = \Carbon\Carbon::today();  // Aaj ki date
-                                $currentTime = \Carbon\Carbon::now();  // Abhi ka time
+                                $today = \Carbon\Carbon::today(); // Aaj ki date
+                                $currentTime = \Carbon\Carbon::now(); // Abhi ka time
                             @endphp
 
                             @foreach ($fitNewsArchive as $news)
-                                @if (\Carbon\Carbon::parse($news->scheduled_at)->isToday()) <!-- Check if scheduled_at is today -->
+                                @if (\Carbon\Carbon::parse($news->scheduled_at)->isToday())
+                                        <!-- Check if scheduled_at is today -->
                                         @php
                                             // Compare current time with scheduled_at
                                             $scheduledTime = \Carbon\Carbon::parse($news->scheduled_at);
@@ -352,7 +353,10 @@
                                             if ($currentTime->lt($scheduledTime)) {
                                                 $statusLabel = 'Upcoming';
                                                 $badgeClass = 'badge-upcoming';
-                                            } elseif ($currentTime->gte($scheduledTime) && $currentTime->lte($scheduledTime->copy()->addHours(2))) {
+                                            } elseif (
+                                                $currentTime->gte($scheduledTime) &&
+                                                $currentTime->lte($scheduledTime->copy()->addHours(2))
+                                            ) {
                                                 // Check if current time is within 1 hour of scheduled time
                                                 $statusLabel = 'Live';
                                                 $badgeClass = 'badge-live';

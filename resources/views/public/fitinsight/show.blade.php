@@ -23,7 +23,7 @@
 
         .article-header {
             /* background: url('https://fittelly.com/storage/app/public/fitinsight/blogs/featured/8rWZnU453WG7kEHZwiZKOr6WCUHLx85PNOXAX0me.jpg') center/cover; */
-            background: url('{{ $blog->featured_image_url ?: "https://images.unsplash.com/photo-1571019613914-85f342c75c29?ixlib=rb-4.0.3" }}') center/cover;
+            background: url('{{ $blog->featured_image_url ?: 'https://images.unsplash.com/photo-1571019613914-85f342c75c29?ixlib=rb-4.0.3' }}') center/cover;
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
@@ -266,9 +266,9 @@
         }
 
         .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
             color: var(--netflix-white);
             display: flex;
             align-items: center;
@@ -324,8 +324,8 @@
         .author-section {
             background: var(--netflix-dark-gray);
             border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 3rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
             border: 1px solid #333;
         }
 
@@ -336,8 +336,8 @@
         }
 
         .author-avatar {
-            width: 80px;
-            height: 80px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--fittelly-orange), var(--fittelly-orange-hover));
             display: flex;
@@ -350,14 +350,14 @@
 
         .author-details h4 {
             color: var(--netflix-white);
-            margin-bottom: 0.5rem;
-            font-size: 1.3rem;
+            margin-bottom: 0.1rem;
+            font-size: .9rem;
         }
 
         .author-details p {
             color: var(--netflix-light-gray);
             margin: 0;
-            line-height: 1.5;
+            line-height: 1;
         }
 
         /* Sidebar */
@@ -434,6 +434,42 @@
 
 
         }
+
+        .article-comments .comment {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 1rem;
+        }
+
+        .article-comments .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: .5rem;
+            color: var(--netflix-white);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .article-comments .comment-author {
+            font-weight: bold;
+            color: #6c757d;
+        }
+
+        .article-comments .comment-time {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .article-comments .comment-text {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .article-comments .comment {
+                padding-bottom: 0.5rem;
+            }
+        }
     </style>
 @endpush
 
@@ -467,7 +503,7 @@
                     </div>
                 </div>
 
-                @if($blog->excerpt)
+                @if ($blog->excerpt)
                     <p class="article-excerpt">{{ $blog->excerpt }}</p>
                 @endif
             </div>
@@ -517,10 +553,64 @@
                             <span>Share ({{ $blog->shares_count }})</span>
                         </button>
                     </div> --}}
+                    <section class="article-comments mt-2">
+                        <div class="container p-0">
+                            <h3 class="section-title">Comments</h3>
+
+                            <!-- Comment Form -->
+                            <div class="comment-form mb-2">
+                                <form action="#" method="POST">
+                                    @csrf
+                                    <div class="input-group">
+                                        <textarea name="comment" class="form-control" rows="1"
+                                            placeholder="Write a comment..." required></textarea>
+                                        <button type="submit" class="btn btn-primary ms-2"
+                                            style="padding: 0 7px;">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                            @php
+                                // Temporary random data generation
+                                $comments = collect([
+                                    (object) [
+                                        'user' => (object) ['name' => 'John Doe'],
+                                        'created_at' => now()->subMinutes(rand(1, 120)), // Random time between 1 minute to 2 hours ago
+                                        'comment' => 'This is a random comment ' . rand(1, 100)
+                                    ],
+                                    (object) [
+                                        'user' => (object) ['name' => 'Jane Smith'],
+                                        'created_at' => now()->subMinutes(rand(1, 120)),
+                                        'comment' => 'Another random comment here ' . rand(101, 200)
+                                    ],
+                                    (object) [
+                                        'user' => (object) ['name' => 'Alice Brown'],
+                                        'created_at' => now()->subMinutes(rand(1, 120)),
+                                        'comment' => 'Random comment generated using PHP Faker ' . rand(201, 300)
+                                    ]
+                                ]);
+                            @endphp
+
+                            <!-- Displaying Comments -->
+                            <div class="comments-list">
+                                @foreach ($comments as $comment)
+                                    <div class="comment">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="comment-author">{{ $comment->user->name }}</span>
+                                            <span class="comment-time">{{ $comment->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        <p class="comment-text">{{ $comment->comment }}</p>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Add this to your CSS file or within a <style> tag -->
+
 
                     <!-- Author Section -->
-                    @if($blog->author)
-                        <div class="author-section d-none d-lg-block">
+                    @if ($blog->author)
+                        <div class="author-section mt-2 d-none d-lg-block">
                             <h3 class="section-title">
                                 <i class="fas fa-user"></i>
                                 About the Author
@@ -531,7 +621,8 @@
                                 </div>
                                 <div class="author-details">
                                     <h4>{{ $blog->author->name }}</h4>
-                                    <p>Fitness expert and wellness advocate with years of experience in helping people achieve
+                                    <p>Fitness expert and wellness advocate with years of experience in helping people
+                                        achieve
                                         their health goals.</p>
                                 </div>
                             </div>
@@ -539,18 +630,18 @@
                     @endif
 
                     <!-- Related Articles -->
-                    @if($relatedBlogs->count() > 0)
+                    @if ($relatedBlogs->count() > 0)
                         <div class="related-section d-none d-lg-block">
                             <h3 class="section-title">
                                 <i class="fas fa-newspaper"></i>
                                 Related Articles
                             </h3>
                             <div class="row">
-                                @foreach($relatedBlogs as $related)
+                                @foreach ($relatedBlogs as $related)
                                     <div class="col-md-6 mb-4">
                                         <div class="related-card"
                                             onclick="window.location.href='{{ route('fitinsight.show', $related) }}'">
-                                            @if($related->featured_image_path)
+                                            @if ($related->featured_image_path)
                                                 <img src="{{ $related->featured_image_url }}" alt="{{ $related->title }}">
                                             @else
                                                 <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3"
@@ -560,11 +651,9 @@
                                                 <h5 class="related-card-title">{{ $related->title }}</h5>
                                                 <div class="related-card-meta">
                                                     <span><i class="fas fa-eye"></i>
-                                                        {{ number_format($related->views_count)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }}</span>
+                                                        {{ number_format($related->views_count) }}</span>
                                                     <span><i class="fas fa-calendar"></i>
-                                                        {{ $related->published_at_formatted
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }}</span>
+                                                        {{ $related->published_at_formatted }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -578,18 +667,17 @@
                 <!-- Sidebar -->
                 <div class="col-lg-4 d-none d-lg-block">
                     <!-- Author's Other Articles -->
-                    @if($authorBlogs->count() > 0)
+                    @if ($authorBlogs->count() > 0)
                         <div class="sidebar-card">
                             <div class="card-header">
                                 <i class="fas fa-user-edit me-2"></i>More from
-                                {{ $blog->author ? $blog->author->name : 'Author'
-                                                                                                                                                                                                                                                                                                                                                                                                        }}
+                                {{ $blog->author ? $blog->author->name : 'Author' }}
                             </div>
                             <div class="card-body">
-                                @foreach($authorBlogs as $authorBlog)
+                                @foreach ($authorBlogs as $authorBlog)
                                     <div class="sidebar-item"
                                         onclick="window.location.href='{{ route('fitinsight.show', $authorBlog) }}'">
-                                        @if($authorBlog->featured_image_path)
+                                        @if ($authorBlog->featured_image_path)
                                             <img src="{{ $authorBlog->featured_image_url }}" alt="{{ $authorBlog->title }}">
                                         @else
                                             <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3"
@@ -606,13 +694,13 @@
                     @endif
 
                     <!-- Categories -->
-                    @if($categories->count() > 0)
+                    @if ($categories->count() > 0)
                         <div class="sidebar-card d-none d-lg-block">
                             <div class="card-header">
                                 <i class="fas fa-folder me-2"></i>Categories
                             </div>
                             <div class="card-body">
-                                @foreach($categories as $category)
+                                @foreach ($categories as $category)
                                     <a href="{{ route('fitinsight.category', $category) }}"
                                         class="d-block text-decoration-none mb-2">
                                         <div class="d-flex justify-content-between align-items-center">
@@ -653,6 +741,7 @@
         function saveBlog(blogId) {
             showNotification('Blog saved successfully!', 'success');
         }
+
         function likeBlog(blogId) {
             fetch(`/fitinsight/${blogId}/like`, {
                 method: 'POST',
@@ -669,8 +758,8 @@
                         const icon = likeBtn.querySelector('i');
 
                         // Toggle between outline and filled thumbs up icon
-                        icon.classList.toggle('far');  // Toggle outline class
-                        icon.classList.toggle('fas');  // Toggle filled class
+                        icon.classList.toggle('far'); // Toggle outline class
+                        icon.classList.toggle('fas'); // Toggle filled class
 
                         // Optionally update like count here
                         const likeBtnText = likeBtn.querySelector('span');
@@ -727,7 +816,8 @@
                     fetch(`/fitinsight/${blogId}/share`, {
                         method: 'POST',
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content'),
                             'Content-Type': 'application/json',
                         },
                     });
@@ -741,7 +831,8 @@
                     fetch(`/fitinsight/${blogId}/share`, {
                         method: 'POST',
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content'),
                             'Content-Type': 'application/json',
                         },
                     });

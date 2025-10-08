@@ -18,10 +18,11 @@
 
         {{-- HERO --}}
 
-         <section class="hero-section" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)),
-           url('{{ $heroStream && $heroStream->banner_image 
-                   ? asset('storage/app/public/'.$heroStream->banner_image) 
-                   : 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?ixlib=rb-4.0.3' }}') 
+        <section class="hero-section"
+            style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)),
+           url('{{ $heroStream && $heroStream->banner_image
+               ? asset('storage/app/public/' . $heroStream->banner_image)
+               : 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?ixlib=rb-4.0.3' }}')
            center/cover no-repeat;">
 
 
@@ -63,15 +64,47 @@
             @if ($upcomingStreams->count())
                 <section class="content-section" data-type="upcoming">
                     <h2 class="section-title">
-                        Upcoming Streams
+                        Today News
                     </h2>
                     <div class="media-grid-wrapper">
+                        @php
+                            $today = \Carbon\Carbon::today(); // Aaj ki date
+                            $currentTime = \Carbon\Carbon::now(); // Abhi ka time
+                        @endphp
                         @foreach ($upcomingStreams as $stream)
-                            <x-home.media-grid :title="$stream->title" :image="$stream->thumbnail ? asset('storage/app/public/' . $stream->thumbnail) : null" :url="route('fitnews.show', $stream)" :type="'upcoming'"
-                                badgeClass="upcoming-badge" :year="optional($stream->scheduled_at)->format('Y')" :description="'By ' .
-                                    optional($stream->creator)->name .
-                                    ' | ' .
-                                    optional($stream->scheduled_at)->format('M d, g:i A')" />
+                            @if (\Carbon\Carbon::parse($stream->scheduled_at)->isToday())
+                                <!-- Check if scheduled_at is today -->
+                                @php
+                                    // Compare current time with scheduled_at
+                                    $scheduledTime = \Carbon\Carbon::parse($stream->scheduled_at);
+
+                                    // Define status and badge class
+                                    if ($currentTime->lt($scheduledTime)) {
+                                        $statusLabel = 'Upcoming';
+                                        $badgeClass = 'badge-upcoming';
+                                    } elseif (
+                                        $currentTime->gte($scheduledTime) &&
+                                        $currentTime->lte($scheduledTime->copy()->addHours(2))
+                                    ) {
+                                        // Check if current time is within 1 hour of scheduled time
+                                        $statusLabel = 'Live';
+                                        $badgeClass = 'badge-live';
+                                    } else {
+                                        $statusLabel = 'Archive';
+                                        $badgeClass = 'badge-archive';
+                                    }
+                                @endphp
+                                <div class="landscape">
+
+                                    <x-home.media-grid :title="$stream->title" :image="$stream->thumbnail
+                                        ? asset('storage/app/public/' . $stream->thumbnail)
+                                        : null" :url="route('fitnews.show', $stream)"
+                                        :type="$statusLabel" badgeClass="$badgeClass" :year="optional($stream->scheduled_at)->format('Y')" :description="'By ' .
+                                            optional($stream->creator)->name .
+                                            ' | ' .
+                                            optional($stream->scheduled_at)->format('M d, g:i A')" />
+                                </div>
+                            @endif
                         @endforeach
                     </div>
                 </section>

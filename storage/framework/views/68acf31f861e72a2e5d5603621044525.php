@@ -51,14 +51,6 @@ unset($__defined_vars); ?>
                 $finalImage = $fallbackImage;
             }
         ?>
-        <!--<?php-->
-                <!--    // Determine the final image path-->
-                <!--    $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');-->
-                <!--    $finalImage = !empty($video->banner_image_path)-->
-                <!--        ? asset('storage/app/public/' . $video->banner_image_path)-->
-                <!--        : $fallbackImage;-->
-            <!--?> ?>-->
-
         <img src="<?php echo e($finalImage); ?>" alt="<?php echo e($video->title); ?>" class="card-image" loading="lazy">
 
         <div class="card-overlay">
@@ -71,5 +63,4 @@ unset($__defined_vars); ?>
     <div class="card-caption">
         <h3 class="card-title"><?php echo e($video->title); ?></h3>
     </div>
-</div>
-<?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/components/home/portrait-card.blade.php ENDPATH**/ ?>
+</div><?php /**PATH C:\xampp\htdocs\Digi_Laravel_Prrojects\Fittelly_github\fittley\resources\views/components/home/portrait-card.blade.php ENDPATH**/ ?>
