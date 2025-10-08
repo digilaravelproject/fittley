@@ -180,7 +180,7 @@
             align-items: flex-start;
             border-bottom: 3px solid var(--primary-color);
             padding-bottom: 40px;
-            gap: 2rem;
+            gap: 0.5rem;
             flex-wrap: wrap;
         }
 
@@ -210,6 +210,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
+            width: 70%;
         }
 
         .live-card {
@@ -377,6 +378,10 @@
                 flex: 0 0 100%;
                 max-width: 100%;
             }
+
+            .gen-social-share {
+                width: 100%;
+            }
         }
     </style>
 @endpush
@@ -388,8 +393,8 @@
             <div class="activity-btn-container">
 
                 @foreach ($subcategories as $subcategory)
-                    <a href="{{ route('fitlive.daily-classes.show', $subcategory->slug) }}"
-                        class="activity-btn {{ request()->is('fitlive/' . $subcategory->slug) ? 'active' : '' }}">
+                    <a href="{{ route('fitlive.daily-classes.show', $subcategory->id) }}"
+                        class="activity-btn {{ request()->is('fitlive/' . $subcategory->id) ? 'active' : '' }}">
                         <i class="fas fa-dumbbell"></i>
                         <span>{{ $subcategory->name }}</span>
                     </a>
@@ -451,27 +456,32 @@
                 </div>
 
                 <div class="gen-social-share">
-                    @forelse($liveSlots as $slot)
-                        <div class="live-card">
-                            <div class="{{ $slot['is_live'] ? 'live-indicator-green' : 'live-indicator' }}"></div>
+                    <div class="row g-3"> {{-- Bootstrap row with gutter spacing --}}
+                        @forelse($liveSlots as $slot)
+                            <div class="col-6 col-md-4 col-lg-3"> {{-- 2 per row on mobile, 3 on tablets, 4 on desktops --}}
+                                <div class="live-card p-3 text-center">
+                                    <div class="{{ $slot['is_live'] ? 'live-indicator-green' : 'live-indicator' }}"></div>
 
-                            <div class="session-info">
-                                <p class="session-time">{{ $slot['time'] }}</p>
+                                    <div class="session-info mt-2">
+                                        <p class="session-time mb-2">{{ $slot['time'] }}</p>
 
-                                @if ($slot['is_live'])
-                                    <a href="{{ route('fitlive.session', $slot['id']) }}"
-                                        class="btn-outline-warning text-decoration-none">Join Now</a>
-                                @else
-                                    <span class="btn-outline-warning disabled">Upcoming</span>
-                                @endif
-
-
+                                        @if ($slot['is_live'])
+                                            <a href="{{ route('fitlive.session', $slot['id']) }}"
+                                                class="btn btn-outline-warning text-decoration-none">Join Now</a>
+                                        @elseif ($slot['is_passed'])
+                                            <button class="btn btn-outline-secondary text-gray" disabled>Ended</button>
+                                        @else
+                                            <span class="btn btn-outline-warning disabled">Upcoming</span>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    @empty
-                        <p class="text-muted">No live sessions today.</p>
-                    @endforelse
+                        @empty
+                            <p class="text-muted">No live sessions today.</p>
+                        @endforelse
+                    </div>
                 </div>
+
             </div>
         </div>
 
