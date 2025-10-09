@@ -4,7 +4,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="{{ asset('public/assets/home/css/homepage.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/home/css/homepage.css') }}?v={{ time() }}">
 @endpush
 
 @section('content')
@@ -524,5 +524,5 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="{{ asset('public/assets/home/js/homepage.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('assets/home/js/homepage.js') }}?v={{ time() }}"></script>
 @endpush

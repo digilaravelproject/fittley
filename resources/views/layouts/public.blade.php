@@ -849,35 +849,91 @@
             max-width: 1600px !important;
         }
 
-        #search-results {
+        .fancy-search-input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border-radius: 25px;
+            border: 1px solid var(--fittelly-orange);
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .fancy-search-input::placeholder {
+            color: #ddd;
+        }
+
+        .fancy-search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ff6b00;
+            box-shadow: 0 0 5px rgba(255, 107, 0, 0.4);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--fittelly-orange);
+            pointer-events: none;
+        }
+
+        #search-results,
+        #mobile-search-results {
             max-height: 300px;
-            /* Limit the height of the results */
             overflow-y: auto;
-            /* Add scrollbars if necessary */
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 9999;
-            color: var(--netflix-black);
+            background-color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 10px 0;
+            animation: fadeIn 0.3s ease-in-out;
         }
 
         .search-item {
-            padding: 0 10px;
-            border-bottom: 1px solid #f1f1f1;
-        }
-
-        .search-item a h5 {
-            color: var(--netflix-black);
-            font-size: 1rem;
-        }
-
-        .search-item:last-child {
-            border-bottom: none;
+            padding: 10px 15px;
+            transition: background 0.2s ease;
         }
 
         .search-item:hover {
-            background-color: #f5f5f5;
-            cursor: pointer;
+            background-color: #f8f9fa;
         }
+
+        .search-item a h5 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Remove dark overlay */
+        /* .modal-backdrop.show {
+            opacity: 0 !important;
+            background-color: transparent !important;
+        }
+
+        /* Optional: make modal itself transparent */
+        /* .modal-content {
+            background: none !important;
+            box-shadow: none;
+        } */
+
+
+        /*  */
     </style>
     @stack('styles')
 </head>
@@ -894,8 +950,12 @@
 
             <!-- Desktop search input (hidden on mobile) -->
             <div class="flex-grow-1 position-relative d-none d-md-block" style="min-width: 200px; max-width: 500px;">
-                <input type="text" id="live-search" class="form-control" placeholder="Search..." autocomplete="off"
-                    style="width: 100%; background: rgba(10, 10, 10, 0.15) !important; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--fittelly-orange); font-size: 0.75rem;" />
+                <div class="position-relative">
+                    <input type="text" id="live-search" class="form-control fancy-search-input" placeholder="Search..."
+                        autocomplete="off" />
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+
                 <div id="search-results" class="bg-white border rounded"
                     style="position: absolute; top: 100%; left: 0; right: 0; z-index: 999; display: none;">
                     <div id="loading-spinner" style="display: none;">Loading...</div> <!-- Optional spinner -->
@@ -1032,14 +1092,30 @@
     <!-- Search Modal for Mobile -->
     <div class="modal fade" id="searchModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen-sm-down" style="height: 100%;">
-            <div class="modal-content p-3" style="background: none;max-height: 300px;">
-                <input type="text" id="mobile-live-search" class="form-control" placeholder="Search..."
-                    autocomplete="off" autofocus />
+            <div class="modal-content p-3" style="background: none; max-height: 300px;">
+
+                <!-- Close Button -->
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                    data-bs-dismiss="modal" aria-label="Close"
+                    style="background-color: rgba(0,0,0,0.4); padding: 0.7rem; border-radius: 50%;">
+                </button>
+
+                <!-- Search Input with Icon -->
+                <div class="position-relative">
+                    <i class="fas fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-white"
+                        style="z-index: 10;"></i>
+                    <input type="text" id="mobile-live-search" class="form-control ps-5 fancy-search-input"
+                        placeholder="Search..." autocomplete="off" autofocus />
+                </div>
+
+                <!-- Search Results -->
                 <div id="mobile-search-results" class="bg-white border rounded mt-2"
-                    style="max-height: 300px; overflow-y: auto; display: none;"></div>
+                    style="max-height: 300px; overflow-y: auto; display: none;">
+                </div>
             </div>
         </div>
     </div>
+
 
 
     <!-- Main Content -->
