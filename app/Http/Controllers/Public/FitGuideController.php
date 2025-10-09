@@ -143,6 +143,62 @@ class FitGuideController extends BaseApiController
             ]);
         }
     }
+    public function fitCast(Request $request)
+    {
+        try {
+            // Fetch the 'fitcast-live' category by slug (optional but cleaner)
+            $fitcastCategory = FgCategory::where('slug', 'fitcast-live')->first();
+
+            if (!$fitcastCategory) {
+                throw new \Exception('FitCast Live category not found.');
+            }
+
+            // Get all singles under this category
+            $fitcastSingles = FgSingle::where('is_published', true)
+                ->where('fg_category_id', $fitcastCategory->id)
+                ->with(['category', 'subCategory'])
+                ->latest()
+                ->get();
+
+            // Get the categories for filters (if needed in UI)
+            $categories = FgCategory::where('is_active', true)
+                ->orderBy('name')
+                ->get();
+
+            // API response
+            if ($this->expectsJson($request)) {
+                return $this->successResponse([
+                    'fitcast_singles' => FitGuideResource::collection($fitcastSingles),
+                    'categories' => $categories->map(function ($category) {
+                        return [
+                            'id' => $category->id,
+                            'name' => $category->name,
+                            'slug' => $category->slug ?? null,
+                            'is_active' => $category->is_active,
+                        ];
+                    }),
+                ], 'FitCast Live content retrieved successfully');
+            }
+
+            // Web view
+            return view('public.fitguide.fitcast', [
+                'fitcast' => $fitcastSingles,
+                'categories' => $categories,
+            ]);
+        } catch (\Exception $e) {
+            // API error response
+            if ($this->expectsJson($request)) {
+                return $this->handleException($e);
+            }
+
+            // Web view with error
+            return view('public.fitguide.fitcast', [
+                'fitcast' => collect(),
+                'categories' => collect(),
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
 
     public function index_old(Request $request)
     {

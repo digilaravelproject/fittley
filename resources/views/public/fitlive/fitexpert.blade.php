@@ -21,21 +21,31 @@
 
         <div class="container px-3 mt-1 mb-5">
 
-             {{-- All --}}
-                    @if ($fitexpert->count() > 0)
-                        <div class="media-grid-wrapper">
-                            @foreach ($fitexpert->sortByDesc('id') as $session)
-                                <x-home.media-grid :title="$session->title" :image="$session->banner_image
-                                    ? asset('storage/app/public/' . $session->banner_image)
-                                    : null" :url="route('fitlive.session', $session)"
-                                    :type="'live'" :duration="null" :year="$session->updated_at->format('Y')" :rating="null"
-                                    badgeClass="live-badge" :description="'By ' .
-                                        $session->instructor->name .
-                                        ' | Ended on ' .
-                                        $session->updated_at->format('M d')" />
-                            @endforeach
-                        </div>
-                    @endif
+            {{-- All --}}
+            @if ($fitexpert->count() > 0)
+                <div class="media-grid-wrapper">
+                    @foreach ($fitexpert->sortByDesc('id') as $session)
+
+                        @php
+                            $status = strtolower($session->status ?? 'unknown');
+
+                            $badgeClass = match ($status) {
+                                'live' => 'live-badge',
+                                'scheduled' => 'upcoming-badge',
+                                'ended' => 'ended-badge',
+                                default => 'badge-default',
+                            };
+
+                            $badgeLabel = ucfirst($status);
+                        @endphp
+
+                        <x-home.media-grid :title="$session->title" :image="$session->banner_image ? asset('storage/app/public/' . $session->banner_image) : null" :url="route('fitlive.session', $session)" :type="$badgeLabel"
+                            :duration="null" :year="$session->updated_at->format('Y')" :rating="null" :badgeClass="$badgeClass"
+                            :description="'By ' . $session->instructor->name . ' | ' . $badgeLabel . ' on ' . $session->updated_at->format('M d')" />
+                    @endforeach
+                </div>
+            @endif
+
 
 
 

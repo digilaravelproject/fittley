@@ -1,27 +1,39 @@
-@props(['video', 'badge' => null, 'badgeClass' => null, 'categorySlug' => null, 'landscapeCard' => null, 'url'])
+@props([
+    'video',
+    'badge' => null,
+    'badgeClass' => null,
+    'categorySlug' => null,
+    'landscapeCard' => null,
+    'routeParams' => null,
+    'url'
+])
+
+@php
+    $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');
+
+    // Smartly decide final image path
+    if (!empty($video->banner_image_path)) {
+        $finalImage = asset('storage/app/public/' . $video->banner_image_path);
+    } elseif (!empty($video->banner_image)) {
+        $finalImage = asset('storage/app/public/' . $video->banner_image);
+    } else {
+        $finalImage = $fallbackImage;
+    }
+
+    // Determine route parameters
+    $finalRouteParams = $routeParams ?? ($categorySlug ? ['category' => $categorySlug] : $video);
+
+    // Generate final URL
+    $finalUrl = route($url, $finalRouteParams);
+@endphp
+
 <div class="content-card-wrapper ccw-portrait">
-    <div class="content-card content-card-portrait"
-        onclick="window.location.href='{{ $categorySlug ? route($url, ['category' => $categorySlug]) : route($url, $video) }}'">
+    <div class="content-card content-card-portrait" onclick="window.location.href='{{ $finalUrl }}'">
         @if ($badge)
             <div class="status-badge {{ $badgeClass }}">
                 {{ $badge }}
             </div>
         @endif
-        @php
-            $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');
-
-            // Smartly decide final image path
-            if (!empty($video->banner_image_path)) {
-                // If accessor or manually set path is available
-                $finalImage = asset('storage/app/public/' . $video->banner_image_path);
-            } elseif (!empty($video->banner_image)) {
-                // If only banner_image is set, build full path
-                $finalImage = asset('storage/app/public/' . $video->banner_image);
-            } else {
-                // Fallback to default
-                $finalImage = $fallbackImage;
-            }
-        @endphp
 
         <img src="{{ $finalImage }}" alt="{{ $video->title }}" class="card-image" loading="lazy">
 

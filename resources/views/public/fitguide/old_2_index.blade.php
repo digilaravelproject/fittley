@@ -28,14 +28,12 @@
                 onclick="window.location.href='{{ route('fitguide.index') }}'">All</button>
 
             @foreach ($categories->sortBy('sort_order')->values() as $category)
-                @continue($category->slug === 'fitcast-live') {{-- Skip showing the button --}}
                 <button class="filter-btn {{ request('category') == $category->slug ? 'active' : '' }}"
                     data-filter="{{ $category->slug }}"
                     onclick="window.location.href='{{ route('fitguide.index', ['category' => $category->slug]) }}'">
                     {{ $category->name }}
                 </button>
             @endforeach
-
 
         </div>
 
@@ -76,7 +74,7 @@
 
             <!-- All Quick Guides -->
             @if (isset($allSingles) && $allSingles->count() > 0)
-                <section class="content-section d-none" data-category="quick-guides">
+                <section class="content-section" data-category="quick-guides">
                     <h2 class="section-title">All Quick Guides</h2>
                     <div class="media-grid-wrapper">
                         @foreach ($allSingles->sortByDesc('id') as $single)
@@ -92,9 +90,8 @@
 
             <!-- All Training Series -->
             @php
-                $desiredOrder = ['fittrain', 'fitcare', 'fitfuel', 'fitwell']; // 'fitcast-live' removed
+                $desiredOrder = ['fittrain', 'fitcare', 'fitfuel', 'fitwell', 'fitcast-live'];
             @endphp
-
 
             @if (isset($allSeries) && $allSeries->count() > 0)
 

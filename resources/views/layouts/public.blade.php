@@ -865,8 +865,9 @@
             border-bottom: 1px solid #f1f1f1;
         }
 
-        .search-item a {
-            color: var(--primary-color);
+        .search-item a h5 {
+            color: var(--netflix-black);
+            font-size: 1rem;
         }
 
         .search-item:last-child {

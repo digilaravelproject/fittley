@@ -227,6 +227,7 @@
         }
 
         .live-indicator,
+        .live-indicator-ended,
         .live-indicator-green {
             width: 12px;
             height: 12px;
@@ -248,6 +249,19 @@
             background-color: #ff3e3e;
         }
 
+        .live-indicator-ended:before {
+            content: "ENDED";
+            position: absolute;
+            left: 18px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .live-indicator-ended {
+            background-color: #6c757d;
+        }
+
         .live-indicator-green {
             background-color: #32cd32;
             animation: blink 1s infinite;
@@ -261,6 +275,16 @@
             font-weight: 600;
             color: #32cd32;
         }
+
+        .session-time.ended {
+            color: #6c757d;
+            /* gray or any faded color */
+            text-decoration: line-through;
+            /* optional, if you want visual cue */
+            font-style: italic;
+            /* optional */
+        }
+
 
         /* Blinking Keyframes */
         @keyframes blink {
@@ -378,6 +402,7 @@
                 flex: 0 0 100%;
                 max-width: 100%;
             }
+
             .gen-social-share {
                 width: 100%;
             }
@@ -393,9 +418,9 @@
 
                 @foreach ($subcategories as $subcategory)
                     <a href="{{ route('fitlive.daily-classes.show', $subcategory->id) }}"
-                        class="activity-btn {{ request()->is('fitlive/'.$subcategory->id) ? 'active' : '' }}">
-                            <i class="fas fa-dumbbell"></i>
-                            <span>{{ $subcategory->name }}</span>
+                        class="activity-btn {{ request()->is('fitlive/' . $subcategory->id) ? 'active' : '' }}">
+                        <i class="fas fa-dumbbell"></i>
+                        <span>{{ $subcategory->name }}</span>
                     </a>
                 @endforeach
             </div>
@@ -459,14 +484,16 @@
                         @forelse($liveSlots as $slot)
                             <div class="col-6 col-md-4 col-lg-3"> {{-- 2 per row on mobile, 3 on tablets, 4 on desktops --}}
                                 <div class="live-card p-3 text-center">
-                                    <div class="{{ $slot['is_live'] ? 'live-indicator-green' : 'live-indicator' }}"></div>
-
+                                    <div
+                                        class="{{ $slot['is_live'] ? 'live-indicator-green' : ($slot['is_passed'] ? 'live-indicator-ended' : 'live-indicator') }}">
+                                    </div>
                                     <div class="session-info mt-2">
-                                        <p class="session-time mb-2">{{ $slot['time'] }}</p>
+                                        <p class="session-time mb-2 {{ $slot['is_passed'] ? 'ended' : '' }}">{{ $slot['time'] }}
+                                        </p>
 
                                         @if ($slot['is_live'])
                                             <a href="{{ route('fitlive.session', $slot['id']) }}"
-                                            class="btn btn-outline-warning text-decoration-none">Join Now</a>
+                                                class="btn btn-outline-warning text-decoration-none">Join Now</a>
                                         @elseif ($slot['is_passed'])
                                             <button class="btn btn-outline-secondary text-gray" disabled>Ended</button>
                                         @else

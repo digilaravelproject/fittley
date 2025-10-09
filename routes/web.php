@@ -110,7 +110,7 @@ Route::middleware(['auth', 'role:instructor'])->prefix('instructor')->name('inst
 // Public FitLive Routes
 Route::prefix('fitlive')->name('fitlive.')->group(function () {
     Route::get('/', [FitLiveController::class, 'index'])->name('index');
-      Route::get('/fitexpert', [FitLiveController::class, 'fitexpert'])->name('fitexpert');
+    Route::get('/fitexpert', [FitLiveController::class, 'fitexpert'])->name('fitexpert');
     // Scroll the fitflix vdo
     Route::get('/vdo', [FitLiveController::class, 'fitflixShortsVdo'])->name('vdo');
 
@@ -124,7 +124,6 @@ Route::prefix('fitlive')->name('fitlive.')->group(function () {
     });
 
     Route::get('/{id}', [FitLiveController::class, 'show'])->name('daily-classes.show');
-
 });
 
 
@@ -158,6 +157,7 @@ Route::prefix('fitinsight')->name('fitinsight.')->group(function () {
 Route::prefix('fitguide')->name('fitguide.')->group(function () {
     // Public index and category listings
     Route::get('/', [\App\Http\Controllers\Public\FitGuideController::class, 'index'])->name('index');
+    Route::get('/fit-cast', [\App\Http\Controllers\Public\FitGuideController::class, 'fitCast'])->name('fitcast');
     Route::get('/categories', [\App\Http\Controllers\Public\FitGuideController::class, 'categories'])->name('categories');
     Route::get('/category/{category}', [\App\Http\Controllers\Public\FitGuideController::class, 'category'])->name('category');
 

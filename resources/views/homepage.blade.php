@@ -170,32 +170,101 @@
                                         @foreach ($allContent as $subCategory)
 
                                             @if ($category->id == 21)
-                                                <x-home.landscape-card :route="route('fitlive.daily-classes.show', $subCategory->id)"
-                                                    :title="$subCategory->name" :image="$subCategory->banner_image ? asset('storage/app/public/' . $subCategory->banner_image) : null" :badge="['label' => 'Live', 'class' => 'badge-live']"
-                                                    :meta="['<i class=\'fas fa-calendar\'></i> ' . ($subCategory->created_at?->format('M d, Y') ?? '')]" />
+
+
+                                            @php
+                                                $now = \Carbon\Carbon::now();
+                                                $liveSession = null;
+                                                $nextSession = null;
+                                                $status = 'upcoming';
+                                                $badgeClass = 'badge-scheduled';
+                                                $badge = 'Upcoming';
+
+                                                $sessions = $subCategory->fitLiveSessions ?? collect();
+
+                                                // Sort sessions by time
+                                                $sessions = $sessions->sortBy('scheduled_at')->values();
+
+                                                foreach ($sessions as $session) {
+                                                    $start = \Carbon\Carbon::parse($session->scheduled_at);
+                                                    $end = $start->copy()->addMinutes(30);
+
+                                                    if ($now->between($start, $end)) {
+                                                        // LIVE session
+                                                        $liveSession = $session;
+                                                        $status = 'live';
+                                                        $badgeClass = 'badge-live';
+                                                        $badge = 'Live';
+                                                        break;
+                                                    }
+
+                                                    if ($start->gt($now)) {
+                                                        // Upcoming session
+                                                        $nextSession = $session;
+                                                        break;
+                                                    }
+                                                }
+
+                                                if (!$liveSession && $nextSession) {
+                                                    $status = 'scheduled';
+                                                    $badgeClass = 'badge-scheduled';
+                                                    $badge = 'Scheduled ' . \Carbon\Carbon::parse($nextSession->scheduled_at)->format('h:i A');
+                                                } elseif (!$liveSession && !$nextSession && $sessions->count()) {
+                                                    // All sessions are past
+                                                    $status = 'ended';
+                                                    $badgeClass = 'badge-ended';
+                                                    $badge = 'Ended';
+                                                }
+                                            @endphp
+
+                                            <x-home.landscape-card
+                                                :route="route('fitlive.daily-classes.show', $subCategory->id)"
+                                                :title="$subCategory->name"
+                                                :image="$subCategory->banner_image ? asset('storage/app/public/' . $subCategory->banner_image) : null"
+                                                :badge="['label' => $badge, 'class' => $badgeClass]"
+                                                :meta="['<i class=\'fas fa-calendar\'></i> ' . ($subCategory->created_at?->format('M d, Y') ?? '')]"
+                                            />
+
+
                                             @else
-                                                @foreach ($subCategory->fitLiveSessions->sortByDesc('id') as $data)
+                                                @php
+                                                    // Define status priority for sorting
+                                                    $statusPriority = [
+                                                        'live' => 0,
+                                                        'scheduled' => 1,
+                                                        'ended' => 2,
+                                                    ];
+
+                                                    // Sort the sessions based on status
+                                                    $fitLiveSessions = $subCategory->fitLiveSessions->sortBy(function ($data) use ($statusPriority) {
+                                                        return $statusPriority[strtolower($data->status ?? '')] ?? 3;
+                                                    })->values();
+                                                @endphp
+
+                                                @foreach ($fitLiveSessions as $data)
                                                     @php
                                                         // Set route based on category
-                                                        $route = $category->id == 21 ? 'fitlive.daily-classes.show' : 'fitlive.fitexpert';
+                                                        $route = $category->id == 21 ? 'fitlive.daily-classes.show' : 'fitlive.session';
 
-                                                        // Get status from database
+                                                        // Get status
                                                         $status = $data->status ?? 'Null';
 
-                                                        // Generate CSS class based on status
+                                                        // Assign badge class based on status
                                                         $badgeClass = match (strtolower($status)) {
                                                             'live' => 'badge-live',
-                                                            'upcoming' => 'badge-upcoming',
+                                                            'scheduled' => 'badge-scheduled',
                                                             'ended' => 'badge-ended',
                                                             default => 'badge-default',
                                                         };
                                                     @endphp
 
+                                                    {{-- Portrait card component --}}
                                                     <x-home.portrait-card
                                                         :video="$data"
                                                         :badge="$status"
                                                         :badgeClass="$badgeClass"
                                                         :url="$route"
+
                                                     />
                                                 @endforeach
                                             @endif
@@ -236,7 +305,15 @@
                         <div class="content-slider">
                             <div class="slider-container" id="fitarena-live-slider">
                                 @php
-                                    $fitarenaliveEvents = $fitarenaliveEvents->sortBy('created_at')->values();
+                                    $statusPriority = [
+                                        'live' => 0,
+                                        'upcoming' => 1,
+                                        'ended' => 2,
+                                    ];
+
+                                    $fitarenaliveEvents = $fitarenaliveEvents->sortBy(function ($event) use ($statusPriority) {
+                                        return $statusPriority[$event->status] ?? 3;
+                                    })->values();
                                 @endphp
 
                                 @foreach ($fitarenaliveEvents as $event)
@@ -250,12 +327,9 @@
                                     <x-home.landscape-card :route="route('fitarena.show', $event)" :title="$event->title"
                                         :image="$event->banner_image_path ? $event->banner_image_path : null" :badge="$badge"
                                         :meta="['<i class=\'fas fa-calendar\'></i> ' . ($event->created_at?->format('M d, Y') ?? '')]" />
-                                    {{--
-                                    <x-home.portrait-card :video="$event" badge="Live" badgeClass="badge-live"
-                                        url="fitarena.show" /> --}}
                                 @endforeach
-
                             </div>
+
 
                             <button class="slider-controls slider-prev" onclick="slideContent('fitarena-live-slider', -1)">
                                 <i class="fas fa-chevron-left"></i>
@@ -294,7 +368,7 @@
                                     $isFitcastLive = $category->slug === 'fitcast-live';
                                 @endphp
                                 @if ($isFitcastLive)
-                                    <a href="{{ route('fitguide.index', ['category' => $category->slug]) }}" class="text-decoration-none">
+                                    <a href="{{ route('fitguide.fitcast') }}" class="text-decoration-none">
                                         <div class="section-header">
                                             <h2 class="section-title">
                                                 {{-- <i class="fas fa-dumbbell"></i> --}}
@@ -313,10 +387,10 @@
                                         @foreach ($allContent->sortByDesc('id') as $content)
 
                                             @if ($isFitcastLive)
-                                                <x-home.landscape-card :route="route('fitguide.index', ['category' => $category->slug])"
+                                                <x-home.landscape-card :route="route('fitguide.single.show', $content->slug)"
                                                     :title="$content->title" :image="$content->banner_image_path ? asset('storage/app/public/' . $content->banner_image_path) : null" :meta="['<i class=\'fas fa-calendar\'></i> ' . ($content->created_at?->format('M d, Y') ?? '')]" />
                                             @else
-                                                <x-home.portrait-card :video="$content" url="fitguide.index" :categorySlug="$category->slug" />
+                                                <x-home.portrait-card :video="$content" url="fitguide.series.show" :routeParams="['fgSeries' => $content->slug]" />
                                             @endif
                                         @endforeach
                                     </div>
