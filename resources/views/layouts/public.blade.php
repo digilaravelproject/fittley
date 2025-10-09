@@ -1135,7 +1135,8 @@
                             <div class="text-center">
                                 <p class="mb-2">Or scan the QR code to get the app instantly.</p>
                                 @php
-                                    $appUrl = url('/');
+                                    $appUrl1 = url('/');
+                                    $appUrl = 'https://www.fittelly.com';
                                     $qrUrl =
                                         'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' .
                                         urlencode($appUrl);

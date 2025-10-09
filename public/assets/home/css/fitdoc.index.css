@@ -29,9 +29,11 @@ body {
 .hero-section {
     height: 20vh;
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)),
-        url("hx") center/cover;
+        url("https://www.fittelly.com/storage/app/public/default-fitdoc-image.jpeg")
+            center/cover no-repeat;
     display: flex;
     align-items: center;
+    justify-content: center;
     position: relative;
     font-family: var(--title-fonts);
 }

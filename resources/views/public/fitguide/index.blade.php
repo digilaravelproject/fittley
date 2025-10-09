@@ -48,7 +48,7 @@
                         @foreach ($featuredSingles->sortByDesc('id') as $single)
                             <x-home.media-grid :title="$single->title" :image="$single->banner_image_url ??
                             'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'"
-                                :url="route('fitguide.single.show', $single->slug)" :type="'quick-guide'" badgeClass="type-badge"
+                                :url="route('fitguide.single.show', $single->slug)"
                                 :year="optional($single->created_at)->format('Y')" :rating="null"
                                 :description="Str::limit($single->description ?? 'Training guide description', 100)" />
                         @endforeach
@@ -64,7 +64,7 @@
                         @foreach ($featuredSeries->sortByDesc('id') as $series)
                             <x-home.media-grid :title="$series->title" :image="$series->banner_image_url ??
                             'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'"
-                                :url="route('fitguide.series.show', $series->slug)" :type="'series'" badgeClass="series-badge"
+                                :url="route('fitguide.series.show', $series->slug)"
                                 :year="optional($series->created_at)->format('Y')" :rating="null"
                                 :description="Str::limit($series->description ?? 'Training series description', 100)" />
                         @endforeach
@@ -80,7 +80,7 @@
                         @foreach ($allSingles->sortByDesc('id') as $single)
                             <x-home.media-grid :title="$single->title" :image="$single->banner_image_url ??
                             'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'"
-                                :url="route('fitguide.single.show', $single->slug)" :type="'quick-guide'" badgeClass="type-badge"
+                                :url="route('fitguide.single.show', $single->slug)"
                                 :year="optional($single->created_at)->format('Y')" :rating="null"
                                 :description="Str::limit($single->description ?? 'Training guide description', 100)" />
                         @endforeach
@@ -108,7 +108,7 @@
                                 <div class="media-grid-wrapper">
                                     @foreach ($seriesInCategory->sortByDesc('id') as $series)
                                         <x-home.media-grid :title="$series->title" :image="$series->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'"
-                                            :url="route('fitguide.series.show', $series->slug)" :type="'series'" badgeClass="series-badge"
+                                            :url="route('fitguide.series.show', $series->slug)"
                                             :year="optional($series->created_at)->format('Y')" :rating="null"
                                             :description="Str::limit($series->description ?? 'Training series description', 100)" />
                                     @endforeach
@@ -129,7 +129,7 @@
                             <div class="media-grid-wrapper">
                                 @foreach ($filteredSeries->sortByDesc('id') as $series)
                                     <x-home.media-grid :title="$series->title" :image="$series->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'"
-                                        :url="route('fitguide.series.show', $series->slug)" :type="'series'" badgeClass="series-badge"
+                                        :url="route('fitguide.series.show', $series->slug)"
                                         :year="optional($series->created_at)->format('Y')" :rating="null"
                                         :description="Str::limit($series->description ?? 'Training series description', 100)" />
                                 @endforeach
