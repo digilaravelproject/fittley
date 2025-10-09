@@ -176,14 +176,27 @@
                                             @else
                                                 @foreach ($subCategory->fitLiveSessions->sortByDesc('id') as $data)
                                                     @php
-                                                        if ($category->id == 21) {
-                                                            $route = 'fitlive.daily-classes.show';
-                                                        } else {
-                                                            $route = 'fitlive.fitexpert';
-                                                        }
+                                                        // Set route based on category
+                                                        $route = $category->id == 21 ? 'fitlive.daily-classes.show' : 'fitlive.fitexpert';
+
+                                                        // Get status from database
+                                                        $status = $data->status ?? 'Null';
+
+                                                        // Generate CSS class based on status
+                                                        $badgeClass = match (strtolower($status)) {
+                                                            'live' => 'badge-live',
+                                                            'upcoming' => 'badge-upcoming',
+                                                            'ended' => 'badge-ended',
+                                                            default => 'badge-default',
+                                                        };
                                                     @endphp
 
-                                                    <x-home.portrait-card :video="$data" badge="Live" badgeClass="badge-live" :url="$route" />
+                                                    <x-home.portrait-card
+                                                        :video="$data"
+                                                        :badge="$status"
+                                                        :badgeClass="$badgeClass"
+                                                        :url="$route"
+                                                    />
                                                 @endforeach
                                             @endif
                                         @endforeach

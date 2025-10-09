@@ -913,29 +913,29 @@
             {{-- Mobile Auth Section (Visible only on Mobile) --}}
             <div class="d-flex d-lg-none align-items-center" style="margin-right: -1rem;">
                 @auth
-                @php
-                $user = auth()->user();
-                $profilePhoto = $user->profile_photo_url ?? null;
-                $initials = strtoupper(
-                substr($user->name, 0, 1) . substr($user->name, strpos($user->name, ' ') + 1, 1),
-                );
-                @endphp
+                    @php
+                        $user = auth()->user();
+                        $profilePhoto = $user->profile_photo_url ?? null;
+                        $initials = strtoupper(
+                            substr($user->name, 0, 1) . substr($user->name, strpos($user->name, ' ') + 1, 1),
+                        );
+                    @endphp
 
-                <a href="{{ route('dashboard') }}" class="d-inline-block text-decoration-none">
-                    @if ($profilePhoto)
-                    <img src="{{ $profilePhoto }}" alt="Profile" class="rounded-circle"
-                        style="width: 36px; height: 36px; object-fit: cover;">
-                    @else
-                    <div class="rounded-circle text-uppercase d-flex align-items-center justify-content-center"
-                        style="width: 36px; height: 36px; background: var(--primary-color); color: white; font-weight: 600;">
-                        {{ $initials }}
-                    </div>
-                    @endif
-                </a>
+                    <a href="{{ route('dashboard') }}" class="d-inline-block text-decoration-none">
+                        @if ($profilePhoto)
+                            <img src="{{ $profilePhoto }}" alt="Profile" class="rounded-circle"
+                                style="width: 36px; height: 36px; object-fit: cover;">
+                        @else
+                            <div class="rounded-circle text-uppercase d-flex align-items-center justify-content-center"
+                                style="width: 36px; height: 36px; background: var(--primary-color); color: white; font-weight: 600;">
+                                {{ $initials }}
+                            </div>
+                        @endif
+                    </a>
                 @else
-                <a href="{{ route('login') }}" class="btn btn-outline-light btn-sm me-2">Login</a>
-                {{-- <a href="{{ route('register') }}" class="btn btn-outline-warning btn-sm"
-                    style="padding: 0.25rem 0.5rem;border-radius: 0.25rem;">Sign Up</a> --}}
+                    <a href="{{ route('login') }}" class="btn btn-outline-light btn-sm me-2">Login</a>
+                    {{-- <a href="{{ route('register') }}" class="btn btn-outline-warning btn-sm"
+                        style="padding: 0.25rem 0.5rem;border-radius: 0.25rem;">Sign Up</a> --}}
                 @endauth
             </div>
 
@@ -983,45 +983,45 @@
 
                 <ul class="navbar-nav">
                     @auth
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle me-1"></i>{{ auth()->user()->name }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a class="dropdown-item" href="{{ route('dashboard') }}">
-                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                                </a></li>
-                            @if (auth()->user()->hasRole('admin'))
-                            <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">
-                                    <i class="fas fa-cog me-2"></i>Admin Panel
-                                </a></li>
-                            @endif
-                            @if (auth()->user()->hasRole('instructor'))
-                            <li><a class="dropdown-item" href="{{ route('instructor.dashboard') }}">
-                                    <i class="fas fa-chalkboard-teacher me-2"></i>Instructor Panel
-                                </a></li>
-                            @endif
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i>{{ auth()->user()->name }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="{{ route('dashboard') }}">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    </a></li>
+                                @if (auth()->user()->hasRole('admin'))
+                                    <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                            <i class="fas fa-cog me-2"></i>Admin Panel
+                                        </a></li>
+                                @endif
+                                @if (auth()->user()->hasRole('instructor'))
+                                    <li><a class="dropdown-item" href="{{ route('instructor.dashboard') }}">
+                                            <i class="fas fa-chalkboard-teacher me-2"></i>Instructor Panel
+                                        </a></li>
+                                @endif
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
                     @else
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">Login</a>
-                    </li>
-                    {{-- <li class="nav-item">
-                        <a class="btn btn-primary ms-2" href="{{ route('register') }}">Sign Up</a>
-                    </li> --}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('login') }}">Login</a>
+                        </li>
+                        {{-- <li class="nav-item">
+                            <a class="btn btn-primary ms-2" href="{{ route('register') }}">Sign Up</a>
+                        </li> --}}
                     @endauth
                 </ul>
             </div>
@@ -1044,11 +1044,11 @@
     <!-- Main Content -->
     <main class="main-content">
         @if (Request::is('/'))
-        @yield('content')
-        @else
-        <div class="container">
             @yield('content')
-        </div>
+        @else
+            <div class="container">
+                @yield('content')
+            </div>
         @endif
     </main>
 
@@ -1135,10 +1135,11 @@
                             <div class="text-center">
                                 <p class="mb-2">Or scan the QR code to get the app instantly.</p>
                                 @php
-                                $appUrl = url('/');
-                                $qrUrl =
-                                'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' .
-                                urlencode($appUrl);
+                                    $appUrl1 = url('/');
+                                    $appUrl = 'https://www.fittelly.com';
+                                    $qrUrl =
+                                        'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' .
+                                        urlencode($appUrl);
                                 @endphp
 
                                 <img src="{{ $qrUrl }}" alt="QR Code" class="img-fluid" style="max-width: 180px;">
