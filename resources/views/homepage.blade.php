@@ -187,7 +187,7 @@
 
                                                 foreach ($sessions as $session) {
                                                     $start = \Carbon\Carbon::parse($session->scheduled_at);
-                                                    $end = $start->copy()->addMinutes(30);
+                                                    $end = $start->copy()->addMinutes(60);
 
                                                     if ($now->between($start, $end)) {
                                                         // LIVE session
@@ -207,12 +207,13 @@
 
                                                 if (!$liveSession && $nextSession) {
                                                     $status = 'scheduled';
-                                                    $badgeClass = 'badge-scheduled';
-                                                    $badge = 'Scheduled ' . \Carbon\Carbon::parse($nextSession->scheduled_at)->format('h:i A');
+                                                    $badgeClass = 'badge-single';
+                                                    $badge = 'Upcoming';
+                                                    // $badge = 'Scheduled ' . \Carbon\Carbon::parse($nextSession->scheduled_at)->format('h:i A');
                                                 } elseif (!$liveSession && !$nextSession && $sessions->count()) {
                                                     // All sessions are past
                                                     $status = 'ended';
-                                                    $badgeClass = 'badge-ended';
+                                                    $badgeClass = 'badge-scheduled';
                                                     $badge = 'Ended';
                                                 }
                                             @endphp
