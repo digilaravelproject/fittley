@@ -9,8 +9,8 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Schedule daily FitLive sessions creation
-Schedule::command('fitlive:create-daily-sessions')->everyTwoHours();
-Schedule::command('fitnews:create-daily-news')->everyTwoHours();
+Schedule::command('fitlive:create-daily-sessions')->everyMinute();
+Schedule::command('fitnews:create-daily-news')->everyMinute();
 
 // Schedule badge checking (run every hour)
-Schedule::command('badges:check')->everyTwoHours();
+Schedule::command('badges:check')->everyMinute();

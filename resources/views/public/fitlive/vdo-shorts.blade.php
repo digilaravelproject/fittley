@@ -9,8 +9,23 @@
                 <div class="shorts-item">
 
                     <!-- Video -->
-                    <video class="shorts-video" src="{{ asset('storage/app/public/' . $short->video_path) }}"
-                        poster="{{ asset('storage/app/public/' . $short->thumbnail_path) }}" playsinline autoplay loop>
+                    <video
+                        class="shorts-video"
+                        preload="metadata"
+                        playsinline
+                        webkit-playsinline
+                        autoplay
+                        loop
+                        muted
+                        defaultMuted
+                        poster="{{ asset('storage/app/public/' . $short->thumbnail_path) }}"
+                    >
+                        <source
+                            src="{{ asset('storage/app/public/' . $short->video_path) }}"
+                            type="video/mp4"
+                        />
+                        <!-- Fallback text -->
+                        Your browser does not support the video tag.
                     </video>
 
                     <!-- Top Left: User Info -->
@@ -19,12 +34,6 @@
                             class="user-avatar">
                         <span class="username">{{ '@ ' . $short->title }}</span><br>
                     </div>
-
-                    <!-- <div class="shorts-description1">
-                            <p class="description-text1 line-clamp1">
-                                {{ $short->category->name }}
-                            </p>
-                        </div> -->
 
                     <!-- Bottom Left: Description -->
                     <div class="shorts-description">
@@ -36,31 +45,11 @@
 
                     <!-- Right Side Actions -->
                     <div class="shorts-actions-overlay">
-                        <!-- Views -->
-                        {{-- <button class="action-btn views-btn" disabled>
-                            <i class="fas fa-eye"></i>
-                            <span class="count">{{ $short->views_count ?? 0 }}</span>
-                        </button> --}}
-
                         <button class="action-btn like-btn {{ $short->isLiked ? 'active' : '' }}"
                             data-id="{{ $short->id }}">
                             <i class="far fa-thumbs-up"></i>
-
                             <span class="count">{{ $short->likes_count }}</span>
                         </button>
-                        <!-- <button class="action-btn like-btn {{ $short->isUnLiked ? 'active' : '' }}"
-                                data-id="{{ $short->id }}">
-                                <i class="far fa-thumbs-down"></i>
-
-
-                                <span class="count">{{ $short->unlikes_count }}</span>
-                            </button> -->
-                        <!-- <button class="action-btn like-btn" data-id="{{ $short->id }}">
-                                <i class="fa-regular fa-comment"></i>
-
-
-                                <span class="count">{{ $short->comments }}</span>
-                            </button> -->
 
                         <button class="action-btn share-btn" data-id="{{ $short->id }}">
                             <i class="far fa-share-from-square"></i>
@@ -74,13 +63,8 @@
     </div>
 
     <style>
-        navbar-expand-lg {
-            display: none;
-        }
-
-        footer {
-            display: none;
-        }
+        navbar-expand-lg { display: none; }
+        footer { display: none; }
 
         .shorts-container {
             position: fixed;
@@ -91,7 +75,6 @@
             overflow: hidden;
             background: black;
         }
-
         .shorts-wrapper {
             height: 100%;
             overflow-y: scroll;
@@ -102,10 +85,7 @@
             background-color: black;
             padding: 0;
         }
-
-        .shorts-wrapper::-webkit-scrollbar {
-            display: none;
-        }
+        .shorts-wrapper::-webkit-scrollbar { display: none; }
 
         .shorts-item {
             position: relative;
@@ -116,7 +96,6 @@
             align-items: center;
             background: black;
         }
-
         .shorts-video {
             position: absolute;
             width: 100%;
@@ -133,7 +112,6 @@
             align-items: center;
             z-index: 10;
         }
-
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -142,7 +120,6 @@
             border: 2px solid white;
             background: white !important;
         }
-
         .username {
             color: white;
             margin-left: 10px;
@@ -164,17 +141,14 @@
             color: #fff;
             font-size: 1rem;
         }
-
         .description-text {
             display: -webkit-box;
             -webkit-line-clamp: 2;
-            /* show only 3 lines */
             -webkit-box-orient: vertical;
             overflow: hidden;
             margin-bottom: -0.5rem;
             font-size: .78rem;
         }
-
         .description-text.expanded {
             -webkit-line-clamp: unset;
             overflow: visible;
@@ -185,10 +159,7 @@
             border-radius: 10px;
             max-width: 425px;
             width: 100%;
-            
         }
-
-
         .read-more-btn {
             background: none;
             border: none;
@@ -208,7 +179,6 @@
             gap: .8rem;
             z-index: 10;
         }
-
         .action-btn {
             background: none;
             border: none;
@@ -224,15 +194,8 @@
             cursor: pointer;
             transition: transform 0.2s ease;
         }
-
-        .action-btn:hover {
-            transform: scale(1.2);
-        }
-
-        .action-btn.active {
-            color: #e74c3c;
-        }
-
+        .action-btn:hover { transform: scale(1.2); }
+        .action-btn.active { color: #e74c3c; }
         .action-btn .count {
             font-size: 0.75rem;
             margin-top: 2px;
@@ -246,18 +209,57 @@
         document.addEventListener("DOMContentLoaded", function() {
             const videos = document.querySelectorAll('.shorts-video');
 
-            // Auto-play/pause on scroll
+            // Ensure iOS/Safari-friendly autoplay
+            videos.forEach(v => {
+                // Attributes (defensive)
+                v.setAttribute('muted', '');
+                v.muted = true;
+                v.defaultMuted = true;
+
+                v.setAttribute('playsinline', '');
+                v.setAttribute('webkit-playsinline', '');
+                v.playsInline = true;
+
+                // If Safari blocks autoplay, try after metadata
+                v.addEventListener('loadeddata', () => {
+                    const playAttempt = v.play();
+                    if (playAttempt && typeof playAttempt.catch === 'function') {
+                        playAttempt.catch(() => {
+                            // Will be unlocked by user tap below
+                        });
+                    }
+                }, { once: true });
+
+                // Tap-to-start fallback (only triggers if autoplay was blocked)
+                const unlock = () => {
+                    v.muted = true; // keep muted to satisfy autoplay policies
+                    v.playsInline = true;
+                    v.play().catch(() => {});
+                    // Remove after first interaction
+                    v.removeEventListener('touchstart', unlock);
+                    v.removeEventListener('click', unlock);
+                };
+                v.addEventListener('touchstart', unlock, { passive: true });
+                v.addEventListener('click', unlock);
+            });
+
+            // Auto-play/pause on scroll (keep your behavior)
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     const video = entry.target;
-                    entry.isIntersecting ? video.play() : video.pause();
+                    if (entry.isIntersecting) {
+                        // extra safety for iOS inline playback
+                        video.muted = true;
+                        video.playsInline = true;
+                        video.play().catch(() => {});
+                    } else {
+                        video.pause();
+                    }
                 });
-            }, {
-                threshold: 0.75
-            });
+            }, { threshold: 0.75 });
             videos.forEach(video => observer.observe(video));
 
-            // Like button
+            // Like button (unchanged)
             document.querySelectorAll('.like-btn').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -265,26 +267,26 @@
                     const countEl = btn.querySelector('.count');
 
                     fetch(`/fitlive/toggle-like/${videoId}`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json'
-                            }
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                btn.classList.toggle('active', data.data.is_liked);
-                                countEl.textContent = data.data.likes_count;
-                            } else {
-                                alert(data.message || 'Something went wrong!');
-                            }
-                        })
-                        .catch(err => console.error(err));
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            btn.classList.toggle('active', data.data.is_liked);
+                            countEl.textContent = data.data.likes_count;
+                        } else {
+                            alert(data.message || 'Something went wrong!');
+                        }
+                    })
+                    .catch(err => console.error(err));
                 });
             });
 
-            // Share button
+            // Share button (unchanged)
             document.querySelectorAll('.share-btn').forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.stopPropagation();
@@ -292,28 +294,29 @@
                     const countEl = btn.querySelector('.count');
 
                     fetch(`/fitlive/share-video/${videoId}`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                'Accept': 'application/json'
-                            }
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                countEl.textContent = data.data.shares_count;
-                                navigator.clipboard.writeText(data.data.share_link)
-                                    .then(() => alert('Share link copied!'));
-                            } else {
-                                alert(data.message || 'Failed to share video');
-                            }
-                        })
-                        .catch(err => console.error(err));
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            countEl.textContent = data.data.shares_count;
+                            navigator.clipboard.writeText(data.data.share_link)
+                                .then(() => alert('Share link copied!'));
+                        } else {
+                            alert(data.message || 'Failed to share video');
+                        }
+                    })
+                    .catch(err => console.error(err));
                 });
             });
         });
     </script>
     <script>
+        // Read more / less (unchanged)
         document.querySelectorAll('.read-more-btn').forEach(btn => {
             const descEl = btn.previousElementSibling;
             btn.addEventListener('click', function() {

@@ -333,6 +333,67 @@ async function startStream() {
     }
 }
 
+// ---- Safer Blade → JS values ----
+const subCat = @json($session->subCategory->name);
+const scheduledAtISO = @json($session->scheduled_at->toIso8601String());
+const sessionId = @json($session->id); // unique per session
+const scheduledAt = new Date(scheduledAtISO);
+
+// Unique key so each session/time runs only once on this browser
+const doneKey = `autoStopDone:v1:${sessionId}:${scheduledAtISO}`;
+
+let stopTriggered = false; // in-tab guard
+
+function scheduleAutoStopOnce() {
+  if (!['Meditation','HIIT'].includes(subCat)) return;
+  if (!(scheduledAt instanceof Date) || isNaN(scheduledAt)) return;
+
+  // If we've already run this once (even in another tab), do nothing.
+  if (localStorage.getItem(doneKey)) return;
+
+  const cutoff = new Date(scheduledAt.getTime() + 30 * 60 * 1000);
+  const now = new Date();
+
+  // If we are way past the cutoff (e.g., >2 minutes), don't start the loop.
+  if (now.getTime() - cutoff.getTime() > 2 * 60 * 1000) {
+    // Optionally mark done to avoid future loops on this browser.
+    localStorage.setItem(doneKey, String(Date.now()));
+    return;
+  }
+
+  let delay = Math.max(0, cutoff.getTime() - now.getTime());
+
+  const timerId = setTimeout(async () => {
+    if (stopTriggered || localStorage.getItem(doneKey)) return;
+    stopTriggered = true;
+
+    // Mark done BEFORE alert/reload to prevent loops after reload.
+    localStorage.setItem(doneKey, String(Date.now()));
+
+    try {
+      alert("⏱ 30+ minutes past scheduled time, stopping stream…");
+      await stopStream();
+    } finally {
+    //   location.reload();
+      window.location.href = "{{ url('admin/fitlive/sessions') }}";
+    }
+  }, delay);
+
+  // Clean up on navigation
+  window.addEventListener('beforeunload', () => clearTimeout(timerId));
+}
+
+// Keep tabs in sync: if another tab marks it done, stop here too.
+window.addEventListener('storage', (e) => {
+  if (e.key === doneKey && e.newValue) {
+    stopTriggered = true;
+  }
+});
+
+// Start once on load (and ensure no duplicate handlers)
+document.addEventListener('DOMContentLoaded', scheduleAutoStopOnce, { once: true });
+
+
 // Stop streaming
 async function stopStream() {
     try {

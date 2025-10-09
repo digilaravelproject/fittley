@@ -66,7 +66,7 @@ class CreateDailyFitNewsSessions extends Command
         $created = 0;
         $skipped = 0;
 
-        foreach ($this->times as $time) {
+        foreach ($this->times as $k => $time) {
             $total++;
             $scheduledAt = $targetDate->copy()->setTimeFromTimeString($time);
 
@@ -79,10 +79,18 @@ class CreateDailyFitNewsSessions extends Command
             }
 
             // Prepare payload (make sure your FitNews model has $fillable for these)
+            if($k == 0){
+                $title = "Fitness Industry Growth in 2025: What's Next?";
+                $news_img = 'fitnews/thumbnails/mgTBqM7ZcjgFCxtBRosSM22oqsEqhsSwsDBhRbgX.jpg';
+            } else {
+                $title = "Experts Weigh In on Post-Workouts";
+                $news_img = 'fitnews/thumbnails/jnMaFDW2FU54TAUo4GWlCIlGUwWK7ZNjiMRwPwW1.jpg';
+            }
+
             $payload = [
-                'title'            => "Fit News {$scheduledAt->format('M d, Y')} at {$scheduledAt->format('h:i A')}",
+                'title'            => $title,
                 'description'      => "Your daily Fit News bulletin scheduled at {$scheduledAt->format('h:i A')}.",
-                'thumbnail'        => 'fitnews/thumbnails/mgTBqM7ZcjgFCxtBRosSM22oqsEqhsSwsDBhRbgX.jpg',
+                'thumbnail'        => $news_img,
                 'status'           => 'scheduled', // enum: draft|scheduled|live|ended
                 'channel_name'     => FitNews::generateChannelName($scheduledAt),
                 'is_published'     => 1,
