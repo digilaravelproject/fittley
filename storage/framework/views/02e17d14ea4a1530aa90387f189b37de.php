@@ -913,29 +913,29 @@
             
             <div class="d-flex d-lg-none align-items-center" style="margin-right: -1rem;">
                 <?php if(auth()->guard()->check()): ?>
-                <?php
-                $user = auth()->user();
-                $profilePhoto = $user->profile_photo_url ?? null;
-                $initials = strtoupper(
-                substr($user->name, 0, 1) . substr($user->name, strpos($user->name, ' ') + 1, 1),
-                );
-                ?>
+                    <?php
+                        $user = auth()->user();
+                        $profilePhoto = $user->profile_photo_url ?? null;
+                        $initials = strtoupper(
+                            substr($user->name, 0, 1) . substr($user->name, strpos($user->name, ' ') + 1, 1),
+                        );
+                    ?>
 
-                <a href="<?php echo e(route('dashboard')); ?>" class="d-inline-block text-decoration-none">
-                    <?php if($profilePhoto): ?>
-                    <img src="<?php echo e($profilePhoto); ?>" alt="Profile" class="rounded-circle"
-                        style="width: 36px; height: 36px; object-fit: cover;">
-                    <?php else: ?>
-                    <div class="rounded-circle text-uppercase d-flex align-items-center justify-content-center"
-                        style="width: 36px; height: 36px; background: var(--primary-color); color: white; font-weight: 600;">
-                        <?php echo e($initials); ?>
+                    <a href="<?php echo e(route('dashboard')); ?>" class="d-inline-block text-decoration-none">
+                        <?php if($profilePhoto): ?>
+                            <img src="<?php echo e($profilePhoto); ?>" alt="Profile" class="rounded-circle"
+                                style="width: 36px; height: 36px; object-fit: cover;">
+                        <?php else: ?>
+                            <div class="rounded-circle text-uppercase d-flex align-items-center justify-content-center"
+                                style="width: 36px; height: 36px; background: var(--primary-color); color: white; font-weight: 600;">
+                                <?php echo e($initials); ?>
 
-                    </div>
-                    <?php endif; ?>
-                </a>
+                            </div>
+                        <?php endif; ?>
+                    </a>
                 <?php else: ?>
-                <a href="<?php echo e(route('login')); ?>" class="btn btn-outline-light btn-sm me-2">Login</a>
-                
+                    <a href="<?php echo e(route('login')); ?>" class="btn btn-outline-light btn-sm me-2">Login</a>
+                    
                 <?php endif; ?>
             </div>
 
@@ -983,44 +983,44 @@
 
                 <ul class="navbar-nav">
                     <?php if(auth()->guard()->check()): ?>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle me-1"></i><?php echo e(auth()->user()->name); ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i><?php echo e(auth()->user()->name); ?>
 
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a class="dropdown-item" href="<?php echo e(route('dashboard')); ?>">
-                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
-                                </a></li>
-                            <?php if(auth()->user()->hasRole('admin')): ?>
-                            <li><a class="dropdown-item" href="<?php echo e(route('admin.dashboard')); ?>">
-                                    <i class="fas fa-cog me-2"></i>Admin Panel
-                                </a></li>
-                            <?php endif; ?>
-                            <?php if(auth()->user()->hasRole('instructor')): ?>
-                            <li><a class="dropdown-item" href="<?php echo e(route('instructor.dashboard')); ?>">
-                                    <i class="fas fa-chalkboard-teacher me-2"></i>Instructor Panel
-                                </a></li>
-                            <?php endif; ?>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <form method="POST" action="<?php echo e(route('logout')); ?>" class="d-inline">
-                                    <?php echo csrf_field(); ?>
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="<?php echo e(route('dashboard')); ?>">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    </a></li>
+                                <?php if(auth()->user()->hasRole('admin')): ?>
+                                    <li><a class="dropdown-item" href="<?php echo e(route('admin.dashboard')); ?>">
+                                            <i class="fas fa-cog me-2"></i>Admin Panel
+                                        </a></li>
+                                <?php endif; ?>
+                                <?php if(auth()->user()->hasRole('instructor')): ?>
+                                    <li><a class="dropdown-item" href="<?php echo e(route('instructor.dashboard')); ?>">
+                                            <i class="fas fa-chalkboard-teacher me-2"></i>Instructor Panel
+                                        </a></li>
+                                <?php endif; ?>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="POST" action="<?php echo e(route('logout')); ?>" class="d-inline">
+                                        <?php echo csrf_field(); ?>
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
                     <?php else: ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo e(route('login')); ?>">Login</a>
-                    </li>
-                    
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo e(route('login')); ?>">Login</a>
+                        </li>
+                        
                     <?php endif; ?>
                 </ul>
             </div>
@@ -1043,11 +1043,11 @@
     <!-- Main Content -->
     <main class="main-content">
         <?php if(Request::is('/')): ?>
-        <?php echo $__env->yieldContent('content'); ?>
-        <?php else: ?>
-        <div class="container">
             <?php echo $__env->yieldContent('content'); ?>
-        </div>
+        <?php else: ?>
+            <div class="container">
+                <?php echo $__env->yieldContent('content'); ?>
+            </div>
         <?php endif; ?>
     </main>
 
@@ -1134,10 +1134,11 @@
                             <div class="text-center">
                                 <p class="mb-2">Or scan the QR code to get the app instantly.</p>
                                 <?php
-                                $appUrl = url('/');
-                                $qrUrl =
-                                'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' .
-                                urlencode($appUrl);
+                                    $appUrl1 = url('/');
+                                    $appUrl = 'https://www.fittelly.com';
+                                    $qrUrl =
+                                        'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' .
+                                        urlencode($appUrl);
                                 ?>
 
                                 <img src="<?php echo e($qrUrl); ?>" alt="QR Code" class="img-fluid" style="max-width: 180px;">

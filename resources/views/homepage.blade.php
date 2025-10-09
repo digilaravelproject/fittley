@@ -4,7 +4,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="{{ asset('assets/home/css/homepage.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('public/assets/home/css/homepage.css') }}?v={{ time() }}">
 @endpush
 
 @section('content')
@@ -176,14 +176,27 @@
                                             @else
                                                 @foreach ($subCategory->fitLiveSessions->sortByDesc('id') as $data)
                                                     @php
-                                                        if ($category->id == 21) {
-                                                            $route = 'fitlive.daily-classes.show';
-                                                        } else {
-                                                            $route = 'fitlive.fitexpert';
-                                                        }
+                                                        // Set route based on category
+                                                        $route = $category->id == 21 ? 'fitlive.daily-classes.show' : 'fitlive.fitexpert';
+
+                                                        // Get status from database
+                                                        $status = $data->status ?? 'Null';
+
+                                                        // Generate CSS class based on status
+                                                        $badgeClass = match (strtolower($status)) {
+                                                            'live' => 'badge-live',
+                                                            'upcoming' => 'badge-upcoming',
+                                                            'ended' => 'badge-ended',
+                                                            default => 'badge-default',
+                                                        };
                                                     @endphp
 
-                                                    <x-home.portrait-card :video="$data" badge="Live" badgeClass="badge-live" :url="$route" />
+                                                    <x-home.portrait-card
+                                                        :video="$data"
+                                                        :badge="$status"
+                                                        :badgeClass="$badgeClass"
+                                                        :url="$route"
+                                                    />
                                                 @endforeach
                                             @endif
                                         @endforeach
@@ -437,5 +450,5 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="{{ asset('assets/home/js/homepage.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('public/assets/home/js/homepage.js') }}?v={{ time() }}"></script>
 @endpush
