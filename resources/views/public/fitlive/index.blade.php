@@ -56,7 +56,7 @@
 
                     {{-- Daily-Live --}}
                     @if ($dailylive->count() > 0)
-
+                       
                         <div class="media-grid-wrapper mb-4">
                             @foreach ($dailylive as $session)
                                 <x-home.media-grid :title="$session->name" :image="$session->banner_image

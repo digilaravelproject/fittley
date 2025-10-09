@@ -378,7 +378,6 @@
                 flex: 0 0 100%;
                 max-width: 100%;
             }
-
             .gen-social-share {
                 width: 100%;
             }
@@ -394,9 +393,9 @@
 
                 @foreach ($subcategories as $subcategory)
                     <a href="{{ route('fitlive.daily-classes.show', $subcategory->id) }}"
-                        class="activity-btn {{ request()->is('fitlive/' . $subcategory->id) ? 'active' : '' }}">
-                        <i class="fas fa-dumbbell"></i>
-                        <span>{{ $subcategory->name }}</span>
+                        class="activity-btn {{ request()->is('fitlive/'.$subcategory->id) ? 'active' : '' }}">
+                            <i class="fas fa-dumbbell"></i>
+                            <span>{{ $subcategory->name }}</span>
                     </a>
                 @endforeach
             </div>
@@ -467,7 +466,7 @@
 
                                         @if ($slot['is_live'])
                                             <a href="{{ route('fitlive.session', $slot['id']) }}"
-                                                class="btn btn-outline-warning text-decoration-none">Join Now</a>
+                                            class="btn btn-outline-warning text-decoration-none">Join Now</a>
                                         @elseif ($slot['is_passed'])
                                             <button class="btn btn-outline-secondary text-gray" disabled>Ended</button>
                                         @else

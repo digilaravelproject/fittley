@@ -395,7 +395,7 @@ class SearchController extends Controller
             return response()->json($results);
         } catch (\Exception $e) {
             // Log the exception message
-            Log::error('Search Error: ' . $e->getMessage());
+            Log::error('Search Error: '.$e->getMessage());
 
             // Return a 500 response with error message
             return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
@@ -452,7 +452,7 @@ class SearchController extends Controller
             return response()->json($results);
         } catch (\Exception $e) {
             // Log the exception message
-            Log::error('Search Error: ' . $e->getMessage());
+            Log::error('Search Error: '.$e->getMessage());
 
             // Return a 500 response with error message
             return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);

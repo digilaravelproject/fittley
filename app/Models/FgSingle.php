@@ -118,7 +118,7 @@ class FgSingle extends Model
 
     public function getBannerImageUrlAttribute()
     {
-        return $this->banner_image_path ? "https://purple-gaur-534336.hostingersite.com/storage/app/public/" . $this->banner_image_path : null;
+        return $this->banner_image_path ? "https://fittelly.com/storage/app/public/" . $this->banner_image_path : null;
     }
 
 }

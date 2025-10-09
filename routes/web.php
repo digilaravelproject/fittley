@@ -26,6 +26,10 @@ use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\SearchController;
 
 // Home route
+Route::get('/time', function () {
+    return now()->toDateTimeString(); // e.g. 2025-10-09 17:42:18
+});
+
 Route::get('/', [HomepageController::class, 'index'])->name('home');
 Route::get('/search', [SearchController::class, 'search']);
 
@@ -106,7 +110,7 @@ Route::middleware(['auth', 'role:instructor'])->prefix('instructor')->name('inst
 // Public FitLive Routes
 Route::prefix('fitlive')->name('fitlive.')->group(function () {
     Route::get('/', [FitLiveController::class, 'index'])->name('index');
-    Route::get('/fitexpert', [FitLiveController::class, 'fitexpert'])->name('fitexpert');
+      Route::get('/fitexpert', [FitLiveController::class, 'fitexpert'])->name('fitexpert');
     // Scroll the fitflix vdo
     Route::get('/vdo', [FitLiveController::class, 'fitflixShortsVdo'])->name('vdo');
 
@@ -120,6 +124,7 @@ Route::prefix('fitlive')->name('fitlive.')->group(function () {
     });
 
     Route::get('/{id}', [FitLiveController::class, 'show'])->name('daily-classes.show');
+
 });
 
 

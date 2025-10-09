@@ -28,15 +28,16 @@ body {
 /* Hero Section */
 .hero-section {
     height: 20vh;
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)),
-        url("https://www.fittelly.com/storage/app/public/default-fitdoc-image.jpeg")
-            center/cover no-repeat;
+    background: 
+        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8)),
+        url('https://www.fittelly.com/storage/app/public/default-fitdoc-image.jpeg') center/cover no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     font-family: var(--title-fonts);
 }
+
 
 .hero-content h1 {
     font-size: 2.2rem;

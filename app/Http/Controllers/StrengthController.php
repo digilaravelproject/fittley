@@ -15,7 +15,7 @@ class StrengthController extends Controller
     {
         // Fetch subcategories
         $subcategories = SubCategory::where('category_id', 21)
-            ->where('id', operator: '!=', 17)
+            ->where('id', '!=', 17)
             ->orderBy('sort_order')
             ->get(['id', 'name', 'slug']);
 

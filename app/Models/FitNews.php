@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+
 
 class FitNews extends Model
 {
@@ -115,9 +118,15 @@ class FitNews extends Model
     /**
      * Generate unique channel name
      */
-    public function generateChannelName(): string
+    public static function generateChannelName_old(): string
     {
         return 'fitnews_' . $this->id . '_' . time();
+    }
+
+    public static function generateChannelName(?Carbon $when = null): string
+    {
+        $when = $when ?: now();
+        return 'fitnews_' . $when->format('Ymd_His') . '_' . Str::random(6);
     }
 
     /**
@@ -168,6 +177,6 @@ class FitNews extends Model
 
     public function getThumbnailUrlAttribute()
     {
-        return $this->thumbnail ? "https://purple-gaur-534336.hostingersite.com/storage/app/public/" . $this->thumbnail : null;
+        return $this->thumbnail ? "https://fittelly.com/storage/app/public/" . $this->thumbnail : null;
     }
 }

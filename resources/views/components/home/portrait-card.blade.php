@@ -1,19 +1,19 @@
-@props(['video', 'badge' => null, 'badgeClass' => null, 'categorySlug' => null, 'landscapeCard' => null, 'url'])
+@props(['video', 'badge' => null, 'badgeClass' => null, 'categorySlug' => null,'landscapeCard' => null, 'url'])
 <div class="content-card-wrapper ccw-portrait">
     <div class="content-card content-card-portrait"
         onclick="window.location.href='{{ $categorySlug ? route($url, ['category' => $categorySlug]) : route($url, $video) }}'">
-        @if ($badge)
-            <div class="status-badge {{ $badgeClass }}">
-                {{ $badge }}
-            </div>
-        @endif
+    @if ($badge)
+        <div class="status-badge {{ $badgeClass }}">
+            {{ $badge }}
+        </div>
+    @endif
         @php
             $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');
 
             // Smartly decide final image path
             if (!empty($video->banner_image_path)) {
                 // If accessor or manually set path is available
-                $finalImage = asset('storage/app/public/' . $video->banner_image_path);
+                $finalImage = asset('storage/app/public/' .$video->banner_image_path);
             } elseif (!empty($video->banner_image)) {
                 // If only banner_image is set, build full path
                 $finalImage = asset('storage/app/public/' . $video->banner_image);
@@ -22,13 +22,21 @@
                 $finalImage = $fallbackImage;
             }
         @endphp
-        <img src="{{ $finalImage }}" alt="{{ $video->title }}" class="card-image" loading="lazy">
+    <!--@php-->
+    <!--    // Determine the final image path-->
+    <!--    $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');-->
+    <!--    $finalImage = !empty($video->banner_image_path)-->
+    <!--        ? asset('storage/app/public/' . $video->banner_image_path)-->
+    <!--        : $fallbackImage;-->
+    <!--@endphp-->
 
-        <div class="card-overlay">
-            <div class="play-icon">
-                <i class="fas fa-play"></i>
-            </div>
+    <img src="{{ $finalImage }}" alt="{{ $video->title }}" class="card-image" loading="lazy">
+
+    <div class="card-overlay">
+        <div class="play-icon">
+            <i class="fas fa-play"></i>
         </div>
+    </div>
     </div>
 
     <div class="card-caption">

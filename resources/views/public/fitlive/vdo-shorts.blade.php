@@ -7,58 +7,72 @@
         <div class="shorts-wrapper">
             @foreach ($shorts->shuffle() as $short)
                 <div class="shorts-item">
+
                     <!-- Video -->
                     <video class="shorts-video" src="{{ asset('storage/app/public/' . $short->video_path) }}"
                         poster="{{ asset('storage/app/public/' . $short->thumbnail_path) }}" playsinline autoplay loop>
                     </video>
+
                     <!-- Top Left: User Info -->
                     <div class="shorts-user-info">
                         <img src="{{ asset('storage/app/public/default-profile1.png') }}" alt="{{ $short->uploader->name }}"
                             class="user-avatar">
                         <span class="username">{{ '@ ' . $short->title }}</span><br>
                     </div>
+
                     <!-- <div class="shorts-description1">
-                                            <p class="description-text1 line-clamp1">
-                                                {{ $short->category->name }}
-                                            </p>
-                                        </div> -->
+                            <p class="description-text1 line-clamp1">
+                                {{ $short->category->name }}
+                            </p>
+                        </div> -->
+
                     <!-- Bottom Left: Description -->
                     <div class="shorts-description">
                         <p class="description-text line-clamp" data-full="{{ $short->description }}">
                             {{ $short->description }}
                         </p>
                         <button class="read-more-btn">Read more</button>
+                    </div>
 
-                        <!-- Right Side Actions -->
-                        <div class="shorts-actions-overlay">
-                            <!-- Views -->
-                            {{-- <button class="action-btn views-btn" disabled>
+                    <!-- Right Side Actions -->
+                    <div class="shorts-actions-overlay">
+                        <!-- Views -->
+                        {{-- <button class="action-btn views-btn" disabled>
                             <i class="fas fa-eye"></i>
                             <span class="count">{{ $short->views_count ?? 0 }}</span>
                         </button> --}}
-                            <button class="action-btn like-btn {{ $short->isLiked ? 'active' : '' }}"
+
+                        <button class="action-btn like-btn {{ $short->isLiked ? 'active' : '' }}"
+                            data-id="{{ $short->id }}">
+                            <i class="far fa-thumbs-up"></i>
+
+                            <span class="count">{{ $short->likes_count }}</span>
+                        </button>
+                        <!-- <button class="action-btn like-btn {{ $short->isUnLiked ? 'active' : '' }}"
                                 data-id="{{ $short->id }}">
-                                <i class="far fa-thumbs-up"></i>
-                                <span class="count">{{ $short->likes_count }}</span>
-                            </button>
-                            <!-- <button class="action-btn like-btn {{ $short->isUnLiked ? 'active' : '' }}"
-                                                data-id="{{ $short->id }}">
-                                                <i class="far fa-thumbs-down"></i>
-                                                <span class="count">{{ $short->unlikes_count }}</span>
-                                            </button> -->
-                            <!-- <button class="action-btn like-btn" data-id="{{ $short->id }}">
-                                                <i class="fa-regular fa-comment"></i>
-                                                <span class="count">{{ $short->comments }}</span>
-                                            </button> -->
-                            <button class="action-btn share-btn" data-id="{{ $short->id }}">
-                                <i class="far fa-share-from-square"></i>
-                                <span class="count">{{ $short->shares_count }}</span>
-                            </button>
-                        </div>
+                                <i class="far fa-thumbs-down"></i>
+
+
+                                <span class="count">{{ $short->unlikes_count }}</span>
+                            </button> -->
+                        <!-- <button class="action-btn like-btn" data-id="{{ $short->id }}">
+                                <i class="fa-regular fa-comment"></i>
+
+
+                                <span class="count">{{ $short->comments }}</span>
+                            </button> -->
+
+                        <button class="action-btn share-btn" data-id="{{ $short->id }}">
+                            <i class="far fa-share-from-square"></i>
+                            <span class="count">{{ $short->shares_count }}</span>
+                        </button>
                     </div>
+
+                </div>
             @endforeach
         </div>
     </div>
+
     <style>
         navbar-expand-lg {
             display: none;
@@ -171,7 +185,7 @@
             border-radius: 10px;
             max-width: 425px;
             width: 100%;
-
+            
         }
 
 

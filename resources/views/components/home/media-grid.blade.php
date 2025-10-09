@@ -17,11 +17,9 @@ $typeText = ucfirst($type);
 @endphp
 <div class="content-card-wrapper ccw-portrait">
     <div class="content-card" onclick="window.location.href='{{ $url }}'">
-        @if($badgeClass)
         <div class="type-badge {{ $badgeClass }}">
             {{ ucfirst($type) }}
         </div>
-        @endif
         <img src="{{ $image }}" alt="{{ $title }}" class="card-image" loading="lazy">
         <div class="card-overlay">
             <div class="play-icon"><i class="fas fa-play"></i></div>

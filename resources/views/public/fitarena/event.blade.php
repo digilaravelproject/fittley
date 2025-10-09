@@ -8,7 +8,7 @@
     <section class="event-hero bg-dark text-white position-relative overflow-hidden">
         <div class="hero-background">
             @if($event->banner_image)
-                <img src="{{ asset('storage/app/public/'.$event->banner_image) }}" 
+                <img src="{{ $event->banner_image }}" 
                     alt="{{ $event->title }}" 
                     class="w-100 h-100 object-cover opacity-50">
             @else
@@ -123,7 +123,14 @@
                             <div class="mb-3">
                                 <small class="text-muted">
                                     <i class="fas fa-clock me-1"></i>
-                                    Started {{ $session->actual_start->diffForHumans() }}
+                                    @php
+                                        if($session->actual_start && $session->actual_start != ''){
+                                            $strIng = $session->actual_start->diffForHumans();
+                                        } else {
+                                            $strIng = '-';
+                                        }
+                                    @endphp
+                                    Started {{ $strIng }}
                                 </small>
                             </div>
                             

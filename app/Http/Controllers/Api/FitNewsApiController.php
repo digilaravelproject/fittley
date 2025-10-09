@@ -7,11 +7,18 @@ use App\Models\FitNews;
 use App\Models\FitCast;
 use App\Models\PostLike;
 use Illuminate\Support\Facades\Auth;
+use App\Services\AgoraService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class FitNewsApiController extends Controller
 {
+    protected $agoraService;
+
+    public function __construct(AgoraService $agoraService)
+    {
+        $this->agoraService = $agoraService;
+    }
     /**
      * Get all FitNews articles
      */
@@ -89,6 +96,16 @@ class FitNewsApiController extends Controller
                             ->exists();
                     }
 
+                    // Generate viewer token if stream is live
+                    $streamingConfig = null;
+                    // if ($item->status == 'live') {
+                        $streamingConfig = $this->agoraService->getStreamingConfig(
+                            $item->id,
+                            Auth::id() ?? 0, // Use 0 for anonymous users
+                            'subscriber'
+                        );
+                    // }
+
                     return [
                         'id' => $item->id,
                         'title' => $item->title,
@@ -109,6 +126,7 @@ class FitNewsApiController extends Controller
                         'recording_url' => $item->recording_url,
                         'type' => 'fitnews',
                         'is_like' => $isLiked,
+                        'streamingConfig' => $streamingConfig,
                     ];
                 });
 

@@ -3,7 +3,7 @@
 @section('title', 'FitInsight - Fitness Blog')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('assets/home/css/fitinsight.css') }}?v={{ time() }}">
+<link rel="stylesheet" href="{{ asset('public/assets/home/css/fitinsight.css') }}?v={{ time() }}">
 @endpush
 
 @section('content')

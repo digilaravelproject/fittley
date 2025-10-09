@@ -24,7 +24,8 @@ class FitLiveController extends Controller
         $this->agoraService = $agoraService;
     }
 
-    public function index()
+  
+  public function index()
     {
         // Get live sessions
         $liveSessions = FitLiveSession::with(['category', 'subCategory', 'instructor'])
@@ -231,7 +232,7 @@ class FitLiveController extends Controller
             'groupedArchived' => $groupedArchived,
         ]);
     }
-
+    
     public function show($id)
     {
         // Fetch subcategories
@@ -241,9 +242,9 @@ class FitLiveController extends Controller
             ->get(['id', 'name', 'slug']);
 
         $selectedSubcategory = $subcategories->firstWhere('id', $id);
-        if (!$selectedSubcategory) {
-            abort(404);
-        }
+            if (!$selectedSubcategory) {
+                abort(404);
+            }
 
         $now = Carbon::now();
 
@@ -342,7 +343,7 @@ class FitLiveController extends Controller
         $groupedArchived = $archivedSessions->groupBy(function ($session) {
             return Carbon::parse($session->scheduled_at)->format('Y-m-d');
         });
-
+        
         // echo'<pre>';print_r($archivedSessions);die;
 
         return view('tools.active-session', [

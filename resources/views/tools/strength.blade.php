@@ -173,7 +173,7 @@
             align-items: flex-start;
             border-bottom: 3px solid var(--primary-color);
             padding-bottom: 40px;
-            gap: 2rem;
+            gap: 0.5rem;
             flex-wrap: wrap;
         }
 
@@ -203,6 +203,7 @@
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
+            width: 70%;
         }
 
         .live-card {
@@ -333,6 +334,7 @@
                 display: flex;
                 flex-wrap: wrap;
                 gap: 12px;
+                width: 100%;
             }
 
             .live-card {

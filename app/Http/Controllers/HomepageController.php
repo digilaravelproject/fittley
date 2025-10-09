@@ -30,13 +30,13 @@ class HomepageController extends Controller
                 ->where('type', 'single')
                 ->orderBy('created_at', 'desc')
                 ->get();
-
+            
             $fitDocSeries = FitDoc::where('is_published', true)
                 ->where('type', 'series')
                 ->orderBy('created_at', 'desc')
                 ->get();
         }
-
+        
         $fitarenaliveEvents = collect();
         // Get live events
         $fitarenaliveEvents = FitArenaEvent::where('visibility', 'public')
@@ -51,21 +51,21 @@ class HomepageController extends Controller
         // 2. FitLive Content - Organized by Categories and Subcategories
         $fitLiveCategories = collect();
         if (class_exists('App\Models\Category')) {
-            $fitLiveCategories = Category::with(['subCategories' => function ($query) {
-                $query->with(['fitLiveSessions' => function ($q) {
+            $fitLiveCategories = Category::with(['subCategories' => function($query) {
+                $query->with(['fitLiveSessions' => function($q) {
                     $q->where('visibility', 'public')
-                        ->orderByRaw("CASE status WHEN 'live' THEN 1 WHEN 'scheduled' THEN 2 WHEN 'ended' THEN 3 END")
-                        ->orderBy('scheduled_at', 'desc');
+                      ->orderByRaw("CASE status WHEN 'live' THEN 1 WHEN 'scheduled' THEN 2 WHEN 'ended' THEN 3 END")
+                      ->orderBy('scheduled_at', 'desc');
                 }]);
             }])
-                // ->whereHas('fitLiveSessions', function($query) {
-                //     $query->where('visibility', 'public');
-                // })
-                ->where('id', '!=', 17)
-                ->orderByDesc('sort_order')
-                ->get();
+            // ->whereHas('fitLiveSessions', function($query) {
+            //     $query->where('visibility', 'public');
+            // })
+            ->where('id', '!=', 17)
+            ->orderByDesc('sort_order')
+            ->get();
         }
-
+        
         // echo '<pre>';print_r($fitLiveCategories);die;
 
         // 3. FitNews Content - Live first, then archive
@@ -76,7 +76,7 @@ class HomepageController extends Controller
                 ->with('creator')
                 ->orderBy('started_at', 'desc')
                 ->get();
-
+            
             $fitNewsArchive = FitNews::whereIn('status', ['ended', 'scheduled'])
                 ->with('creator')
                 ->orderBy('created_at', 'desc')
@@ -87,23 +87,23 @@ class HomepageController extends Controller
         $fitGuideCategories = collect();
         $fitGuides = collect();
         if (class_exists('App\Models\FgCategory')) {
-            $fitGuideCategories = FgCategory::with(['singles' => function ($query) {
+            $fitGuideCategories = FgCategory::with(['singles' => function($query) {
                 $query->where('is_published', true)
-                    ->orderBy('created_at', 'desc');
-            }, 'series' => function ($query) {
+                      ->orderBy('created_at', 'desc');
+            }, 'series' => function($query) {
                 $query->where('is_published', true)
-                    ->orderBy('created_at', 'desc');
+                      ->orderBy('created_at', 'desc');
             }])
-                ->where('is_active', true)
-                ->whereHas('singles', function ($query) {
-                    $query->where('is_published', true);
-                })
-                ->orWhereHas('series', function ($query) {
-                    $query->where('is_published', true);
-                })
-                ->orderBy('sort_order')
-                ->get();
-
+            ->where('is_active', true)
+            ->whereHas('singles', function($query) {
+                $query->where('is_published', true);
+            })
+            ->orWhereHas('series', function($query) {
+                $query->where('is_published', true);
+            })
+            ->orderBy('sort_order')
+            ->get();
+            
             // Also get simple collection for homepage_new.blade.php
             $fitGuides = collect();
             if (class_exists('App\Models\FgSingle')) {

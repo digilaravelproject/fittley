@@ -16,10 +16,17 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Services\AgoraService;
 use Illuminate\Support\Facades\DB;
 
 class HomepageController extends Controller
 {
+    protected $agoraService;
+
+    public function __construct(AgoraService $agoraService)
+    {
+        $this->agoraService = $agoraService;
+    }
     /**
      * Get all homepage content for mobile application
      */
@@ -403,16 +410,29 @@ class HomepageController extends Controller
             $expertSessions = FitLiveSession::with(['category', 'instructor'])
                 ->where('visibility', 'public')
                 ->where('id', $id)
-                ->where(function($query) {
-                    $query->where('title', 'like', '%expert%')
-                          ->orWhere('title', 'like', '%advanced%')
-                          ->orWhere('title', 'like', '%masterclass%');
-                })
+                // ->where(function($query) {
+                //     $query->where('title', 'like', '%expert%')
+                //           ->orWhere('title', 'like', '%advanced%')
+                //           ->orWhere('title', 'like', '%masterclass%');
+                // })
                 ->whereIn('status', ['scheduled', 'live'])
                 ->orderBy('scheduled_at', 'asc')
                 ->limit(10)
                 ->get()
                 ->map(function ($session) {
+                    $viewerId = auth()->check() ? auth()->id() : rand(100000, 999999);
+                    // $streamingConfig = '';
+                    // if($session->status == 'live'){
+                        $streamingConfig = [
+                                'app_id' => config('agora.app_id'),
+                                'channel' => 'fitlive_' . $session->id,
+                                'token' => $this->agoraService->generateToken('fitlive_' . $session->id, $viewerId, 'subscriber'),
+                                'uid' => $viewerId,
+                                'role' => 'subscriber',
+                                'configured' => !empty(config('agora.app_id'))
+                        ];
+                    // }
+
                     return [
                         'id' => $session->id,
                         'title' => $session->title,
@@ -424,9 +444,24 @@ class HomepageController extends Controller
                         'views' => $session->viewer_peak,
                         'scheduled_at' => $session->scheduled_at?->format('Y-m-d H:i:s'),
                         'status' => $session->status,
-                        'type' => 'fitexpert_live'
+                        'type' => 'fitexpert_live',
+                        'streamingConfig' => $streamingConfig,
                     ];
                 });
+
+            // if($expertSessions){
+            //     $viewerId = auth()->check() ? auth()->id() : rand(100000, 999999);
+            //     $expertSessions = [
+            //         'app_id' => config('agora.app_id'),
+            //         'channel' => 'fitlive_' . $session->id,
+            //         'token' => $this->agoraService->generateToken('fitlive_' . $session->id, $viewerId, 'subscriber'),
+            //         'uid' => $viewerId,
+            //         'role' => 'subscriber',
+            //         'configured' => !empty(config('agora.app_id'))
+            //     ];
+                
+            //     $expertSessions['streamingConfig'] = $streamingConfig;
+            // }
 
             // You can now shape the response however you like
             return response()->json([

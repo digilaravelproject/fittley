@@ -163,7 +163,7 @@ class FiBlog extends Model
 
     public function getFeaturedImageUrlAttribute()
     {
-        return $this->featured_image_path ? "https://purple-gaur-534336.hostingersite.com/storage/app/public/" . $this->featured_image_path : null;
+        return $this->featured_image_path ? "https://fittelly.com/storage/app/public/" . $this->featured_image_path : null;
     }
 
     public function getSocialImageUrlAttribute()
