@@ -158,11 +158,11 @@ class MobileHomepageController extends Controller
             // For FitExpert Live, we'll use sessions with 'expert' in title or specific category
             $expertSessions = FitLiveSession::with(['category', 'instructor'])
                 ->where('visibility', 'public')
-                ->where(function($query) {
-                    $query->where('title', 'like', '%expert%')
-                          ->orWhere('title', 'like', '%advanced%')
-                          ->orWhere('title', 'like', '%masterclass%');
-                })
+                // ->where(function($query) {
+                //     $query->where('title', 'like', '%expert%')
+                //           ->orWhere('title', 'like', '%advanced%')
+                //           ->orWhere('title', 'like', '%masterclass%');
+                // })
                 ->whereIn('status', ['scheduled', 'live'])
                 ->orderBy('scheduled_at', 'asc')
                 ->limit(10)
@@ -172,7 +172,7 @@ class MobileHomepageController extends Controller
                         'id' => $session->id,
                         'title' => $session->title,
                         'category' => $session->category ? $session->category->name : 'Expert Session',
-                        'image' => $session->banner_image ? asset('storage/app/public/' . $session->banner_image) : null,
+                        'image' => $session->banner_image ? asset('' . $session->banner_image) : null,
                         'recording_url' => $session->recording_url,
                         'description' => $session->description,
                         'instructor' => $session->instructor ? $session->instructor->name : 'Expert',
@@ -205,7 +205,7 @@ class MobileHomepageController extends Controller
                         'title' => $event->title,
                         'category' => $event->event_type ?? 'Arena Event',
                         // 'image' => $event->banner_image ? asset('storage/app/public/' . $event->banner_image) : null,
-                        'image' => $event->banner_image ? "https://purple-gaur-534336.hostingersite.com/storage/app/public/" . $event->banner_image : null,
+                        'image' => $event->banner_image ? "https://fittelly.com/storage/app/public/" . $event->banner_image : null,
                         'description' => $event->description,
                         'start_date' => $event->start_date?->format('Y-m-d H:i:s'),
                         'end_date' => $event->end_date?->format('Y-m-d H:i:s'),
@@ -289,7 +289,7 @@ class MobileHomepageController extends Controller
                         'title' => $item->title,
                         'category' => 'News',
                         // 'image' => $item->thumbnail ? asset('storage/app/public/' . $item->thumbnail) : null,
-                        'image' => $item->thumbnail ? "https://purple-gaur-534336.hostingersite.com/storage/app/public/" . $item->thumbnail : null,
+                        'image' => $item->thumbnail ? "https://fittelly.com/storage/app/public/" . $item->thumbnail : null,
                         'description' => $item->description,
                         'creator' => $item->creator ? $item->creator->name : 'News Team',
                         'scheduled_at' => $item->scheduled_at?->format('Y-m-d H:i:s'),
@@ -352,7 +352,7 @@ class MobileHomepageController extends Controller
                         'title' => $cast->title,
                         'description' => $cast->description,
                         // 'thumbnail' => $cast->thumbnail ? asset('storage/app/public/' . $cast->thumbnail) : null,
-                        'thumbnail' =>  $cast->thumbnail ? "https://purple-gaur-534336.hostingersite.com/storage/app/public/" .  $cast->thumbnail : null,
+                        'thumbnail' =>  $cast->thumbnail ? "https://fittelly.com/storage/app/public/" .  $cast->thumbnail : null,
                         'video_url' => $cast->video_url,
                         'duration' => $cast->duration,
                         'category' => $cast->category ? [

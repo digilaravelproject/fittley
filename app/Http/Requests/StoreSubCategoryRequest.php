@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreSubCategoryRequest extends FormRequest
 {
@@ -19,14 +20,32 @@ class StoreSubCategoryRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules_old(): array
     {
         $subCategoryId = $this->route('subCategory') ? $this->route('subCategory')->id : null;
-        
+
         return [
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:120',
             'slug' => 'nullable|string|unique:sub_categories,slug,' . $subCategoryId,
+            'sort_order' => 'nullable|integer|min:0',
+        ];
+    }
+    public function rules(): array
+    {
+        $subCategoryId = $this->route('subCategory') ? $this->route('subCategory')->id : null;
+
+        return [
+            'category_id' => 'required|exists:categories,id',
+            'name' => 'required|string|max:120',
+            'slug' => [
+                'nullable',
+                'string',
+                // Check uniqueness only if slug is provided and different from the current slug
+                Rule::unique('sub_categories')->ignore($subCategoryId)->where(function ($query) use ($subCategoryId) {
+                    return $query->where('id', '!=', $subCategoryId);
+                }),
+            ],
             'sort_order' => 'nullable|integer|min:0',
         ];
     }

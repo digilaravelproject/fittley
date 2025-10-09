@@ -386,10 +386,10 @@
             <div class="activity-btn-container">
 
                 <?php $__currentLoopData = $subcategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subcategory): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <a href="<?php echo e(url($subcategory->slug)); ?>"
-                        class="activity-btn <?php echo e(request()->is($subcategory->slug) ? 'active' : ''); ?>">
-                        <i class="fas fa-dumbbell"></i>
-                        <span><?php echo e($subcategory->name); ?></span>
+                    <a href="<?php echo e(route('fitlive.daily-classes.show', $subcategory->id)); ?>"
+                        class="activity-btn <?php echo e(request()->is('fitlive/'.$subcategory->id) ? 'active' : ''); ?>">
+                            <i class="fas fa-dumbbell"></i>
+                            <span><?php echo e($subcategory->name); ?></span>
                     </a>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
@@ -457,8 +457,10 @@
                                 <p class="session-time"><?php echo e($slot['time']); ?></p>
 
                                 <?php if($slot['is_live']): ?>
-                                    <a href="<?php echo e(route('subcategory.show', $selectedSubcategory->slug)); ?>#session-<?php echo e($slot['id']); ?>"
+                                    <a href="<?php echo e(route('fitlive.session', $slot['id'])); ?>"
                                         class="btn-outline-warning text-decoration-none">Join Now</a>
+                                <?php elseif($slot['is_passed'] && $slot['is_passed'] == 1): ?>
+                                    <button class="btn btn-outline-warning text-gray" disabled>Ended</button>
                                 <?php else: ?>
                                     <span class="btn-outline-warning disabled">Upcoming</span>
                                 <?php endif; ?>
@@ -470,6 +472,7 @@
                         <p class="text-muted">No live sessions today.</p>
                     <?php endif; ?>
                 </div>
+
             </div>
         </div>
 
@@ -488,7 +491,7 @@
                     <?php $__currentLoopData = $sessions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $arch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="col-12 col-sm-6 col-lg-3">
                             <div class="card h-100">
-                                <img src="<?php echo e(asset('storage/app/public/' . $arch->banner_image_url)); ?>" class="card-img-top" alt="<?php echo e($arch->title); ?>">
+                                <img src="<?php echo e($arch->banner_image); ?>" class="card-img-top" alt="<?php echo e($arch->title); ?>">
                                 <div class="p-2">
                                     <h6 class="fw-bold text-white mb-1"><?php echo e($arch->title ?? 'Untitled Session'); ?></h6>
                                     <p class="small  --text-muted mb-0">

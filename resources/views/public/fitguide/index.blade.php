@@ -7,134 +7,134 @@
 @endpush
 
 @section('content')
-    {{-- @php
-        $liveStreams = $liveStreams ?? collect();
-        $upcomingStreams = $upcomingStreams ?? collect();
-        $pastStreams = $pastStreams ?? collect();
-        $heroStream = $latestStream ?? ($liveStreams->first() ?? null);
-    @endphp --}}
-
     <div class="fitdoc-container">
 
         {{-- HERO --}}
         <section class="hero-section">
             <div class="container-fluid">
-                <div class="hero-content text-white">
-                    <h1>FitGuide</h1>
+                    <h1>
+                        {{ $categories->firstWhere('slug', request('category'))->name ?? 'FitGuide' }}
+                    </h1>
                     <p>Master your fitness journey with comprehensive training guides, workout programs, and expert-led
                         series.</p>
-                    {{-- @if ($heroStream)
-                        <div class="live-now-alert">
-
-                            <strong>{{ $heroStream->title }}</strong>
-                            <a href="{{ route('fitnews.show', $heroStream) }}" class="btn btn-light btn-sm ms-2">
-                                Watch Now
-                            </a>
-                        </div>
-                    @endif --}}
                 </div>
             </div>
         </section>
 
-        <div class="container px-3 mt-1 mb-5">
-            <!-- Error Message if there's an error -->
-            @if (isset($error))
-                <div class="content-section">
-                    <div class="text-center">
-                        <h3 style="color: #e50914;">Error: {{ $error }}</h3>
-                    </div>
-                </div>
-            @endif
-            {{-- <!-- Categories Section -->
-            @if (isset($categories) && $categories->count() > 0)
-                <section class="content-section">
-                    <h2 class="section-title">
-                         Training Categories
-                    </h2>
-                    <div class="row">
-                        @foreach ($categories as $category)
-                            <div class="col-md-6 col-lg-3 mb-4">
-                                <a href="{{ route('fitguide.category', $category->slug) }}" style="text-decoration: none;">
-                                    <div class="category-card">
-                                        <div class="category-icon">
-                                          <i class="fas fa-dumbbell"></i>
-                                        </div>
-                                        <h3 class="category-title">{{ $category->name }}</h3>
-                                        <p style="color: #8c8c8c;">Available Programs</p>
-                                    </div>
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
-                </section>
-            @endif --}}
-            <!-- Featured Singles -->
-            @if (isset($featuredSingles) && $featuredSingles->count() > 0)
+        <div class="container px-2 mt-1 mb-5">
+            <!-- Filter Buttons for Categories -->
+            <div class="filter-buttons">
+                <button class="filter-btn {{ request('category') == null ? 'active' : '' }}" data-filter="all"
+                    onclick="window.location.href='{{ route('fitguide.index') }}'">All</button>
 
-                <section class="content-section" data-type="live">
-                    <h2 class="section-title">
-                        Featured Quick Guides
-                    </h2>
+                @foreach ($categories->sortBy('sort_order')->values() as $category)
+                    <button class="filter-btn {{ request('category') == $category->slug ? 'active' : '' }}"
+                        data-filter="{{ $category->slug }}"
+                        onclick="window.location.href='{{ route('fitguide.index', ['category' => $category->slug]) }}'">
+                        {{ $category->name }}
+                    </button>
+                @endforeach
+
+            </div>
+
+
+            <!-- Content Based on Category Selection -->
+            <div class="filterable-content">
+                <!-- Featured Quick Guides -->
+                @if (isset($featuredSingles) && $featuredSingles->count() > 0)
+                    <section class="content-section d-none" data-category="quick-guides">
+                        <h2 class="section-title">Featured Quick Guides</h2>
+                        <div class="media-grid-wrapper">
+                            @foreach ($featuredSingles->sortByDesc('id') as $single)
+                                <x-home.media-grid :title="$single->title" :image="$single->banner_image_url ??
+                                    'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'" :url="route('fitguide.single.show', $single->slug)" :year="optional($single->created_at)->format('Y')" :rating="null" :description="Str::limit($single->description ?? 'Training guide description', 100)" />
+                            @endforeach
+                        </div>
+                    </section>
+                @endif
+
+                <!-- Featured Training Series -->
+                @if (isset($featuredSeries) && $featuredSeries->count() > 0)
+                    <section class="content-section d-none" data-category="training-series">
+                        <h2 class="section-title">Featured Training Series</h2>
+                        <div class="media-grid-wrapper">
+                            @foreach ($featuredSeries->sortByDesc('id') as $series)
+                                <x-home.media-grid :title="$series->title" :image="$series->banner_image_url ??
+                                    'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'" :url="route('fitguide.series.show', $series->slug)" :year="optional($series->created_at)->format('Y')" :rating="null" :description="Str::limit($series->description ?? 'Training series description', 100)" />
+                            @endforeach
+                        </div>
+                    </section>
+                @endif
+
+                <!-- All Quick Guides -->
+                @if (isset($allSingles) && $allSingles->count() > 0)
+                    <section class="content-section" data-category="quick-guides">
+                        <h2 class="section-title">All Quick Guides</h2>
+                        <div class="media-grid-wrapper">
+                            @foreach ($allSingles->sortByDesc('id') as $single)
+                                <x-home.media-grid :title="$single->title" :image="$single->banner_image_url ??
+                                    'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'" :url="route('fitguide.single.show', $single->slug)"
+                                    :year="optional($single->created_at)->format('Y')" :rating="null"
+                                    :description="Str::limit($single->description ?? 'Training guide description', 100)" />
+                            @endforeach
+                        </div>
+                    </section>
+                @endif
+
+                <!-- All Training Series -->
+                @php
+                $desiredOrder = ['fittrain', 'fitcare', 'fitfuel', 'fitwell', 'fitcast-live'];
+                @endphp
+        
+                @if (isset($allSeries) && $allSeries->count() > 0)
+        
+                @if (!request('category')) {{-- Show all categories in order when "All" is selected --}}
+                @foreach ($desiredOrder as $slug)
+                @php
+                $category = $categories->firstWhere('slug', $slug);
+                $seriesInCategory = $allSeries->where('fg_category_id', $category->id ?? null);
+                @endphp
+        
+                @if ($seriesInCategory->count() > 0)
+                <section class="content-section" data-category="training-series">
+                    <h2 class="section-title">{{ $category->name ?? '' }} - Training Series</h2>
                     <div class="media-grid-wrapper">
-                        @foreach ($featuredSingles as $single)
-                            <x-home.media-grid :title="$single->title" :image="$single->banner_image_url
-                                ? $single->banner_image_url
-                                : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'" :url="route('fitguide.single.show', $single->slug)" :type="'quick-guide'"
-                                badgeClass="type-badge" :year="optional($single->created_at)->format('Y')" :rating="null" :description="Str::limit($single->description ?? 'Training guide description', 100)" />
+                        @foreach ($seriesInCategory->sortByDesc('id') as $series)
+                        <x-home.media-grid :title="$series->title"
+                            :image="$series->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'"
+                            :url="route('fitguide.series.show', $series->slug)" 
+                            :year="optional($series->created_at)->format('Y')" :rating="null"
+                            :description="Str::limit($series->description ?? 'Training series description', 100)" />
                         @endforeach
                     </div>
                 </section>
-            @endif
-
-
-            <!-- Featured Series -->
-            @if (isset($featuredSeries) && $featuredSeries->count() > 0)
-                <section class="content-section" data-type="series">
-                    <h2 class="section-title">
-                        Featured Training Series
-                    </h2>
+                @endif
+                @endforeach
+        
+                @else {{-- If specific category selected, show only that category's training series --}}
+                @php
+                $selectedCategory = $categories->firstWhere('slug', request('category'));
+                $filteredSeries = $allSeries->where('fg_category_id', $selectedCategory->id ?? null);
+                @endphp
+        
+                @if ($filteredSeries->count() > 0)
+                <section class="content-section" data-category="training-series">
+                    <h2 class="section-title">{{ $selectedCategory->name ?? '' }} - Training Series</h2>
                     <div class="media-grid-wrapper">
-                        @foreach ($featuredSeries as $series)
-                            <x-home.media-grid :title="$series->title" :image="$series->banner_image_url ??
-                                'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'" :url="route('fitguide.series.show', $series->slug)" :type="'series'"
-                                badgeClass="series-badge" :year="optional($series->created_at)->format('Y')" :rating="null" :description="Str::limit($series->description ?? 'Training series description', 100)" />
+                        @foreach ($filteredSeries->sortByDesc('id') as $series)
+                        <x-home.media-grid :title="$series->title"
+                            :image="$series->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'"
+                            :url="route('fitguide.series.show', $series->slug)" 
+                            :year="optional($series->created_at)->format('Y')" :rating="null"
+                            :description="Str::limit($series->description ?? 'Training series description', 100)" />
                         @endforeach
                     </div>
                 </section>
-            @endif
-
-
-            <!-- All Quick Guides -->
-            @if (isset($allSingles) && $allSingles->count() > 0)
-                <section class="content-section" data-type="quick-guides">
-                    <h2 class="section-title">
-                        All Quick Guides
-                    </h2>
-                    <div class="media-grid-wrapper">
-                        @foreach ($allSingles as $single)
-                            <x-home.media-grid :title="$single->title" :image="$single->banner_image_url ??
-                                'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'" :url="route('fitguide.single.show', $single->slug)" :type="'quick-guide'"
-                                badgeClass="type-badge" :year="optional($single->created_at)->format('Y')" :rating="null" :description="Str::limit($single->description ?? 'Training guide description', 100)" />
-                        @endforeach
-                    </div>
-                </section>
-            @endif
-            <!-- All Training Series -->
-            @if (isset($allSeries) && $allSeries->count() > 0)
-                <section class="content-section" data-type="training-series">
-                    <h2 class="section-title">
-                        All Training Series
-                    </h2>
-                    <div class="media-grid-wrapper">
-                        @foreach ($allSeries as $series)
-                            <x-home.media-grid :title="$series->title" :image="$series->banner_image_url ??
-                                'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'" :url="route('fitguide.series.show', $series->slug)" :type="'series'"
-                                badgeClass="series-badge" :year="optional($series->created_at)->format('Y')" :rating="null" :description="Str::limit($series->description ?? 'Training series description', 100)" />
-                        @endforeach
-                    </div>
-                </section>
-            @endif
-
+                @endif
+                @endif
+        
+                @endif
+            </div>
 
             <!-- Coming Soon Message if no content -->
             @if (
@@ -144,7 +144,6 @@
                         (!isset($categories) || $categories->count() === 0)))
                 <section class="content-section">
                     <div class="text-center py-5">
-
                         <h2 style="color: #fff; margin-bottom: 1rem;">Coming Soon</h2>
                         <p style="color: #aaa; font-size: 1.1rem;">
                             Comprehensive training guides and workout programs are being prepared. Get ready to transform
@@ -157,3 +156,30 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const contentSections = document.querySelectorAll('.content-section[data-category]');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    const filter = this.getAttribute('data-filter');
+
+                    contentSections.forEach(section => {
+                        // Check if the category matches the filter
+                        if (filter === 'all' || section.getAttribute('data-category') ===
+                            filter) {
+                            section.style.display = '';
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+@endpush

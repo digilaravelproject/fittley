@@ -5,517 +5,372 @@
 @push('styles')
 <style>
     :root {
-        --fittelly-orange: #f7a31a;
-        --fittelly-orange-hover: #e8941a;
-        --netflix-black: #000;
-        --netflix-dark-gray: #141414;
-        --netflix-gray: #2f2f2f;
-        --netflix-light-gray: #8c8c8c;
-        --netflix-white: #ffffff;
+        --primary-color: #f7a31a;
+        --dark-bg: #121212;
+        --dark-card-bg: #1e1e1e;
+        --light-text: #e0e0e0;
+        --muted-text: #a0a0a0;
+        --hover-shadow: 0 10px 30px rgba(247, 163, 26, 0.3);
     }
 
     body {
-        background-color: var(--netflix-black);
-        color: var(--netflix-white);
+        background-color: var(--dark-bg);
+        color: var(--light-text);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    /* Category Header */
-    .category-header {
-        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), 
-                    url('{{ $category->banner_image_url ?: "https://images.unsplash.com/photo-1571019613914-85f342c75c29?ixlib=rb-4.0.3" }}') center/cover;
-        min-height: 50vh;
+    a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    a:hover {
+        color: #e8941a;
+        text-decoration: underline;
+    }
+
+    /* Hero Section */
+    .hero {
+        background: linear-gradient(rgba(18, 18, 18, 0.7), rgba(18, 18, 18, 0.9)),
+        url('{{ $category->banner_image_url ?: "https://images.unsplash.com/photo-1571019613914-85f342c75c29?ixlib=rb-4.0.3" }}') center center/cover no-repeat;
+        min-height: 40vh;
         display: flex;
         align-items: center;
-        position: relative;
+        justify-content: center;
+        padding: 2rem 1rem;
+        text-align: center;
+        border-radius: 12px;
+        margin-bottom: 3rem;
     }
 
-    .category-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(45deg, rgba(247, 163, 26, 0.1), rgba(0,0,0,0.8));
-    }
-
-    .category-header-content {
-        position: relative;
-        z-index: 2;
-    }
-
-    .category-title {
-        font-size: 3.5rem;
+    .hero h1 {
+        font-size: 2.8rem;
         font-weight: 800;
-        margin-bottom: 1rem;
-        line-height: 1.2;
+        margin-bottom: 0.5rem;
+        color: #fff;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
     }
 
-    .category-description {
+    .hero p {
         font-size: 1.2rem;
-        color: var(--netflix-light-gray);
+        max-width: 700px;
+        margin: 0 auto;
+        color: #ddd;
         line-height: 1.6;
-        max-width: 600px;
-        margin-bottom: 1rem;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
     }
 
-    .category-stats {
+    /* Stats */
+    .stats {
         display: flex;
-        align-items: center;
+        justify-content: center;
         gap: 2rem;
-        flex-wrap: wrap;
+        margin-top: 1rem;
+        color: var(--muted-text);
+        font-weight: 600;
     }
 
-    .stat-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--netflix-light-gray);
-        font-size: 0.95rem;
+    .stats i {
+        color: var(--primary-color);
+        margin-right: 0.5rem;
     }
 
-    .stat-item i {
-        color: var(--fittelly-orange);
+    /* Articles Grid */
+    .articles {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
     }
 
-    /* Content Section */
-    .content-section {
-        padding: 4rem 0;
-    }
-
-    /* Article Cards */
-    .content-card {
-        background: var(--netflix-dark-gray);
+    .card-article {
+        background: var(--dark-card-bg);
         border-radius: 12px;
         overflow: hidden;
-        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        display: flex;
+        flex-direction: column;
         cursor: pointer;
-        position: relative;
-        height: 400px;
-        margin-bottom: 2rem;
-        border: 1px solid #333;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .content-card:hover {
-        transform: scale(1.05);
-        z-index: 10;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+    .card-article:hover {
+        transform: translateY(-6px);
+        box-shadow: var(--hover-shadow);
     }
 
-    .card-image {
+    .card-img {
         width: 100%;
-        height: 220px;
+        height: 180px;
         object-fit: cover;
-        transition: transform 0.3s ease;
+        border-bottom: 3px solid var(--primary-color);
     }
 
-    .content-card:hover .card-image {
-        transform: scale(1.1);
-    }
-
-    .card-content {
-        padding: 1.5rem;
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(transparent, rgba(20, 20, 20, 0.95));
+    .card-body {
+        padding: 1.2rem 1rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .card-title {
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: var(--netflix-white);
+        font-size: 1.2rem;
+        font-weight: 700;
         margin-bottom: 0.5rem;
+        color: #fff;
     }
 
     .card-meta {
         display: flex;
-        align-items: center;
-        gap: 1rem;
-        color: var(--netflix-light-gray);
+        gap: 1.2rem;
         font-size: 0.9rem;
-        margin-bottom: 0.5rem;
+        color: var(--muted-text);
+        margin-bottom: 0.8rem;
     }
 
     .card-description {
-        color: var(--netflix-light-gray);
-        font-size: 0.85rem;
+        flex-grow: 1;
+        font-size: 0.95rem;
+        color: #ccc;
         line-height: 1.4;
+        overflow: hidden;
         display: -webkit-box;
+        line-clamp: 2;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .type-badge {
-        position: absolute;
-        top: 15px;
-        left: 15px;
-        background: var(--fittelly-orange);
-        color: var(--netflix-black);
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
     }
 
     /* Sidebar */
-    .sidebar-card {
-        background: var(--netflix-dark-gray);
-        border-radius: 12px;
-        overflow: hidden;
-        margin-bottom: 2rem;
-        border: 1px solid #333;
-    }
-
-    .sidebar-card .card-header {
-        background: var(--fittelly-orange);
-        color: var(--netflix-black);
-        font-weight: 600;
-        padding: 1rem 1.5rem;
-    }
-
-    .sidebar-card .card-body {
+    .sidebar {
+        background: var(--dark-card-bg);
         padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        margin-top: 3rem;
+    }
+
+    .sidebar h3 {
+        color: #fff;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 0.5rem;
     }
 
     .sidebar-item {
         display: flex;
         gap: 1rem;
         margin-bottom: 1rem;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid #333;
+        cursor: pointer;
+        transition: background-color 0.25s ease;
+        padding: 0.5rem;
+        border-radius: 8px;
     }
 
-    .sidebar-item:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        border-bottom: none;
+    .sidebar-item:hover {
+        background-color: rgba(247, 163, 26, 0.15);
     }
 
     .sidebar-item img {
-        width: 60px;
-        height: 60px;
+        width: 64px;
+        height: 64px;
         object-fit: cover;
         border-radius: 8px;
+        flex-shrink: 0;
     }
 
-    .sidebar-item-content h6 {
-        color: var(--netflix-white);
-        margin-bottom: 0.25rem;
-        font-size: 0.9rem;
-        line-height: 1.3;
-    }
-
-    .sidebar-item-content small {
-        color: var(--netflix-light-gray);
-    }
-
-    /* Filter and Sort */
-    .filter-section {
-        background: var(--netflix-dark-gray);
-        border-radius: 12px;
-        padding: 2rem;
-        margin-bottom: 3rem;
-        border: 1px solid #333;
-    }
-
-    .filter-row {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .filter-group {
+    .sidebar-item-content {
+        flex-grow: 1;
         display: flex;
         flex-direction: column;
-        gap: 0.5rem;
+        justify-content: center;
     }
 
-    .filter-group label {
-        color: var(--netflix-white);
-        font-weight: 500;
-        font-size: 0.9rem;
+    .sidebar-item-title {
+        color: #fff;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
     }
 
-    .filter-group select,
-    .filter-group input {
-        background: var(--netflix-gray);
-        border: 1px solid #333;
-        color: var(--netflix-white);
-        border-radius: 8px;
+    .sidebar-item-date {
+        font-size: 0.85rem;
+        color: var(--muted-text);
+    }
+
+    /* Search + Sort */
+    .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .filter-bar input[type="text"],
+    .filter-bar select {
         padding: 0.5rem 1rem;
-        min-width: 150px;
+        border-radius: 8px;
+        border: none;
+        background-color: var(--dark-card-bg);
+        color: var(--light-text);
+        font-size: 1rem;
+        min-width: 180px;
+        transition: box-shadow 0.3s ease;
     }
 
-    .filter-group select:focus,
-    .filter-group input:focus {
+    .filter-bar input[type="text"]:focus,
+    .filter-bar select:focus {
         outline: none;
-        border-color: var(--fittelly-orange);
-        box-shadow: 0 0 0 2px rgba(247, 163, 26, 0.2);
+        box-shadow: 0 0 8px var(--primary-color);
     }
 
     /* Pagination */
     .pagination {
-        --bs-pagination-bg: var(--netflix-dark-gray);
-        --bs-pagination-border-color: #333;
-        --bs-pagination-color: var(--netflix-white);
-        --bs-pagination-hover-bg: #333;
-        --bs-pagination-hover-color: #fff;
-        --bs-pagination-active-bg: var(--fittelly-orange);
-        --bs-pagination-active-border-color: var(--fittelly-orange);
+        justify-content: center;
     }
 
-    /* Empty State */
-    .empty-state {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: var(--netflix-dark-gray);
-        border-radius: 12px;
-        border: 1px solid #333;
-    }
-
-    .empty-state i {
-        font-size: 4rem;
-        color: var(--netflix-light-gray);
-        margin-bottom: 1rem;
-    }
-
-    .empty-state h3 {
-        color: var(--netflix-white);
-        margin-bottom: 1rem;
-    }
-
-    .empty-state p {
-        color: var(--netflix-light-gray);
-        margin-bottom: 2rem;
+    .pagination .page-item.active .page-link {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: #121212;
+        font-weight: 700;
     }
 
     /* Responsive */
     @media (max-width: 768px) {
-        .category-title {
-            font-size: 2.5rem;
+        .hero h1 {
+            font-size: 2rem;
         }
-        
-        .category-stats {
-            gap: 1rem;
+
+        .articles {
+            grid-template-columns: 1fr;
         }
-        
-        .filter-row {
+
+        .filter-bar {
             flex-direction: column;
             align-items: stretch;
         }
-        
-        .filter-group {
+
+        .filter-bar input[type="text"],
+        .filter-bar select {
             width: 100%;
+            min-width: unset;
+        }
+
+        .sidebar {
+            margin-top: 2rem;
         }
     }
 </style>
 @endpush
 
 @section('content')
-<!-- Category Header -->
-<section class="category-header">
-    <div class="container">
-        <div class="category-header-content">
-            <h1 class="category-title">{{ $category->name }}</h1>
-            
-            @if($category->description)
-                <p class="category-description">{{ $category->description }}</p>
-            @endif
-            
-            <div class="category-stats">
-                <div class="stat-item">
-                    <i class="fas fa-newspaper"></i>
-                    <span>{{ $blogs->total() }} articles</span>
-                </div>
-                <div class="stat-item">
-                    <i class="fas fa-eye"></i>
-                    <span>{{ number_format($blogs->sum('views_count')) }} total views</span>
-                </div>
-                <div class="stat-item">
-                    <i class="fas fa-heart"></i>
-                    <span>{{ number_format($blogs->sum('likes_count')) }} total likes</span>
-                </div>
-            </div>
+<!-- Hero Section -->
+<section class="hero">
+    <div>
+        <h1>{{ $category->name }}</h1>
+        @if($category->description)
+        <p>{{ $category->description }}</p>
+        @endif
+        <div class="stats" aria-label="Category statistics">
+            <div><i class="fas fa-newspaper"></i> {{ $blogs->total() }} Articles</div>
+            <div><i class="fas fa-eye"></i> {{ number_format($blogs->sum('views_count')) }} Views</div>
+            <div><i class="fas fa-heart"></i> {{ number_format($blogs->sum('likes_count')) }} Likes</div>
         </div>
     </div>
 </section>
 
 <!-- Main Content -->
-<section class="content-section">
-    <div class="container">
-        <div class="row">
-            <!-- Articles -->
-            <div class="col-lg-8">
-                <!-- Filter and Sort -->
-                <div class="filter-section">
-                    <form method="GET" class="filter-row">
-                        <div class="filter-group">
-                            <label for="search">Search</label>
-                            <input type="text" name="search" id="search" 
-                                   value="{{ request('search') }}" 
-                                   placeholder="Search articles...">
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label for="sort">Sort by</label>
-                            <select name="sort" id="sort">
-                                <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>
-                                <option value="popular" {{ request('sort') == 'popular' ? 'selected' : '' }}>Most Popular</option>
-                                <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-primary" style="background: var(--fittelly-orange); border: none; color: var(--netflix-black);">
-                                <i class="fas fa-search"></i> Filter
-                            </button>
-                        </div>
-                        
-                        @if(request()->hasAny(['search', 'sort']))
-                            <div class="filter-group">
-                                <label>&nbsp;</label>
-                                <a href="{{ route('fitinsight.category', $category) }}" class="btn btn-outline-secondary" style="border-color: #333; color: var(--netflix-white);">
-                                    <i class="fas fa-times"></i> Clear
-                                </a>
-                            </div>
-                        @endif
-                    </form>
-                </div>
+<section class="container">
+    <div class="row">
+        <!-- Articles Column -->
+        <div class="col-lg-8">
+            <!-- Filter Bar -->
+            <form method="GET" class="filter-bar" role="search" aria-label="Search and sort articles">
+                <input type="text" name="search" id="search" value="{{ request('search') }}"
+                    placeholder="Search articles..." aria-label="Search articles" autocomplete="off">
 
-                <!-- Articles Grid -->
-                @if($blogs->count() > 0)
-                    <div class="row">
-                        @foreach($blogs as $blog)
-                            <div class="col-lg-6 mb-4">
-                                <div class="content-card" onclick="window.location.href='{{ route('fitinsight.show', $blog) }}'">
-                                    @if($blog->featured_image_path)
-                                        <img src="{{ $blog->featured_image_url }}" class="card-image" 
-                                             alt="{{ $blog->featured_image_alt ?: $blog->title }}">
-                                    @else
-                                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3" class="card-image" 
-                                             alt="{{ $blog->title }}">
-                                    @endif
-                                    <div class="type-badge">{{ $category->name }}</div>
-                                    <div class="card-content">
-                                        <h3 class="card-title">{{ $blog->title }}</h3>
-                                        <div class="card-meta">
-                                            <span><i class="fas fa-eye"></i> {{ number_format($blog->views_count) }}</span>
-                                            <span><i class="fas fa-heart"></i> {{ number_format($blog->likes_count) }}</span>
-                                            <span><i class="fas fa-share"></i> {{ number_format($blog->shares_count) }}</span>
-                                        </div>
-                                        <p class="card-description">{{ $blog->excerpt_or_content }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+                <select name="sort" id="sort" aria-label="Sort articles">
+                    <option value="latest" {{ request('sort')=='latest' ? 'selected' : '' }}>Latest</option>
+                    <option value="popular" {{ request('sort')=='popular' ? 'selected' : '' }}>Most Popular</option>
+                    <option value="oldest" {{ request('sort')=='oldest' ? 'selected' : '' }}>Oldest</option>
+                </select>
+            </form>
 
-                    <!-- Pagination -->
-                    <div class="d-flex justify-content-center mt-4">
-                        {{ $blogs->appends(request()->query())->links() }}
+            @if($blogs->count() > 0)
+            <div class="articles" role="list">
+                @foreach($blogs as $blog)
+                <article role="listitem" tabindex="0" class="card-article"
+                    onclick="window.location.href='{{ route('fitinsight.show', $blog) }}'"
+                    onkeypress="if(event.key === 'Enter') window.location.href='{{ route('fitinsight.show', $blog) }}'">
+                    @if($blog->featured_image_path)
+                    <img src="{{ $blog->featured_image_url }}" alt="{{ $blog->featured_image_alt ?: $blog->title }}"
+                        class="card-img" loading="lazy">
+                    @else
+                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3"
+                        alt="Placeholder Image" class="card-img" loading="lazy">
+                    @endif
+                    <div class="card-body">
+                        <h2 class="card-title">{{ Str::limit($blog->title, 60) }}</h2>
+                        <div class="card-meta">
+                            <span><i class="fas fa-user"></i> {{ $blog->author->name }}</span>
+                            <span><i class="fas fa-calendar-alt"></i> {{ $blog->published_at->format('M d, Y') }}</span>
+                            <span><i class="fas fa-eye"></i> {{ number_format($blog->views_count) }}</span>
+                        </div>
+                        <p class="card-description">{{ Str::limit(strip_tags($blog->content), 150) }}</p>
                     </div>
-                @else
-                    <!-- Empty State -->
-                    <div class="empty-state">
-                        <i class="fas fa-newspaper"></i>
-                        <h3>No articles found</h3>
-                        <p>There are no articles in this category yet, or no articles match your search criteria.</p>
-                        <a href="{{ route('fitinsight.index') }}" class="btn btn-primary" style="background: var(--fittelly-orange); border: none; color: var(--netflix-black);">
-                            <i class="fas fa-arrow-left"></i> Back to All Articles
-                        </a>
-                    </div>
-                @endif
+                </article>
+                @endforeach
             </div>
 
-            <!-- Sidebar -->
-            <div class="col-lg-4">
-                <!-- Featured Articles from this Category -->
-                @if($featuredBlogs->count() > 0)
-                <div class="sidebar-card">
-                    <div class="card-header">
-                        <i class="fas fa-star me-2"></i>Featured in {{ $category->name }}
-                    </div>
-                    <div class="card-body">
-                        @foreach($featuredBlogs as $featured)
-                            <div class="sidebar-item" onclick="window.location.href='{{ route('fitinsight.show', $featured) }}'">
-                                @if($featured->featured_image_path)
-                                    <img src="{{ $featured->featured_image_url }}" alt="{{ $featured->title }}">
-                                @else
-                                    <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3" alt="{{ $featured->title }}">
-                                @endif
-                                <div class="sidebar-item-content">
-                                    <h6>{{ Str::limit($featured->title, 50) }}</h6>
-                                    <small>{{ $featured->published_at_formatted }}</small>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
+            <nav aria-label="Page navigation" class="mt-4">
+                {{ $blogs->links() }}
+            </nav>
 
-                <!-- All Categories -->
-                @if($categories->count() > 0)
-                <div class="sidebar-card">
-                    <div class="card-header">
-                        <i class="fas fa-folder me-2"></i>All Categories
-                    </div>
-                    <div class="card-body">
-                        @foreach($categories as $cat)
-                            <a href="{{ route('fitinsight.category', $cat) }}" 
-                               class="d-block text-decoration-none mb-2 {{ $cat->id == $category->id ? 'text-warning' : 'text-light' }}">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span>{{ $cat->name }}</span>
-                                    <span class="badge bg-secondary">{{ $cat->published_blogs_count }}</span>
-                                </div>
-                            </a>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
-
-                <!-- Newsletter -->
-                <div class="sidebar-card">
-                    <div class="card-header">
-                        <i class="fas fa-envelope me-2"></i>Stay Updated
-                    </div>
-                    <div class="card-body">
-                        <p class="text-light mb-3">Get the latest {{ $category->name }} articles delivered to your inbox.</p>
-                        <form>
-                            <div class="mb-3">
-                                <input type="email" class="form-control" placeholder="Your email address" 
-                                       style="background: var(--netflix-gray); border: 1px solid #333; color: var(--netflix-white);">
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100" 
-                                    style="background: var(--fittelly-orange); border: none; color: var(--netflix-black);">
-                                Subscribe
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+            @else
+            <p class="text-muted mt-4">No articles found for your search.</p>
+            @endif
         </div>
+
+        <!-- Sidebar Column -->
+        <aside class="col-lg-4 sidebar" aria-label="Sidebar with latest and popular posts">
+            <section>
+                <h3>Latest Posts</h3>
+                @foreach($latestBlogs as $latest)
+                <a href="{{ route('fitinsight.show', $latest) }}" class="sidebar-item">
+                    <img src="{{ $latest->featured_image_url ?: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3' }}"
+                        alt="{{ $latest->featured_image_alt ?: $latest->title }}" loading="lazy">
+                    <div class="sidebar-item-content">
+                        <div class="sidebar-item-title">{{ Str::limit($latest->title, 50) }}</div>
+                        <div class="sidebar-item-date">{{ $latest->published_at->format('M d, Y') }}</div>
+                    </div>
+                </a>
+                @endforeach
+            </section>
+
+            <section class="mt-4">
+                <h3>Popular Posts</h3>
+                @foreach($popularBlogs as $popular)
+                <a href="{{ route('fitinsight.show', $popular) }}" class="sidebar-item">
+                    <img src="{{ $popular->featured_image_url ?: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3' }}"
+                        alt="{{ $popular->featured_image_alt ?: $popular->title }}" loading="lazy">
+                    <div class="sidebar-item-content">
+                        <div class="sidebar-item-title">{{ Str::limit($popular->title, 50) }}</div>
+                        <div class="sidebar-item-date">{{ $popular->published_at->format('M d, Y') }}</div>
+                    </div>
+                </a>
+                @endforeach
+            </section>
+        </aside>
     </div>
 </section>
+
 @endsection
 
 @push('scripts')
-<script>
-// Auto-submit form on sort change
-document.getElementById('sort').addEventListener('change', function() {
-    this.form.submit();
-});
-
-// Search form enhancement
-document.getElementById('search').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        this.form.submit();
-    }
-});
-</script>
+<!-- FontAwesome for icons -->
+<script src="https://kit.fontawesome.com/a2d4d76d9a.js" crossorigin="anonymous"></script>
 @endpush

@@ -19,7 +19,7 @@ class FitInsightController extends Controller
         // Search functionality
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('content', 'like', '%' . $request->search . '%');
+                ->orWhere('content', 'like', '%' . $request->search . '%');
         }
 
         // Filter by category
@@ -66,9 +66,9 @@ class FitInsightController extends Controller
             ->get();
 
         return view('public.fitinsight.index', compact(
-            'blogs', 
-            'categories', 
-            'featuredBlogs', 
+            'blogs',
+            'categories',
+            'featuredBlogs',
             'trendingBlogs'
         ));
     }
@@ -78,12 +78,16 @@ class FitInsightController extends Controller
      */
     public function category(FiCategory $category, Request $request)
     {
+        // Base query for blogs in this category
         $query = $category->publishedBlogs()->with(['category', 'author']);
 
-        // Search functionality
+        // Search functionality — search in title or content within the category only
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('content', 'like', '%' . $request->search . '%');
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', "%{$searchTerm}%")
+                    ->orWhere('content', 'like', "%{$searchTerm}%");
+            });
         }
 
         // Sorting
@@ -101,34 +105,93 @@ class FitInsightController extends Controller
                 break;
         }
 
-        $blogs = $query->paginate(12);
+        $blogs = $query->paginate(12)->withQueryString();
 
-        // Get other categories for navigation
+        // Sidebar - latest blogs from this category
+        $latestBlogs = $category->publishedBlogs()
+            ->orderBy('published_at', 'desc')
+            ->take(5)
+            ->get();
+
+        // Sidebar - popular blogs from this category
+        $popularBlogs = $category->publishedBlogs()
+            ->orderBy('views_count', 'desc')
+            ->take(5)
+            ->get();
+
+        // Other categories for nav or sidebar if needed
         $categories = FiCategory::where('is_active', true)
             ->withCount(['publishedBlogs'])
             ->having('published_blogs_count', '>', 0)
             ->orderBy('sort_order')
             ->get();
 
-        // Get featured blogs from this category
+        // Featured blogs if you want to keep using them somewhere
         $featuredBlogs = $category->publishedBlogs()
             ->featured()
-            ->with(['category', 'author'])
             ->take(5)
             ->get();
 
         return view('public.fitinsight.category', compact(
             'category',
-            'blogs', 
-            'categories', 
-            'featuredBlogs'
+            'blogs',
+            'categories',
+            'featuredBlogs',
+            'latestBlogs',
+            'popularBlogs'
         ));
     }
+
 
     /**
      * Display the specified blog.
      */
     public function show(FiBlog $blog)
+    {
+        if (!$blog->isPublished()) {
+            abort(404, 'Blog not found');
+        }
+
+        $blog->incrementViews();
+        $blog->load(['category', 'author']);
+
+        $relatedBlogs = FiBlog::published()
+            ->where('fi_category_id', $blog->fi_category_id)
+            ->where('id', '!=', $blog->id)
+            ->with(['category', 'author'])
+            ->take(4)
+            ->get();
+
+        $authorBlogs = FiBlog::published()
+            ->where('author_id', $blog->author_id)
+            ->where('id', '!=', $blog->id)
+            ->with(['category', 'author'])
+            ->take(3)
+            ->get();
+
+        $categories = FiCategory::where('is_active', true)
+            ->withCount(['publishedBlogs'])
+            ->having('published_blogs_count', '>', 0)
+            ->orderBy('sort_order')
+            ->get();
+
+        // Fetch popular blogs by views (example)
+        $popularBlogs = FiBlog::published()
+            ->orderBy('views_count', 'desc')
+            ->with(['category', 'author'])
+            ->take(5)
+            ->get();
+
+        return view('public.fitinsight.show', compact(
+            'blog',
+            'relatedBlogs',
+            'authorBlogs',
+            'categories',
+            'popularBlogs'  // pass this too
+        ));
+    }
+
+    public function show_old(FiBlog $blog)
     {
         // Check if blog is published
         if (!$blog->isPublished()) {
@@ -189,7 +252,6 @@ class FitInsightController extends Controller
                 'likes_count' => $blog->fresh()->likes_count,
                 'message' => 'Blog liked successfully!'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -215,7 +277,6 @@ class FitInsightController extends Controller
                 'shares_count' => $blog->fresh()->shares_count,
                 'message' => 'Share recorded successfully!'
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -223,4 +284,4 @@ class FitInsightController extends Controller
             ], 500);
         }
     }
-} 
+}

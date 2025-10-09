@@ -1,35 +1,34 @@
-@extends('layouts.home.public')
+@extends('layouts.public')
 
 @section('title', 'FITTELLY - Your Ultimate Fitness Destination')
 
 @push('styles')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="{{ asset('public/assets/home/css/homepage.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="{{ asset('assets/home/css/homepage.css') }}?v={{ time() }}">
 @endpush
 
 @section('content')
     <div class="homepage-container">
         <!-- Hero Section -->
         <section class="hero-section">
-            @if ($hero->youtube_video_id)
+            @if ($hero && isset($hero['play_button_link']))
+                <!-- Local Background Video -->
+                <video class="hero-video" autoplay muted loop playsinline preload="auto"
+                    controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture
+                    oncontextmenu="return false;">
+                    <source
+                        src="{{ asset(str_replace('/storage/app/public/', '/storage/app/public/', $hero['play_button_link'])) }}"
+                        type="video/mp4">
+                </video>
+            @elseif ($hero && isset($hero['youtube_video_id']))
                 <!-- YouTube Video Background -->
                 <iframe id="yt-hero-video" class="hero-video"
-                    src="https://www.youtube.com/embed/{{ $hero->youtube_video_id }}?autoplay=1&mute=1&loop=1&playlist={{ $hero->youtube_video_id }}&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0&playsinline=1&enablejsapi=1&origin={{ request()->getSchemeAndHttpHost() }}"
+                    src="https://www.youtube.com/embed/{{ $hero['youtube_video_id'] }}?autoplay=1&mute=1&loop=1&playlist={{ $hero['youtube_video_id'] }}&controls=0&modestbranding=1&rel=0&showinfo=0&disablekb=1&fs=0&iv_load_policy=3&cc_load_policy=0&playsinline=1&enablejsapi=1&origin={{ request()->getSchemeAndHttpHost() }}"
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen loading="lazy">
                 </iframe>
-            @else
-                <!-- Fallback Background Video -->
-                <video class="hero-video" autoplay muted loop playsinline preload="auto"
-                    controlslist="nodownload nofullscreen noremoteplayback" disablepictureinpicture
-                    oncontextmenu="return false;">
-                    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-                        type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
             @endif
-
 
             <!-- Video Overlay -->
             <div class="hero-overlay"></div>
@@ -51,7 +50,8 @@
                             <span><i class="fas fa-star"></i> Premium Content</span>
                         </div>
                     @endif
-                    <p>{{ $hero ? $hero->description : 'Discover world-class fitness documentaries, live training sessions, expert guides, and the latest fitness news - all in one place.' }}
+                    <p>{{ $hero ? $hero->description : 'Discover world-class fitness documentaries, live training sessions,
+                        expert guides, and the latest fitness news - all in one place.' }}
                     </p>
                     <div class="hero-buttons">
                         <a href="{{ $hero && $hero->play_button_link ? $hero->play_button_link : '#' }}"
@@ -60,8 +60,7 @@
                             {{ $hero && $hero->play_button_text ? $hero->play_button_text : 'Start Watching' }}
                         </a>
                         @if ($hero && $hero->trailer_button_text)
-                            <a href="{{ $hero->trailer_button_link ?? '#' }}"
-                                class="btn-hero btn btn-outline-light border">
+                            <a href="{{ $hero->trailer_button_link ?? '#' }}" class="btn-hero btn btn-outline-light border">
                                 <i class="fas fa-info-circle"></i> {{ $hero->trailer_button_text }}
                             </a>
                         @else
@@ -79,33 +78,31 @@
             @if ($fitDocVideos->count() > 0 || $fitDocSeries->count() > 0)
                 <section class="content-section mt-2">
                     <a href="{{ route('fitdoc.index') }}" class="text-decoration-none">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            {{-- <i class="fas fa-film"></i>  --}}
-                            FitSeries
-                        </h2>
-                        <span class="view-all-btn opacity-75">View All</span>
-                    </div>
-                </a>
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                {{-- <i class="fas fa-film"></i> --}}
+                                FitSeries
+                            </h2>
+                            <span class="view-all-btn opacity-75">View All</span>
+                        </div>
+                    </a>
 
                     <!-- FitDoc Videos -->
                     @if ($fitDocVideos->count() > 0)
-                        <div class="category-section">
+                        <div class="category-section mb-1">
                             <h3 class="category-title">Documentory</h3>
                             <div class="content-slider">
 
                                 <div class="slider-container" id="fitdoc-videos-slider">
-                                    @foreach ($fitDocVideos as $video)
-                                        <x-home.portrait-card-second :video="$video" badge="Movie" badgeClass="badge-single" url="fitdoc.single.show"/>
+                                    @foreach ($fitDocVideos->sortByDesc('id') as $video)
+                                        <x-home.portrait-card-second :video="$video" url="fitdoc.single.show" />
                                     @endforeach
                                 </div>
 
-                                <button class="slider-controls slider-prev"
-                                    onclick="slideContent('fitdoc-videos-slider', -1)">
+                                <button class="slider-controls slider-prev" onclick="slideContent('fitdoc-videos-slider', -1)">
                                     <i class="fas fa-chevron-left"></i>
                                 </button>
-                                <button class="slider-controls slider-next"
-                                    onclick="slideContent('fitdoc-videos-slider', 1)">
+                                <button class="slider-controls slider-next" onclick="slideContent('fitdoc-videos-slider', 1)">
                                     <i class="fas fa-chevron-right"></i>
                                 </button>
                             </div>
@@ -115,21 +112,20 @@
 
                     <!-- FitDoc Series -->
                     @if ($fitDocSeries->count() > 0)
-                        <div class="category-section">
+                        <div class="category-section mb-1">
                             <h3 class="category-title">Season</h3>
                             <div class="content-slider">
                                 <div class="slider-container" id="fitdoc-series-slider">
-                                       @foreach ($fitDocSeries as $video)
-                                        <x-home.portrait-card :video="$video" badge="Series" badgeClass="badge-series" url="fitdoc.series.show"/>
+                                    @foreach ($fitDocSeries as $video)
+                                        <x-home.portrait-card :video="$video" badge="Series" badgeClass="badge-series"
+                                            url="fitdoc.series.show" />
                                     @endforeach
 
                                 </div>
-                                <button class="slider-controls slider-prev"
-                                    onclick="slideContent('fitdoc-series-slider', -1)">
+                                <button class="slider-controls slider-prev" onclick="slideContent('fitdoc-series-slider', -1)">
                                     <i class="fas fa-chevron-left"></i>
                                 </button>
-                                <button class="slider-controls slider-next"
-                                    onclick="slideContent('fitdoc-series-slider', 1)">
+                                <button class="slider-controls slider-next" onclick="slideContent('fitdoc-series-slider', 1)">
                                     <i class="fas fa-chevron-right"></i>
                                 </button>
                             </div>
@@ -152,34 +148,43 @@
 
                     @foreach ($fitLiveCategories as $category)
                         @php
-                            // Collect all subcategories inside this category
-                            $allContent = $category->subCategories;
+                            $allContent = $category->subCategories->sortBy('sort_order')->values();
                         @endphp
-
                         @if ($allContent->count() > 0)
-                            <div class="category-section">
+                            <div class="category-section mb-1">
+                            @if ($category->id == 21)
+                                @php
+                                    $route = route('fitlive.daily-classes.show', 19);
+                                @endphp
+                            @else
+                                @php
+                                    $route = route('fitlive.fitexpert');
+                                @endphp
+                            @endif
+                            <a href="{{ $route }}" class="text-decoration-none">
                                 <h3 class="category-title">{{ $category->name }}</h3>
+                            </a>
                                 <div class="content-slider">
                                     <div class="slider-container" id="fitlive-{{ $category->id }}-slider">
+
                                         @foreach ($allContent as $subCategory)
 
-                                            @if ($category->id == 19)
-                                                <x-home.landscape-card
-                                                    :route="route('fitlive.daily-classes.show', $category->slug)"
-
-                                                    :title="$subCategory->title"
-                                                    :image="$subCategory->banner_image_path ? asset('storage/app/public/' . $subCategory->banner_image_path) : null"
-                                                    :badge="['label' => 'Live', 'class' => 'badge-live']"
-                                                    :meta="[ '<i class=\'fas fa-calendar\'></i> ' . ($subCategory->created_at?->format('M d, Y') ?? '') ]"
-                                                />
+                                            @if ($category->id == 21)
+                                                <x-home.landscape-card :route="route('fitlive.daily-classes.show', $subCategory->id)"
+                                                    :title="$subCategory->name" :image="$subCategory->banner_image ? asset('storage/app/public/' . $subCategory->banner_image) : null" :badge="['label' => 'Live', 'class' => 'badge-live']"
+                                                    :meta="['<i class=\'fas fa-calendar\'></i> ' . ($subCategory->created_at?->format('M d, Y') ?? '')]" />
                                             @else
-                                        {{ $subCategory->title }}
-                                                <x-home.portrait-card
-                                                    :video="$subCategory"
-                                                    badge="Live"
-                                                    badgeClass="badge-live"
-                                                    url="fitlive.daily-classes.show"
-                                                />
+                                                @foreach ($subCategory->fitLiveSessions->sortByDesc('id') as $data)
+                                                    @php
+                                                        if ($category->id == 21) {
+                                                            $route = 'fitlive.daily-classes.show';
+                                                        } else {
+                                                            $route = 'fitlive.fitexpert';
+                                                        }
+                                                    @endphp
+
+                                                    <x-home.portrait-card :video="$data" badge="Live" badgeClass="badge-live" :url="$route" />
+                                                @endforeach
                                             @endif
                                         @endforeach
                                     </div>
@@ -201,7 +206,7 @@
 
             <!-- FitArena Live Section -->
             @if ($fitarenaliveEvents->count() > 0 || $fitarenaliveEvents->count() > 0)
-                <section class="content-section mt-2">
+                <section class="content-section mt-4">
                     <a href="{{ route('fitarena.index') }}" class="text-decoration-none">
                         <div class="section-header">
                             <h2 class="section-title">
@@ -211,42 +216,38 @@
                         </div>
                     </a>
 
-                    <div class="category-section">
-                        <h3 class="category-title">Live Events</h3>
+                    <div class="category-section mb-1">
+                        <a href="{{ route('fitarena.index') }}" class="text-decoration-none">
+                            <h3 class="category-title">Live Events</h3>
+                        </a>
                         <div class="content-slider">
                             <div class="slider-container" id="fitarena-live-slider">
+                                @php
+                                    $fitarenaliveEvents = $fitarenaliveEvents->sortBy('created_at')->values();
+                                @endphp
 
                                 @foreach ($fitarenaliveEvents as $event)
-                                        @php
-                                                $badge = match ($event->status) {
-                                                    'upcoming' => ['label' => 'Upcoming', 'class' => 'badge-upcoming'],
-                                                    'live'     => ['label' => 'Live',     'class' => 'badge-live'],
-                                                    'ended'    => ['label' => 'Ended',    'class' => 'badge-ended'],
-                                                };
-                                            @endphp
-                                                <x-home.landscape-card
-                                                    :route="route('fitarena.show', $event)"
-                                                    :title="$event->title"
-                                                    :image="$event->banner_image_path ? $event->banner_image_path : null"
-                                                    :badge="$badge"
-                                                    :meta="[ '<i class=\'fas fa-calendar\'></i> ' . ($event->created_at?->format('M d, Y') ?? '') ]"
-                                                />
-                                {{-- <x-home.portrait-card
-                                        :video="$event"
-                                        badge="Live"
-                                        badgeClass="badge-live"
-                                        url="fitarena.show"
-                                    /> --}}
+                                    @php
+                                        $badge = match ($event->status) {
+                                            'upcoming' => ['label' => 'Upcoming', 'class' => 'badge-upcoming'],
+                                            'live' => ['label' => 'Live', 'class' => 'badge-live'],
+                                            'ended' => ['label' => 'Ended', 'class' => 'badge-ended'],
+                                        };
+                                    @endphp
+                                    <x-home.landscape-card :route="route('fitarena.show', $event)" :title="$event->title"
+                                        :image="$event->banner_image_path ? $event->banner_image_path : null" :badge="$badge"
+                                        :meta="['<i class=\'fas fa-calendar\'></i> ' . ($event->created_at?->format('M d, Y') ?? '')]" />
+                                    {{--
+                                    <x-home.portrait-card :video="$event" badge="Live" badgeClass="badge-live"
+                                        url="fitarena.show" /> --}}
                                 @endforeach
 
                             </div>
 
-                            <button class="slider-controls slider-prev"
-                                onclick="slideContent('fitarena-live-slider', -1)">
+                            <button class="slider-controls slider-prev" onclick="slideContent('fitarena-live-slider', -1)">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
-                            <button class="slider-controls slider-next"
-                                onclick="slideContent('fitarena-live-slider', 1)">
+                            <button class="slider-controls slider-next" onclick="slideContent('fitarena-live-slider', 1)">
                                 <i class="fas fa-chevron-right"></i>
                             </button>
                         </div>
@@ -258,31 +259,52 @@
             @if ($fitGuideCategories->count() > 0)
                 <section class="content-section mt-4">
                     <a href="{{ route('fitguide.index') }}" class="text-decoration-none">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            {{-- <i class="fas fa-dumbbell"></i> --}}
-                             FitGuide
-                        </h2>
-                        <span class="opacity-75 view-all-btn">View All</span>
-                    </div>
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                {{-- <i class="fas fa-dumbbell"></i> --}}
+                                FitGuide
+                            </h2>
+                            <span class="opacity-75 view-all-btn">View All</span>
+                        </div>
                     </a>
 
-                    @foreach ($fitGuideCategories as $category)
+                    {{-- @foreach ($fitGuideCategories->sortBy(function($category) {
+                    return $category->slug === 'fitcast-live' ? 1 : 0;
+                    }) as $category) --}}
+                    @foreach ($fitGuideCategories->sortBy('sort_order')->values() as $category)
                         @php
                             $allContent = $category->singles->merge($category->series);
                         @endphp
                         @if ($allContent->count() > 0)
-                            <div class="category-section">
-                                <h3 class="category-title">{{ $category->name }}</h3>
+                            <div class="category-section mb-1">
+                                @php
+                                    $isFitcastLive = $category->slug === 'fitcast-live';
+                                @endphp
+                                @if ($isFitcastLive)
+                                    <a href="{{ route('fitguide.index', ['category' => $category->slug]) }}" class="text-decoration-none">
+                                        <div class="section-header">
+                                            <h2 class="section-title">
+                                                {{-- <i class="fas fa-dumbbell"></i> --}}
+                                                FitCasts
+                                            </h2>
+                                            <span class="opacity-75 view-all-btn">View All</span>
+                                        </div>
+                                    </a>
+                                @else
+                                    <a href="{{ route('fitguide.index', ['category' => $category->slug]) }}" class="text-decoration-none">
+                                        <h3 class="category-title">{{ $category->name }}</h3>
+                                    </a>
+                                @endif
                                 <div class="content-slider">
                                     <div class="slider-container" id="fitguide-{{ $category->id }}-slider">
-                                        @foreach ($allContent as $content)
-                                           <x-home.portrait-card
-                                                :video="$content"
+                                        @foreach ($allContent->sortByDesc('id') as $content)
 
-                                                url="fitguide.index"
-                                            />
-
+                                            @if ($isFitcastLive)
+                                                <x-home.landscape-card :route="route('fitguide.index', ['category' => $category->slug])"
+                                                    :title="$content->title" :image="$content->banner_image_path ? asset('storage/app/public/' . $content->banner_image_path) : null" :meta="['<i class=\'fas fa-calendar\'></i> ' . ($content->created_at?->format('M d, Y') ?? '')]" />
+                                            @else
+                                                <x-home.portrait-card :video="$content" url="fitguide.index" :categorySlug="$category->slug" />
+                                            @endif
                                         @endforeach
                                     </div>
                                     <button class="slider-controls slider-prev"
@@ -306,47 +328,67 @@
             {{-- @if ($fitNewsLive->count() > 0 || $fitNewsArchive->count() > 0) --}}
             @if (count($fitNewsLive ?? []) > 0 || count($fitNewsArchive ?? []) > 0)
 
-            <section class="content-section mt-4">
-                <a href="{{ route('fitnews.index') }}" class="text-decoration-none">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            {{-- <i class="fas fa-newspaper"></i>  --}}
-                            FitNews
-                        </h2>
-                        <span class="opacity-75 view-all-btn">View All</span>
-                    </div>
-                </a>
+                <section class="content-section mt-4">
+                    <a href="{{ route('fitnews.index') }}" class="text-decoration-none">
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                {{-- <i class="fas fa-newspaper"></i> --}}
+                                FitNews
+                            </h2>
+                            <span class="opacity-75 view-all-btn">View All</span>
+                        </div>
+                    </a>
 
                     <div class="content-slider">
                         <div class="slider-container" id="fitnews-slider">
-                        @foreach ($fitNewsLive as $news)
-                        <x-home.landscape-card
-                                :route="route('fitnews.show', $news)"
-                                :title="$news->title"
-                                :image="$news->thumbnail ? asset('storage/app/public/' . $news->thumbnail) : null"
-                                :badge="['label' => 'LIVE', 'class' => 'badge-live']"
-                                :meta="[
+                            @foreach ($fitNewsLive as $news)
+                                        <x-home.landscape-card :route="route('fitnews.show', $news)" :title="$news->title"
+                                            :image="$news->thumbnail ? asset('storage/app/public/' . $news->thumbnail) : null"
+                                            :badge="['label' => 'LIVE', 'class' => 'badge-live']" :meta="[
                                     '<i class=\'fas fa-user\'></i> ' . ($news->creator->name ?? 'Admin'),
                                     '<i class=\'fas fa-eye\'></i> ' . ($news->viewer_count ?? 0) . ' watching'
-                                ]"
-                            />
-                        @endforeach
+                                ]" />
+                            @endforeach
 
-                        @foreach ($fitNewsArchive as $news)
-                            <x-home.landscape-card
-                                :route="route('fitnews.show', $news)"
-                                :title="$news->title"
-                                :image="$news->thumbnail ? asset('storage/app/public/' . $news->thumbnail) : null"
-                                :badge="[
-                                    'label' => $news->status === 'scheduled' ? 'Upcoming' : 'Archive',
-                                    'class' => 'badge-single'
-                                ]"
-                                :meta="[
-                                    '<i class=\'fas fa-user\'></i> ' . ($news->creator->name ?? 'Admin'),
-                                    '<i class=\'fas fa-calendar\'></i> ' . ($news->scheduled_at ? $news->scheduled_at->format('M d') : 'TBD')
-                                ]"
-                            />
-                        @endforeach
+                            @php
+                                $today = \Carbon\Carbon::today(); // Aaj ki date
+                                $currentTime = \Carbon\Carbon::now(); // Abhi ka time
+                            @endphp
+
+                            @foreach ($fitNewsArchive as $news)
+                                @if (\Carbon\Carbon::parse($news->scheduled_at)->isToday())
+                                        <!-- Check if scheduled_at is today -->
+                                        @php
+                                            // Compare current time with scheduled_at
+                                            $scheduledTime = \Carbon\Carbon::parse($news->scheduled_at);
+
+                                            // Define status and badge class
+                                            if ($currentTime->lt($scheduledTime)) {
+                                                $statusLabel = 'Upcoming';
+                                                $badgeClass = 'badge-upcoming';
+                                            } elseif (
+                                                $currentTime->gte($scheduledTime) &&
+                                                $currentTime->lte($scheduledTime->copy()->addHours(2))
+                                            ) {
+                                                // Check if current time is within 1 hour of scheduled time
+                                                $statusLabel = 'Live';
+                                                $badgeClass = 'badge-live';
+                                            } else {
+                                                $statusLabel = 'Archive';
+                                                $badgeClass = 'badge-archive';
+                                            }
+                                        @endphp
+
+                                        <x-home.landscape-card :route="route('fitnews.show', $news)" :title="$news->title"
+                                            :image="$news->thumbnail ? asset('storage/app/public/' . $news->thumbnail) : null"
+                                            :badge="['label' => $statusLabel, 'class' => $badgeClass]" :meta="[
+                                        '<i class=\'fas fa-user\'></i> ' . ($news->creator->name ?? 'Admin'),
+                                        '<i class=\'fas fa-calendar\'></i> ' . ($news->scheduled_at ? $news->scheduled_at->format('M d, h:i A') : 'TBD')
+                                    ]" />
+                                @endif
+                            @endforeach
+
+
 
                         </div>
                         <button class="slider-controls slider-prev" onclick="slideContent('fitnews-slider', -1)">
@@ -361,25 +403,20 @@
 
             <!-- FitInsights Section -->
             @if ($fitInsights->count() > 0)
-                <section class="content-section my-4">
+                <section class="content-section mt-4 mb-3">
                     <a href="{{ route('fitinsight.index') }}" class="text-decoration-none">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            FitInsights
-                        </h2>
-                        <span class="opacity-75 view-all-btn">View All</span>
-                    </div>
+                        <div class="section-header">
+                            <h2 class="section-title">
+                                FitInsights
+                            </h2>
+                            <span class="opacity-75 view-all-btn">View All</span>
+                        </div>
                     </a>
 
                     <div class="content-slider">
                         <div class="slider-container" id="fitinsights-slider">
-                            @foreach ($fitInsights as $insight)
-                                <x-home.portrait-card
-                                    :video="$insight"
-                                    badge="Article"
-                                    badgeClass="badge-single"
-                                    url="fitinsight.index"
-                                />
+                            @foreach ($fitInsights->sortBy('created_at') as $insight)
+                                <x-home.portrait-card :video="$insight" url="fitinsight.show" />
                             @endforeach
                         </div>
                         <button class="slider-controls slider-prev" onclick="slideContent('fitinsights-slider', -1)">
@@ -398,7 +435,7 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
     <script src="https://www.youtube.com/iframe_api"></script>
-    <script src="{{ asset('public/assets/home/js/homepage.js') }}?v={{ time() }}"></script>
+    <script src="{{ asset('assets/home/js/homepage.js') }}?v={{ time() }}"></script>
 @endpush

@@ -27,8 +27,8 @@ foreach ($attributes->all() as $__key => $__value) {
 }
 
 unset($__defined_vars); ?>
-
-<div class="content-card" onclick="window.location.href='<?php echo e(route($url, $video)); ?>'">
+<div class="content-card-wrapper ccw-portrait">
+<div class="content-card content-card-portrait" onclick="window.location.href='<?php echo e(route($url, $video)); ?>'">
     <?php if($badge): ?>
         <div class="status-badge <?php echo e($badgeClass); ?>"><?php echo e($badge); ?></div>
     <?php endif; ?>
@@ -47,13 +47,9 @@ unset($__defined_vars); ?>
             <i class="fas fa-play"></i>
         </div>
     </div>
-    <div class="card-content">
-        <h3 class="card-title"><?php echo e($video->title); ?></h3>
-        <div class="card-meta">
-            <span><i class="fas fa-calendar"></i>
-                <?php echo e($video->created_at ? $video->created_at->format('Y') : 'New'); ?></span>
-            <span><i class="fas fa-clock"></i> <?php echo e($video->duration_minutes ?? 90); ?> min</span>
-        </div>
-    </div>
 </div>
-<?php /**PATH C:\xampp\htdocs\fittley\resources\views/components/home/portrait-card-second.blade.php ENDPATH**/ ?>
+    <div class="card-caption">
+        <h3 class="card-title"><?php echo e($video->title); ?></h3>
+
+    </div>
+</div><?php /**PATH C:\xampp\htdocs\fittley\resources\views/components/home/portrait-card-second.blade.php ENDPATH**/ ?>

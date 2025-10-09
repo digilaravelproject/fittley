@@ -86,7 +86,7 @@
     <div class="login-container">
         <div class="login-card">
             <div class="brand-logo">
-                <img src="{{ asset('storage/app/public/app_logo.png') }}" alt="fitlley Logo" style="max-width: 150px;">
+                <img src="{{ asset('storage/app/public/logos/app_logo.png') }}" alt="fitlley Logo" style="max-width: 150px;">
                 <p class="text-muted">Welcome back! Please sign in to your account.</p>
             </div>
 

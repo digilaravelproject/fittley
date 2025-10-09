@@ -28,32 +28,36 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars); ?>
 
-
 <?php
     $fallbackImage = asset('storage/app/public/fitlive/banners/' . 'default-banner.jpg');
     $finalImage = !empty($image) ? $image : $fallbackImage;
 ?>
 
-<div class="content-card content-card-landscap" onclick="window.location.href='<?php echo e($route); ?>'">
-    <?php if($badge): ?>
-        <div class="status-badge <?php echo e($badge['class'] ?? 'badge-single'); ?>">
-            <?php echo e($badge['label'] ?? ''); ?>
 
-        </div>
-    <?php endif; ?>
+<div class="content-card-wrapper">
 
-    <img loading="lazy" src="<?php echo e($finalImage); ?>" alt="<?php echo e($title); ?>" class="card-image">
+    
+    <div class="content-card content-card-landscap" onclick="window.location.href='<?php echo e($route); ?>'">
+        <?php if($badge): ?>
+            <div class="status-badge <?php echo e($badge['class'] ?? 'badge-single'); ?>">
+                <?php echo e($badge['label'] ?? ''); ?>
 
-    <div class="card-overlay">
-        <div class="play-icon">
-            <i class="fas fa-play"></i>
+            </div>
+        <?php endif; ?>
+
+        <img loading="lazy" src="<?php echo e($finalImage); ?>" alt="<?php echo e($title); ?>" class="card-image">
+
+        <div class="card-overlay">
+            <div class="play-icon">
+                <i class="fas fa-play"></i>
+            </div>
         </div>
     </div>
 
-    <div class="card-content">
+    
+    <div class="card-caption">
         <h3 class="card-title"><?php echo e($title); ?></h3>
-        
-
     </div>
+
 </div>
 <?php /**PATH C:\xampp\htdocs\fittley\resources\views/components/home/landscape-card.blade.php ENDPATH**/ ?>

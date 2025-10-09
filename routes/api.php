@@ -68,6 +68,7 @@ Route::prefix('fitlive')->group(function () {
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('{id}', [App\Http\Controllers\Api\FitLiveSessionApiController::class, 'show']);
         Route::get('/daily-live/{id}', [App\Http\Controllers\Api\FitLiveSessionApiController::class, 'DailyLiveClasses']);
+        Route::get('/live-session/{id}', [App\Http\Controllers\Api\FitLiveSessionApiController::class, 'live_session']);
         Route::get('{id}/details', [App\Http\Controllers\Api\FitLiveSessionApiController::class, 'details']);
         Route::get('{id}/stream-status', [App\Http\Controllers\Api\FitLiveSessionApiController::class, 'streamStatus']);
         

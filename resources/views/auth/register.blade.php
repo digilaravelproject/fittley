@@ -102,7 +102,7 @@
     <div class="register-container">
         <div class="register-card">
             <div class="brand-logo">
-                <img src="{{ asset('storage/app/public/app_logo.png') }}" alt="fitlley Logo" style="max-width: 150px;">
+                <img src="{{ asset('storage/app/public/logos/app_logo.png') }}" alt="fitlley Logo" style="max-width: 150px;">
                 <p class="text-muted">Create your account to get started.</p>
             </div>
 

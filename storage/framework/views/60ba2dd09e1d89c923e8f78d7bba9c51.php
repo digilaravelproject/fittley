@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title><?php echo $__env->yieldContent('title', 'Fittelly - Live Fitness Sessions'); ?></title>
+    <link rel="icon" href="<?php echo e(asset('public/favicon.ico')); ?>" type="image/x-icon">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -126,6 +127,7 @@
             text-decoration: none;
             text-shadow: 0 0 10px rgba(247, 163, 26, 0.3);
             transition: all 0.3s ease;
+            margin-left: -2%;
         }
 
         .navbar-brand:hover {
@@ -717,7 +719,7 @@
 
             .navbar-brand {
                 font-size: 1.5rem;
-                margin-left: -2rem;
+                margin-left: -15%;
             }
 
             .navbar-nav {
@@ -806,7 +808,8 @@
         <div class="container mx-2">
 
             <a class="navbar-brand d-flex align-items-center" href="<?php echo e(url('/')); ?>">
-                <img src="<?php echo e(asset('storage/app/public/logos/app_logo.png')); ?>" height="40" class="me-2 ms-3 ms-md-0">
+                <img src="<?php echo e(asset('storage/app/public/logos/app_logo.png')); ?>" height="40"
+                    class="me-2 ms-3 ms-md-0">
             </a>
             
             <div class="d-flex d-lg-none align-items-center" style="margin-right: -1rem;">
@@ -847,16 +850,16 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link <?php echo e(request()->is('/') ? 'active' : ''); ?>" href="<?php echo e(url('/')); ?>">Home</a>
+                        <a class="nav-link <?php echo e(request()->is('/') ? 'active' : ''); ?>"
+                            href="<?php echo e(url('/')); ?>">Home</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link <?php echo e(request()->routeIs('fitlive.index') ? 'active' : ''); ?>"
-                            href="#">
-                            <!-- <i class="fas fa-broadcast-tower me-1"></i> -->
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#communityModal">
                             Community
                         </a>
                     </li>
+
                     <li class="nav-item">
                         <a class="nav-link <?php echo e(Request::is('fitlive/vdo') ? 'active' : ''); ?>"
                             href="<?php echo e(url('/fitlive/vdo')); ?>">
@@ -865,8 +868,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?php echo e(request()->routeIs('fitarena.index') ? 'active' : ''); ?>"
-                            href="<?php echo e(route('fitarena.index')); ?>">
+                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#communityModal">
                             <!-- <i class="fas fa-film me-1"></i> -->
                             FitTalk
                         </a>
@@ -956,9 +958,7 @@
             </a>
 
 
-
-            <a href="<?php echo e(route('fitlive.index')); ?>"
-                class="bottom-nav-item <?php echo e(Request::is('fitlive.index') ? 'active' : ''); ?>">
+            <a class="bottom-nav-item" href="#" data-bs-toggle="modal" data-bs-target="#communityModal">
                 <div class="bottom-nav-icon">
                     <img src="<?php echo e(Request::is('fitlive.index')
                         ? asset('storage/app/public/navigation-icon/community filled.png')
@@ -979,8 +979,7 @@
                 </div>
                 <span class="bottom-nav-label">FitFlix</span>
             </a>
-            <a href="<?php echo e(route('fitarena.index')); ?>"
-                class="bottom-nav-item <?php echo e(Request::is('fitarena.index') ? 'active' : ''); ?>">
+            <a class="bottom-nav-item" href="#" data-bs-toggle="modal" data-bs-target="#communityModal">
                 <div class="bottom-nav-icon">
                     <img src="<?php echo e(Request::is('fitarena.index')
                         ? asset('storage/app/public/navigation-icon/fittalk new filled.png')
@@ -1004,13 +1003,60 @@
         </div>
     </nav>
 
+    <!-- Modal -->
+    <div class="modal fade" id="communityModal" tabindex="-1" aria-labelledby="communityModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="communityModalLabel">Feature Unavailable</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container d-flex justify-content-center align-items-center">
+                        <div class="card shadow p-4 text-center" style="max-width: 500px; width: 100%;">
+                            <h2 class="mb-3 text-danger">Feature Unavailable on Web</h2>
+                            <p class="mb-4">
+                                This feature isn’t accessible in the web version. <br>
+                                Download our app to unlock exclusive tools and enjoy the full experience!
+                            </p>
+
+                            <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
+                                <a href="#" class="btn btn-primary" style="min-width: 150px;" disabled>
+                                    Download on App Store
+                                </a>
+                                <a href="#" class="btn btn-primary" style="min-width: 150px;" disabled>
+                                    Download on Google Play
+                                </a>
+                            </div>
+
+                            <div class="text-center">
+                                <p class="mb-2">Or scan the QR code to get the app instantly.</p>
+                                <?php
+                                    $appUrl = url('/');
+                                    $qrUrl =
+                                        'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' .
+                                        urlencode($appUrl);
+                                ?>
+
+                                <img src="<?php echo e($qrUrl); ?>" alt="QR Code" class="img-fluid"
+                                    style="max-width: 180px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <!-- Footer -->
     <footer class="footer text-light pt-5 pb-3">
         <div class="container text-center">
             
             <div class="con-logo mb-3">
-                <img src="<?php echo e(asset('storage/app/public/app_logo.png')); ?>" alt="FITTELLY Logo" height="50" class="mb-2">
+                <img src="<?php echo e(asset('storage/app/public/app_logo.png')); ?>" alt="FITTELLY Logo" height="50"
+                    class="mb-2">
             </div>
 
             
@@ -1042,6 +1088,7 @@
         
         <div class="bg-warning mt-4" style="height:7px;"></div>
     </footer>
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

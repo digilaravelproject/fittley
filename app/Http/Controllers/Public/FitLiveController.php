@@ -24,7 +24,47 @@ class FitLiveController extends Controller
         $this->agoraService = $agoraService;
     }
 
-    public function index()
+  
+  public function index()
+    {
+        // Get live sessions
+        $liveSessions = FitLiveSession::with(['category', 'subCategory', 'instructor'])
+            ->where('status', 'live')
+            ->where('visibility', 'public')
+            ->orderBy('scheduled_at', 'desc')
+            ->get();
+
+
+        $dailylive = SubCategory::where('category_id', 21)
+            ->where('id', '!=', 17)
+            ->orderBy('sort_order')
+            ->get();
+
+        // Get recent ended sessions
+        $fitexpert = FitLiveSession::with(['category', 'subCategory', 'instructor'])
+            ->where('sub_category_id', 21)
+            ->where('visibility', 'public')
+            ->get();
+
+
+        // Get categories with session counts
+        $categories = Category::withCount('fitLiveSessions')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+        // Get first live session for hero section
+        $liveSession = $liveSessions->first();
+
+        return view('public.fitlive.index', compact(
+            'liveSessions',
+            'dailylive',
+            'categories',
+            'fitexpert',
+            'liveSession'
+        ));
+    }
+    public function index_old()
     {
         // Get live sessions
         $liveSessions = FitLiveSession::with(['category', 'subCategory', 'instructor'])
@@ -50,6 +90,7 @@ class FitLiveController extends Controller
             ->take(6)
             ->get();
 
+
         // Get categories with session counts
         $categories = Category::withCount('fitLiveSessions')
             ->orderBy('sort_order')
@@ -61,25 +102,44 @@ class FitLiveController extends Controller
 
         return view('public.fitlive.index', compact(
             'liveSessions',
-            'upcomingSessions', 
+            'upcomingSessions',
             'recentSessions',
             'categories',
             'liveSession'
         ));
     }
+    public function fitexpert()
+    {
+        $fitexpert = FitLiveSession::with(['category', 'subCategory', 'instructor'])
+            ->where('sub_category_id', 21)
+            ->where('visibility', 'public')
+            ->get();
 
-    public function show($id)
+        // Get categories with session counts
+        $categories = Category::withCount('fitLiveSessions')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+
+        return view('public.fitlive.fitexpert', compact(
+            'categories',
+            'fitexpert'
+        ));
+    }
+
+    public function show_old($id)
     {
         // Fetch subcategories
         $subcategories = SubCategory::where('category_id', 21)
             ->where('id', '!=', 17)
             ->orderBy('sort_order')
-            ->get(['id', 'name', 'slug']);
+            ->get(['id', 'name', 'id']);
 
         $selectedSubcategory = $subcategories->firstWhere('id', $id);
-            if (!$selectedSubcategory) {
-                abort(404);
-            }
+        if (!$selectedSubcategory) {
+            abort(404);
+        }
 
         $now = Carbon::now();
 
@@ -172,6 +232,130 @@ class FitLiveController extends Controller
             'groupedArchived' => $groupedArchived,
         ]);
     }
+    
+    public function show($id)
+    {
+        // Fetch subcategories
+        $subcategories = SubCategory::where('category_id', 21)
+            ->where('id', '!=', 17)
+            ->orderBy('sort_order')
+            ->get(['id', 'name', 'slug']);
+
+        $selectedSubcategory = $subcategories->firstWhere('id', $id);
+            if (!$selectedSubcategory) {
+                abort(404);
+            }
+
+        $now = Carbon::now();
+
+        // Fetch all today sessions for the selected subcategory
+        $sessions = FitLiveSession::liveToday()
+            ->where('sub_category_id', $selectedSubcategory->id)
+            ->orderBy('scheduled_at')
+            ->get();
+
+        // Find live session and upcoming sessions
+        $liveSessionId = null;
+
+        foreach ($sessions as $index => $session) {
+            $sessionTime = Carbon::parse($session->scheduled_at);
+            $nextSession = $sessions->get($index + 1);
+            $nextSessionTime = $nextSession ? Carbon::parse($nextSession->scheduled_at) : null;
+            if ($now->gte($sessionTime)) {
+                if ($nextSessionTime) {
+                    // Show as live only if it's before the next session
+                    if ($now->lt($nextSessionTime)) {
+                        // But not more than 1 hour after start
+                        if ($now->lte($sessionTime->copy()->addHour())) {
+                            $liveSessionId = $session->id;
+                            break;
+                        }
+                    }
+                } else {
+                    // No next session — show live only if within 1 hour
+                    if ($now->lte($sessionTime->copy()->addHour())) {
+                        $liveSessionId = $session->id;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Filter sessions to show only live session + upcoming sessions
+        $filteredSessions = $sessions->filter(function ($session) use ($now, $liveSessionId) {
+            $sessionTime = Carbon::parse($session->scheduled_at);
+            if ($session->id === $liveSessionId) {
+                return true; // include live session
+            }
+            // Include upcoming sessions
+            if ($sessionTime->gte($now)) {
+                return true;
+            }
+
+            // Include sessions earlier today (past but same day)
+            if ($sessionTime->isSameDay($now)) {
+                return true;
+            }
+        })->values();
+
+        // Prepare liveSlots
+        $liveSlots = $filteredSessions->map(function ($session) use ($liveSessionId) {
+            $sessionTime = Carbon::parse($session->scheduled_at);
+
+            $now = now();
+
+            // Determine if this session is live
+            $isLive = $session->id === $liveSessionId;
+
+            // Determine if the session has fully passed (more than 1 hour ago)
+            $isPassed = $sessionTime->copy()->addHour()->lt($now); // no mutation
+
+            return [
+                'time' => $sessionTime->format('h:i A'),
+                'is_live' => $session->id === $liveSessionId,
+                'id' => $session->id,
+                'is_passed' => $isPassed,
+                'title' => $session->title,
+                'banner_image_url' => $session->banner_image_url,
+            ];
+        });
+
+        // Active session is live session if found
+        $activeSession = $sessions->firstWhere('id', $liveSessionId);
+
+        // Instructor info
+        $instructor = $activeSession ? User::find($activeSession->instructor_id) : null;
+
+        // Archived sessions: today (excluding live/upcoming) + previous days
+        $allPastSessions = FitLiveSession::where('sub_category_id', $selectedSubcategory->id)
+            ->where('scheduled_at', '<', Carbon::now()) // Anything before now
+            ->whereNotNull('ended_at')
+            ->orderBy('ended_at', 'desc')
+            ->get();
+
+        // Filter out today’s sessions that are still live/upcoming
+        $archivedSessions = $allPastSessions->filter(function ($session) use ($liveSlots) {
+            // Skip if already shown as live/upcoming
+            return !$liveSlots->contains('id', $session->id);
+        });
+
+        // Group by date (like 2025-09-26)
+        $groupedArchived = $archivedSessions->groupBy(function ($session) {
+            return Carbon::parse($session->scheduled_at)->format('Y-m-d');
+        });
+        
+        // echo'<pre>';print_r($archivedSessions);die;
+
+        return view('tools.active-session', [
+            'subcategories' => $subcategories,
+            'selectedSubcategory' => $selectedSubcategory,
+            'activeSession' => $activeSession,
+            'instructor' => $instructor,
+            'liveSlots' => $liveSlots,
+            'archivedSessions' => $archivedSessions,
+            'groupedArchived' => $groupedArchived,
+        ]);
+    }
 
     /**
      * Show the fitflix shorts vdo resource.
@@ -180,7 +364,7 @@ class FitLiveController extends Controller
     {
         $query = FitFlixShorts::with(['category', 'uploader'])->latest();
         $shorts = $query->get();
-        
+
         return view('public.fitlive.vdo-shorts', compact('shorts'));
     }
 
@@ -191,13 +375,13 @@ class FitLiveController extends Controller
         $shorts = FitFlixShorts::with(['category', 'uploader'])
             ->latest()
             ->get()
-            ->map(function($short) use ($user) {
+            ->map(function ($short) use ($user) {
                 // Check if current user liked this short
-                $short->isLiked = $user 
+                $short->isLiked = $user
                     ? PostLike::where('post_type', 'fit_flix_video')
-                        ->where('post_id', $short->id)
-                        ->where('user_id', $user->id)
-                        ->exists()
+                    ->where('post_id', $short->id)
+                    ->where('user_id', $user->id)
+                    ->exists()
                     : false;
 
                 // Count likes and shares
@@ -218,7 +402,7 @@ class FitLiveController extends Controller
         $streamingConfig = null;
         if ($session->isLive()) {
             $viewerId = auth()->check() ? auth()->id() : rand(100000, 999999);
-            
+
             $streamingConfig = [
                 'app_id' => config('agora.app_id'),
                 'channel' => 'fitlive_' . $session->id,
@@ -250,19 +434,19 @@ class FitLiveController extends Controller
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+                    ->orWhere('description', 'like', '%' . $request->search . '%');
             });
         }
 
         // Order by status priority and then by scheduled time
         $query->orderByRaw("
-            CASE status 
-                WHEN 'live' THEN 1 
-                WHEN 'scheduled' THEN 2 
-                WHEN 'ended' THEN 3 
+            CASE status
+                WHEN 'live' THEN 1
+                WHEN 'scheduled' THEN 2
+                WHEN 'ended' THEN 3
             END
         ")
-        ->orderBy('scheduled_at', 'desc');
+            ->orderBy('scheduled_at', 'desc');
 
         $sessions = $query->paginate(12);
 
@@ -318,7 +502,7 @@ class FitLiveController extends Controller
 
             // Increment share count
             $short->increment('shares_count');
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -340,4 +524,4 @@ class FitLiveController extends Controller
     {
         return url("/fitflix/videos/{$video->id}");
     }
-} 
+}

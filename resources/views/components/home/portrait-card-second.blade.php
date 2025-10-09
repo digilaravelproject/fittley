@@ -1,6 +1,6 @@
 @props(['video', 'badge' => null, 'badgeClass' => null, 'url'])
-
-<div class="content-card" onclick="window.location.href='{{ route($url, $video) }}'">
+<div class="content-card-wrapper ccw-portrait">
+<div class="content-card content-card-portrait" onclick="window.location.href='{{ route($url, $video) }}'">
     @if ($badge)
         <div class="status-badge {{ $badgeClass }}">{{ $badge }}</div>
     @endif
@@ -19,12 +19,9 @@
             <i class="fas fa-play"></i>
         </div>
     </div>
-    <div class="card-content">
+</div>
+    <div class="card-caption">
         <h3 class="card-title">{{ $video->title }}</h3>
-        <div class="card-meta">
-            <span><i class="fas fa-calendar"></i>
-                {{ $video->created_at ? $video->created_at->format('Y') : 'New' }}</span>
-            <span><i class="fas fa-clock"></i> {{ $video->duration_minutes ?? 90 }} min</span>
-        </div>
+
     </div>
 </div>

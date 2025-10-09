@@ -55,7 +55,7 @@ class HomepageHero extends Model
         if (!$this->youtube_video_id) {
             return null;
         }
-        return "/storage/app/public/fitdoc/videos/h2MNaRO2XDehDBcFzpG8Yn7mkA3Nt1zlS3kElgnC.mp4";
+        return "/storage/app/public/fitdoc/videos/124251-730508536.mp4";
     }
 
     /**

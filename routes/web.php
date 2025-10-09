@@ -23,9 +23,15 @@ use App\Http\Controllers\Admin\HomepageHeroController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\FitArenaController;
 use App\Http\Controllers\TwoFactorController;
+use App\Http\Controllers\SearchController;
 
 // Home route
+Route::get('/time', function () {
+    return now()->toDateTimeString(); // e.g. 2025-10-09 17:42:18
+});
+
 Route::get('/', [HomepageController::class, 'index'])->name('home');
+Route::get('/search', [SearchController::class, 'search']);
 
 Route::get('/tools', [ToolsController::class, 'index'])->name('tools.index');
 Route::get('/progress-insights', [ToolsController::class, 'progress_insights'])->name('progress-insights');
@@ -104,6 +110,7 @@ Route::middleware(['auth', 'role:instructor'])->prefix('instructor')->name('inst
 // Public FitLive Routes
 Route::prefix('fitlive')->name('fitlive.')->group(function () {
     Route::get('/', [FitLiveController::class, 'index'])->name('index');
+      Route::get('/fitexpert', [FitLiveController::class, 'fitexpert'])->name('fitexpert');
     // Scroll the fitflix vdo
     Route::get('/vdo', [FitLiveController::class, 'fitflixShortsVdo'])->name('vdo');
 
@@ -189,7 +196,7 @@ Route::prefix('fitarena')->name('fitarena.')->group(function () {
     // Protected content - requires subscription
     Route::middleware(['auth', 'subscription:fitarena'])->group(function () {
         Route::get('/event/{event}', [\App\Http\Controllers\Public\FitArenaController::class, 'event'])->name('event');
-        Route::get('/{event}', [\App\Http\Controllers\Public\FitArenaController::class, 'show'])->name('show');
+        Route::get('/{event}', [\App\Http\Controllers\Public\FitArenaController::class, 'event'])->name('show');
         Route::get('/{event}/stages/{stage}', [\App\Http\Controllers\Public\FitArenaController::class, 'stage'])->name('stage');
         Route::get('/{event}/sessions/{session}', [\App\Http\Controllers\Public\FitArenaController::class, 'session'])->name('session');
         Route::post('/{event}/join', [\App\Http\Controllers\Public\FitArenaController::class, 'joinEvent'])->name('join');

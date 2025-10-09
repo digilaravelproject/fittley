@@ -28,7 +28,7 @@
                 <section class="content-section" data-type="movie">
                     <h2 class="section-title">Featured Movies</h2>
                     <div class="media-grid-wrapper">
-                        @foreach ($featuredSingles as $single)
+                        @foreach ($featuredSingles->sortByDesc('id') as $single)
                             <x-home.media-grid :title="$single->title" :image="$single->banner_image_url" :type="'movie'" :url="route('fitdoc.single.show', $single->slug)"
                                 :duration="$single->duration_minutes" badgeClass="movie-badge" :year="$single->release_date?->format('Y')" :rating="$single->feedback"
                                 :description="$single->description" />
@@ -41,7 +41,7 @@
                 <section class="content-section" data-type="series">
                     <h2 class="section-title">Featured Series</h2>
                     <div class="media-grid-wrapper">
-                        @foreach ($featuredSeries as $series)
+                        @foreach ($featuredSeries->sortByDesc('id') as $series)
                             <x-home.media-grid :title="$series->title" :image="$series->banner_image_url" :type="'series'" :url="route('fitdoc.series.show', $series->slug)"
                                 :duration="$series->total_episodes" badgeClass="series-badge" :year="$series->release_date?->format('Y')" :rating="$series->feedback"
                                 :description="$series->description" />

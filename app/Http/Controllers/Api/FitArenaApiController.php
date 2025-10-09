@@ -12,10 +12,17 @@ use App\Models\FitLiveChatMessage;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use App\Services\AgoraService;
 use Carbon\Carbon;
 
 class FitArenaApiController extends Controller
 {
+    protected $agoraService;
+
+    public function __construct(AgoraService $agoraService)
+    {
+        $this->agoraService = $agoraService;
+    }
     /**
      * Get all FitArena events
      */
@@ -503,6 +510,19 @@ class FitArenaApiController extends Controller
                 // ->live()
                 ->orderBy('start_date', 'desc')
                 ->get();
+
+            // if ($arenaEvents->isLive()) {
+                $viewerId = auth()->check() ? auth()->id() : rand(100000, 999999);
+                
+                $arenaEvents[0]['streamingConfig'] = [
+                    'app_id' => config('agora.app_id'),
+                    'channel' => 'fitarena_session_' . $arenaEvents[0]->id,
+                    'token' => $this->agoraService->generateToken('fitarena_session_' . $arenaEvents[0]->id, $viewerId, 'subscriber'),
+                    'uid' => $viewerId,
+                    'role' => 'subscriber',
+                    'configured' => !empty(config('agora.app_id'))
+                ];
+            // }
 
             // 🔑 Get current user
             $user = auth()->user();

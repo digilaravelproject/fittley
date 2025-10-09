@@ -109,6 +109,20 @@ class FitLiveSessionApiController extends Controller
         // Active session
         $activeSession = $sessions->firstWhere('id', $liveSessionId);
 
+        if($activeSession){
+            $viewerId = auth()->check() ? auth()->id() : rand(100000, 999999);
+            $streamingConfig = [
+                'app_id' => config('agora.app_id'),
+                'channel' => 'fitlive_' . $session->id,
+                'token' => $this->agoraService->generateToken('fitlive_' . $session->id, $viewerId, 'subscriber'),
+                'uid' => $viewerId,
+                'role' => 'subscriber',
+                'configured' => !empty(config('agora.app_id'))
+            ];
+            
+            $activeSession['streamingConfig'] = $streamingConfig;
+        }
+
         // Instructor
         $instructor = $activeSession ? User::find($activeSession->instructor_id) : null;
 
@@ -138,6 +152,35 @@ class FitLiveSessionApiController extends Controller
                 'live_slots' => $liveSlots,
                 'archived_sessions' => $archivedSessions,
                 'grouped_archived' => $groupedArchived,
+            ]
+        ]);
+    }
+
+    public function live_session($id): JsonResponse
+    {
+        $session = FitLiveSession::with('category', 'subCategory', 'instructor')->findOrFail($id);
+        
+        // Generate streaming configuration only if session is live
+        $streamingConfig = null;
+        if ($session->isLive()) {
+            $viewerId = auth()->check() ? auth()->id() : rand(100000, 999999);
+            
+            $streamingConfig = [
+                'app_id' => config('agora.app_id'),
+                'channel' => 'fitlive_' . $session->id,
+                'token' => $this->agoraService->generateToken('fitlive_' . $session->id, $viewerId, 'subscriber'),
+                'uid' => $viewerId,
+                'role' => 'subscriber',
+                'configured' => !empty(config('agora.app_id'))
+            ];
+        }
+
+        // 🔑 Prepare JSON response
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'session' => $session,
+                'streamingConfig' => $streamingConfig,
             ]
         ]);
     }
