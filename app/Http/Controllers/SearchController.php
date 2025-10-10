@@ -414,7 +414,6 @@ class SearchController extends Controller
                     }
                 }
             }
-
             // Add results from FitAreena
             $fitArenaResults->each(function ($item) use ($results) {
                 $results->push([
