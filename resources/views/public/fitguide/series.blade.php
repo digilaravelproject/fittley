@@ -1,36 +1,39 @@
 @extends('layouts.public')
 
 @section('title', $fgSeries->title . ' - FitGuide Series')
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('public/assets/home/css/fitdoc.index.css') }}?v={{ time() }}">
+@endpush
 
 @section('content')
-    <div class="fg-series-page">
+    <div class="fg-series-page px-2">
 
         {{-- Hero Section --}}
         <div class="hero-section position-relative d-flex align-items-center">
             <div class="hero-overlay"></div>
-            <div class="hero-bg" style="
-                        background: url('{{ $fgSeries->banner_image_url ? getImagePath($fgSeries->banner_image_url) : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3' }}') center/cover no-repeat;
-                    "></div>
+            <div class="hero-bg"
+                style="background: url('{{ $fgSeries->banner_image_url ? getImagePath($fgSeries->banner_image_url) : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3' }}') center/cover no-repeat;">
+            </div>
             <div class="container hero-content text-white">
                 <div class="row align-items-center">
                     <div class="col-lg-8">
                         <h1 class="series-title mb-3">{{ $fgSeries->title }}</h1>
                         <p class="series-desc mb-4">{{ $fgSeries->description ?? 'No description available' }}</p>
                         <div class="d-flex flex-wrap mb-4 series-badges">
-                            @if($fgSeries->category)
+                            @if ($fgSeries->category)
                                 <span class="badge badge-cat me-3">{{ $fgSeries->category->name }}</span>
                             @endif
-                            @if($fgSeries->subCategory)
+                            @if ($fgSeries->subCategory)
                                 <span class="badge badge-subcat">{{ $fgSeries->subCategory->name }}</span>
                             @endif
                         </div>
                         <div class="d-flex flex-wrap align-items-center gap-3">
-                            @if($episodes->count() > 0)
+                            @if ($episodes->count() > 0)
                                 <button class="btn btn-primary btn-lg btn-start" onclick="playEpisode(1)">
                                     <i class="fas fa-play me-2"></i>Start Series
                                 </button>
                             @endif
-                            @if($fgSeries->trailer_url)
+                            @if ($fgSeries->trailer_url)
                                 <button class="btn btn-outline-light btn-lg" onclick="playTrailer()">
                                     <i class="fas fa-video me-2"></i>Watch Trailer
                                 </button>
@@ -48,54 +51,70 @@
         </div>
 
         {{-- Episodes Section --}}
-        <div class="episodes-section py-5">
+        <div class="episodes-section py-1 py-md-2 py-lg-4">
             <div class="container">
                 <h2 class="section-title text-white mb-4">Episodes</h2>
-                @if($episodes->count() > 0)
-                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                        @foreach($episodes as $episode)
-                            <div class="col">
-                                <div class="episode-card" onclick="playEpisode({{ $episode->episode_number }})">
-                                    <div class="episode-thumbnail position-relative">
-                                        <img src="{{ $episode->thumbnail_path ? getImagePath($episode->thumbnail_path) : ($fgSeries->banner_image_url ? getImagePath($fgSeries->banner_image_url) : '') }}"
-                                            alt="Episode {{ $episode->episode_number }}" class="img-fluid rounded">
-                                        <div class="play-overlay">
-                                            <i class="fas fa-play"></i>
-                                        </div>
-                                        <div class="episode-number">
-                                            {{ $episode->episode_number }}
-                                        </div>
+                @if ($episodes->count() > 0)
+                    <div class="media-grid-wrapper">
+                        @foreach ($episodes as $episode)
+                                <x-home.media-grid :title="$episode->title" :image="$episode->thumbnail_path
+                                ? getImagePath($episode->thumbnail_path)
+                                : ($fgSeries->banner_image_url
+                                    ? getImagePath($fgSeries->banner_image_url)
+                                    : '')" :url="route('fitguide.series.episode', [
+                                'fgSeries' => $fgSeries->slug,
+                                'episode' => $episode->episode_number,
+                            ])" :description="Str::limit($episode->description, 100)" :type="$episode->episode_number"
+                                    :badgeClass="'episode-number'" />
+                        @endforeach
+                    </div>
+
+
+
+                    {{-- <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                        @foreach ($episodes as $episode)
+                        <div class="col">
+                            <div class="episode-card" onclick="playEpisode({{ $episode->episode_number }})">
+                                <div class="episode-thumbnail position-relative">
+                                    <img src="{{ $episode->thumbnail_path ? getImagePath($episode->thumbnail_path) : ($fgSeries->banner_image_url ? getImagePath($fgSeries->banner_image_url) : '') }}"
+                                        alt="Episode {{ $episode->episode_number }}" class="img-fluid rounded">
+                                    <div class="play-overlay">
+                                        <i class="fas fa-play"></i>
                                     </div>
-                                    <div class="episode-info p-3">
-                                        <h5 class="episode-title">{{ $episode->title }}</h5>
-                                        <p class="text-muted">{{ Str::limit($episode->description, 100) }}</p>
-                                        <div class="episode-meta d-flex flex-wrap gap-3 mt-2">
-                                            @if($episode->duration_minutes)
-                                                <span class="meta-item"><i
-                                                        class="fas fa-clock me-1"></i>{{ $episode->duration_minutes }} min</span>
-                                            @endif
-                                            @if($episode->release_date)
-                                                <span class="meta-item"><i
-                                                        class="fas fa-calendar me-1"></i>{{ $episode->release_date->format('M d, Y') }}</span>
-                                            @endif
-                                        </div>
+                                    <div class="episode-number">
+                                        {{ $episode->episode_number }}
+                                    </div>
+                                </div>
+                                <div class="episode-info p-3">
+                                    <h5 class="episode-title">{{ $episode->title }}</h5>
+                                    <p class="text-white">{{ Str::limit($episode->description, 100) }}</p>
+                                    <div class="episode-meta d-flex flex-wrap gap-3 mt-2">
+                                        @if ($episode->duration_minutes)
+                                        <span class="meta-item"><i class="fas fa-clock me-1"></i>{{ $episode->duration_minutes
+                                            }} min</span>
+                                        @endif
+                                        @if ($episode->release_date)
+                                        <span class="meta-item"><i class="fas fa-calendar me-1"></i>{{
+                                            $episode->release_date->format('M d, Y') }}</span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         @endforeach
-                    </div>
+                    </div> --}}
                 @else
                     <div class="text-center py-5 no-episodes">
-                        <i class="fas fa-video fa-3x text-muted mb-3"></i>
-                        <h4 class="text-muted">No Episodes Available</h4>
-                        <p class="text-muted">Episodes will be available soon.</p>
+                        <i class="fas fa-video fa-3x text-white mb-3"></i>
+                        <h4 class="text-white">No Episodes Available</h4>
+                        <p class="text-white">Episodes will be available soon.</p>
                     </div>
                 @endif
             </div>
         </div>
 
         {{-- Similar / More Like This Section --}}
-        <div class="more-like-this-section py-5">
+        <div class="more-like-this-section py-5 d-none">
             <div class="container">
                 <h2 class="section-title text-white mb-4">
                     <i class="fas fa-thumbs-up me-3"></i>More Like This
@@ -110,9 +129,9 @@
         :root {
             --series-bg-dark: #121212;
             --series-bg-light: #f5f5f5;
-            --accent-gradient: linear-gradient(90deg, #ff6f61, #f4a261);
-            --btn-primary-color: #ff6f61;
-            --btn-primary-hover: #e55b50;
+            --accent-gradient: linear-gradient(90deg, #ffffff, #ffffff);
+            --btn-primary-color: #F7A31A;
+            --btn-primary-hover: #c27800;
             --text-light: #f0f0f0;
             --text-muted-light: #b0b0b0;
             --card-bg-glass: rgba(255, 255, 255, 0.08);
@@ -339,6 +358,8 @@
         @media (max-width: 768px) {
             .hero-section {
                 min-height: 50vh;
+                height: 100%;
+                margin-top: 0;
             }
 
             .poster-container .poster-img {
@@ -368,15 +389,16 @@
     <script>
         function playEpisode(episodeNumber) {
             // Replace placeholder with actual route
-            const urlTemplate = `{{ route('fitguide.series.episode', ['fgSeries' => $fgSeries->slug, 'episode' => '__EP__']) }}`;
+            const urlTemplate =
+                `{{ route('fitguide.series.episode', ['fgSeries' => $fgSeries->slug, 'episode' => '__EP__']) }}`;
             const final = urlTemplate.replace('__EP__', episodeNumber);
             window.location.href = final;
         }
 
         function playTrailer() {
-            @if($fgSeries->trailer_url)
+            @if ($fgSeries->trailer_url)
                 window.open('{{ $fgSeries->trailer_url }}', '_blank');
             @endif
-                }
+                            }
     </script>
 @endsection
