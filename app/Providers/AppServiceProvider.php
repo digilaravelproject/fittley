@@ -23,5 +23,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Register User Observer
         User::observe(UserObserver::class);
+        // Image Helper
+        require_once app_path('Helpers/getImagePath.php');
     }
 }
