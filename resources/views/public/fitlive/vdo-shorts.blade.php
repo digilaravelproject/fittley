@@ -4,8 +4,8 @@
 
 @section('content')
     <div class="shorts-container row justify-content-center align-items-center">
-        <div class="shorts-wrapper">
-            @foreach ($shorts->shuffle() as $short)
+        <div class="shorts-wrapper" id="shortsWrapper">
+            @foreach ($shorts as $short)
                 <div class="shorts-item">
 
                     <!-- Video -->
@@ -205,124 +205,210 @@
 @endsection
 
 @push('scripts')
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const videos = document.querySelectorAll('.shorts-video');
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const wrapper = document.getElementById('shortsWrapper');
 
-            // Ensure iOS/Safari-friendly autoplay
-            videos.forEach(v => {
-                // Attributes (defensive)
-                v.setAttribute('muted', '');
-                v.muted = true;
-                v.defaultMuted = true;
+    // ---- Helpers to attach handlers to a given root (originals or clones) ----
+    function setupVideoEl(v) {
+        // Attributes (defensive)
+        v.setAttribute('muted', '');
+        v.muted = true;
+        v.defaultMuted = true;
 
-                v.setAttribute('playsinline', '');
-                v.setAttribute('webkit-playsinline', '');
-                v.playsInline = true;
+        v.setAttribute('playsinline', '');
+        v.setAttribute('webkit-playsinline', '');
+        v.playsInline = true;
 
-                // If Safari blocks autoplay, try after metadata
-                v.addEventListener('loadeddata', () => {
-                    const playAttempt = v.play();
-                    if (playAttempt && typeof playAttempt.catch === 'function') {
-                        playAttempt.catch(() => {
-                            // Will be unlocked by user tap below
-                        });
-                    }
-                }, { once: true });
+        // If Safari blocks autoplay, try after metadata
+        v.addEventListener('loadeddata', () => {
+            const playAttempt = v.play();
+            if (playAttempt && typeof playAttempt.catch === 'function') {
+                playAttempt.catch(() => { /* unlocked by user tap */ });
+            }
+        }, { once: true });
 
-                // Tap-to-start fallback (only triggers if autoplay was blocked)
-                const unlock = () => {
-                    v.muted = true; // keep muted to satisfy autoplay policies
-                    v.playsInline = true;
-                    v.play().catch(() => {});
-                    // Remove after first interaction
-                    v.removeEventListener('touchstart', unlock);
-                    v.removeEventListener('click', unlock);
-                };
-                v.addEventListener('touchstart', unlock, { passive: true });
-                v.addEventListener('click', unlock);
-            });
+        // Tap-to-start fallback (only triggers if autoplay was blocked)
+        const unlock = () => {
+            v.muted = true; // keep muted to satisfy autoplay policies
+            v.playsInline = true;
+            v.play().catch(() => {});
+            v.removeEventListener('touchstart', unlock);
+            v.removeEventListener('click', unlock);
+        };
+        v.addEventListener('touchstart', unlock, { passive: true });
+        v.addEventListener('click', unlock);
 
-            // Auto-play/pause on scroll (keep your behavior)
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    const video = entry.target;
-                    if (entry.isIntersecting) {
-                        // extra safety for iOS inline playback
-                        video.muted = true;
-                        video.playsInline = true;
-                        video.play().catch(() => {});
-                    } else {
-                        video.pause();
-                    }
-                });
-            }, { threshold: 0.75 });
-            videos.forEach(video => observer.observe(video));
+        // Observe for auto play/pause
+        observer.observe(v);
+    }
 
-            // Like button (unchanged)
-            document.querySelectorAll('.like-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const videoId = btn.dataset.id;
-                    const countEl = btn.querySelector('.count');
+    function setupReadMore(root) {
+        root.querySelectorAll('.read-more-btn').forEach(btn => {
+            // avoid duplicate bindings
+            if (btn.dataset.bound === '1') return;
+            btn.dataset.bound = '1';
 
-                    fetch(`/fitlive/toggle-like/${videoId}`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            btn.classList.toggle('active', data.data.is_liked);
-                            countEl.textContent = data.data.likes_count;
-                        } else {
-                            alert(data.message || 'Something went wrong!');
-                        }
-                    })
-                    .catch(err => console.error(err));
-                });
-            });
-
-            // Share button (unchanged)
-            document.querySelectorAll('.share-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const videoId = btn.dataset.id;
-                    const countEl = btn.querySelector('.count');
-
-                    fetch(`/fitlive/share-video/${videoId}`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            countEl.textContent = data.data.shares_count;
-                            navigator.clipboard.writeText(data.data.share_link)
-                                .then(() => alert('Share link copied!'));
-                        } else {
-                            alert(data.message || 'Failed to share video');
-                        }
-                    })
-                    .catch(err => console.error(err));
-                });
-            });
-        });
-    </script>
-    <script>
-        // Read more / less (unchanged)
-        document.querySelectorAll('.read-more-btn').forEach(btn => {
             const descEl = btn.previousElementSibling;
             btn.addEventListener('click', function() {
                 descEl.classList.toggle('expanded');
                 btn.textContent = descEl.classList.contains('expanded') ? 'Read less' : 'Read more';
             });
         });
-    </script>
+    }
+
+    function setupLikeShare(root) {
+        // Like
+        root.querySelectorAll('.like-btn').forEach(btn => {
+            if (btn.dataset.bound === '1') return;
+            btn.dataset.bound = '1';
+
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const videoId = btn.dataset.id;
+                const countEl = btn.querySelector('.count');
+
+                fetch(`/fitlive/toggle-like/${videoId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        btn.classList.toggle('active', data.data.is_liked);
+                        countEl.textContent = data.data.likes_count;
+                    } else {
+                        alert(data.message || 'Something went wrong!');
+                    }
+                })
+                .catch(err => console.error(err));
+            });
+        });
+
+        // Share
+        root.querySelectorAll('.share-btn').forEach(btn => {
+            if (btn.dataset.bound === '1') return;
+            btn.dataset.bound = '1';
+
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const videoId = btn.dataset.id;
+                const countEl = btn.querySelector('.count');
+
+                fetch(`/fitlive/share-video/${videoId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        countEl.textContent = data.data.shares_count;
+                        navigator.clipboard.writeText(data.data.share_link)
+                            .then(() => alert('Share link copied!'));
+                    } else {
+                        alert(data.message || 'Failed to share video');
+                    }
+                })
+                .catch(err => console.error(err));
+            });
+        });
+    }
+
+    // IntersectionObserver for play/pause
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const video = entry.target;
+            if (entry.isIntersecting) {
+                video.muted = true;
+                video.playsInline = true;
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+            }
+        });
+    }, { threshold: 0.75 });
+
+    // --- 1) Build seamless loop: clone first and last ---
+    let items = Array.from(wrapper.querySelectorAll('.shorts-item'));
+    if (items.length > 0) {
+        const firstClone = items[0].cloneNode(true);
+        const lastClone  = items[items.length - 1].cloneNode(true);
+
+        // mark clones (optional, not used for styling)
+        firstClone.dataset.clone = 'first';
+        lastClone.dataset.clone  = 'last';
+
+        // insert clones
+        wrapper.insertBefore(lastClone, items[0]);
+        wrapper.appendChild(firstClone);
+
+        // re-query items after cloning
+        items = Array.from(wrapper.querySelectorAll('.shorts-item'));
+
+        // 2) Init handlers on originals and clones
+        // videos
+        wrapper.querySelectorAll('.shorts-video').forEach(setupVideoEl);
+        // read-more
+        setupReadMore(wrapper);
+        // like/share
+        setupLikeShare(wrapper);
+
+        // 3) Snap to the first REAL item on load (index 1 due to prepended lastClone)
+        const pageH = wrapper.clientHeight;
+        // set after frame to ensure layout done
+        requestAnimationFrame(() => {
+            wrapper.scrollTo({ top: pageH, behavior: 'instant' in window ? 'instant' : 'auto' });
+        });
+
+        // 4) Keep it looping by jumping when hitting clones
+        let scrollDebounce;
+        function onScrollEnd() {
+            const page = wrapper.clientHeight; // viewport height
+            const maxIndex = items.length - 2; // real items count
+            const scrollTop = wrapper.scrollTop;
+
+            // Which "page" are we on (rounded)?
+            const indexApprox = Math.round(scrollTop / page);
+
+            // If at firstClone (index 0), jump to last real
+            if (indexApprox === 0) {
+                // last real is at index = items.length - 2 (because last item is firstClone)
+                const targetTop = page * (items.length - 2);
+                wrapper.scrollTo({ top: targetTop, behavior: 'auto' });
+            }
+            // If at firstClone-at-end (index = items.length - 1), jump to first real (index 1)
+            else if (indexApprox === items.length - 1) {
+                const targetTop = page; // first real
+                wrapper.scrollTo({ top: targetTop, behavior: 'auto' });
+            }
+        }
+
+        wrapper.addEventListener('scroll', () => {
+            // 1-by-1 snap feeling is already handled by CSS scroll-snap
+            // we only detect when snap finished (debounce) to do loop jumps
+            clearTimeout(scrollDebounce);
+            scrollDebounce = setTimeout(onScrollEnd, 120);
+        });
+
+        // Optional: keyboard/PageUp/PageDown navigation (doesn't alter your design/logic)
+        wrapper.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                e.preventDefault();
+                wrapper.scrollBy({ top: wrapper.clientHeight, behavior: 'smooth' });
+            } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                wrapper.scrollBy({ top: -wrapper.clientHeight, behavior: 'smooth' });
+            }
+        });
+        // Make wrapper focusable for keyboard navigation (non-invasive)
+        wrapper.setAttribute('tabindex', '0');
+    }
+});
+</script>
 @endpush
