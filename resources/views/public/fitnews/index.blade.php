@@ -18,12 +18,11 @@
 
         {{-- HERO --}}
 
-        <section class="hero-section"
-            style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)),
-           url('{{ $heroStream && $heroStream->banner_image
-               ? asset('storage/app/public/' . $heroStream->banner_image)
-               : 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?ixlib=rb-4.0.3' }}')
-           center/cover no-repeat;">
+        <section class="hero-section" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)),
+               url('{{ $heroStream && $heroStream->banner_image
+        ? asset('storage/app/public/' . $heroStream->banner_image)
+        : 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?ixlib=rb-4.0.3' }}')
+               center/cover no-repeat;">
 
 
             <div class="container-fluid">
@@ -51,10 +50,12 @@
                     <h2 class="section-title">
                         Live Now
                     </h2>
-                    <div class="media-grid-wrapper">
+                    <div class="media-grid-wrapper landscape">
                         @foreach ($liveStreams as $stream)
                             <x-home.media-grid :title="$stream->title" :image="$stream->thumbnail ? asset('storage/app/public/' . $stream->thumbnail) : null" :url="route('fitnews.show', $stream)" :type="'live'"
-                                badgeClass="live-badge" :year="optional($stream->started_at)->format('Y')" :rating="$stream->viewer_count" :description="'By ' . optional($stream->creator)->name" />
+                                badgeClass="live-badge" :year="optional($stream->started_at)->format('Y')"
+                                :rating="$stream->viewer_count" :description="'By ' . optional($stream->creator)->name"
+                                :class="'landscape'" />
                         @endforeach
                     </div>
                 </section>
@@ -66,7 +67,7 @@
                     <h2 class="section-title">
                         Today News
                     </h2>
-                    <div class="media-grid-wrapper">
+                    <div class="media-grid-wrapper landscape">
                         @php
                             $today = \Carbon\Carbon::today(); // Aaj ki date
                             $currentTime = \Carbon\Carbon::now(); // Abhi ka time
@@ -94,16 +95,17 @@
                                         $badgeClass = 'badge-archive';
                                     }
                                 @endphp
-                                <div class="landscape">
 
-                                    <x-home.media-grid :title="$stream->title" :image="$stream->thumbnail
-                                        ? asset('storage/app/public/' . $stream->thumbnail)
-                                        : null" :url="route('fitnews.show', $stream)"
-                                        :type="$statusLabel" badgeClass="$badgeClass" :year="optional($stream->scheduled_at)->format('Y')" :description="'By ' .
-                                            optional($stream->creator)->name .
-                                            ' | ' .
-                                            optional($stream->scheduled_at)->format('M d, g:i A')" />
-                                </div>
+
+                                <x-home.media-grid :title="$stream->title" :image="$stream->thumbnail
+                                    ? asset('storage/app/public/' . $stream->thumbnail)
+                                    : null" :url="route('fitnews.show', $stream)"
+                                                :type="$statusLabel" badgeClass="$badgeClass" :year="optional($stream->scheduled_at)->format('Y')" :description="'By ' .
+                                    optional($stream->creator)->name .
+                                    ' | ' .
+                                    optional($stream->scheduled_at)->format('M d, g:i A')"
+                                    :class="'landscape'" />
+
                             @endif
                         @endforeach
                     </div>
@@ -116,13 +118,14 @@
                     <h2 class="section-title">
                         Recent Streams
                     </h2>
-                    <div class="media-grid-wrapper">
+                    <div class="media-grid-wrapper landscape">
                         @foreach ($pastStreams as $stream)
                             <x-home.media-grid :title="$stream->title" :image="$stream->thumbnail ? asset('storage/app/public/' . $stream->thumbnail) : null" :url="route('fitnews.show', $stream)" :type="'ended'"
                                 badgeClass="ended-badge" :year="optional($stream->ended_at)->format('Y')" :description="'By ' .
-                                    optional($stream->creator)->name .
-                                    ' | ' .
-                                    optional($stream->ended_at)->format('M d')" />
+                            optional($stream->creator)->name .
+                            ' | ' .
+                            optional($stream->ended_at)->format('M d')"
+                                :class="'landscape'" />
                         @endforeach
                     </div>
                 </section>
