@@ -81,7 +81,7 @@ class CreateDailyFitNewsSessions extends Command
             // Prepare payload (make sure your FitNews model has $fillable for these)
             if($k == 0){
                 $title = "Fitness Industry Growth in 2025: What's Next?";
-                $news_img = 'fitnews/thumbnails/mgTBqM7ZcjgFCxtBRosSM22oqsEqhsSwsDBhRbgX.jpg';
+                $news_img = 'fitnews/thumbnails/MndlIdUxwR7bsWZSAuRbdD4hwIHxvlOVXgNlUj9q.jpg';
             } else {
                 $title = "Experts Weigh In on Post-Workouts";
                 $news_img = 'fitnews/thumbnails/jnMaFDW2FU54TAUo4GWlCIlGUwWK7ZNjiMRwPwW1.jpg';
