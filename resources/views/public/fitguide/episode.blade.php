@@ -18,7 +18,8 @@
                                 <li class="breadcrumb-item"><a href="{{ route('fitguide.series.show', $fgSeries->slug) }}"
                                         class="text-light">{{ $fgSeries->title }}</a></li>
                                 <li class="breadcrumb-item active text-warning" aria-current="page">Episode
-                                    {{ $episode->episode_number }}</li>
+                                    {{ $episode->episode_number }}
+                                </li>
                             </ol>
                         </nav>
 
@@ -151,107 +152,107 @@
 
 
     <?php /*<script>
-       $(document).ready(function() {
+          $(document).ready(function() {
 
-       // Function to start the episode
-       function startEpisode() {
-           const videoType = @json($videoType); // Get the video type from Blade to JavaScript
+          // Function to start the episode
+          function startEpisode() {
+              const videoType = @json($videoType); // Get the video type from Blade to JavaScript
 
-           if (videoType) {
-               $('#videoSection').fadeIn().scrollIntoView({ behavior: 'smooth' });
+              if (videoType) {
+                  $('#videoSection').fadeIn().scrollIntoView({ behavior: 'smooth' });
 
-               if (videoType === 'youtube') {
-                   // YouTube iframe will auto-load, no need to programmatically play
-                   console.log('YouTube video loaded');
-               } else {
-                   // For HTML5 video players (like S3 or uploaded videos)
-                   const video = $('#episodeVideo')[0]; // Get the actual video DOM element
-                   if (video) {
-                       video.play().catch(function(error) {
-                           console.log('Auto-play was prevented:', error);
-                           // Optionally show a play button if auto-play fails
-                       });
-                       updatePlayPauseIcon();
-                   }
-               }
-           } else {
-               alert('Video not available for this episode');
-           }
-       }
+                  if (videoType === 'youtube') {
+                      // YouTube iframe will auto-load, no need to programmatically play
+                      console.log('YouTube video loaded');
+                  } else {
+                      // For HTML5 video players (like S3 or uploaded videos)
+                      const video = $('#episodeVideo')[0]; // Get the actual video DOM element
+                      if (video) {
+                          video.play().catch(function(error) {
+                              console.log('Auto-play was prevented:', error);
+                              // Optionally show a play button if auto-play fails
+                          });
+                          updatePlayPauseIcon();
+                      }
+                  }
+              } else {
+                  alert('Video not available for this episode');
+              }
+          }
 
-       // Toggle play/pause of the video
-       function toggleVideo() {
-           const video = $('#episodeVideo')[0];
-           if (video.paused) {
-               video.play();
-           } else {
-               video.pause();
-           }
-           updatePlayPauseIcon();
-       }
+          // Toggle play/pause of the video
+          function toggleVideo() {
+              const video = $('#episodeVideo')[0];
+              if (video.paused) {
+                  video.play();
+              } else {
+                  video.pause();
+              }
+              updatePlayPauseIcon();
+          }
 
-       // Close the video section
-       function closeVideo() {
-           const video = $('#episodeVideo')[0];
-           if (video) {
-               video.pause();
-           }
-           $('#videoSection').fadeOut();
-           $('html, body').animate({ scrollTop: 0 }, 'smooth');
-       }
+          // Close the video section
+          function closeVideo() {
+              const video = $('#episodeVideo')[0];
+              if (video) {
+                  video.pause();
+              }
+              $('#videoSection').fadeOut();
+              $('html, body').animate({ scrollTop: 0 }, 'smooth');
+          }
 
-       // Update the play/pause icon
-       function updatePlayPauseIcon() {
-           const video = $('#episodeVideo')[0];
-           const icon = $('#playPauseIcon');
-           if (video && icon.length) {
-               icon.attr('class', video.paused ? 'fas fa-play' : 'fas fa-pause');
-           }
-       }
+          // Update the play/pause icon
+          function updatePlayPauseIcon() {
+              const video = $('#episodeVideo')[0];
+              const icon = $('#playPauseIcon');
+              if (video && icon.length) {
+                  icon.attr('class', video.paused ? 'fas fa-play' : 'fas fa-pause');
+              }
+          }
 
-       // Video progress tracking
-       const video = $('#episodeVideo')[0];
-       const progressBar = $('#progressBar');
+          // Video progress tracking
+          const video = $('#episodeVideo')[0];
+          const progressBar = $('#progressBar');
 
-       if (video && progressBar.length) {
-           // Update progress bar as video plays
-           $(video).on('timeupdate', function() {
-               if (video.duration && !isNaN(video.duration)) {
-                   const progress = (video.currentTime / video.duration) * 100;
-                   progressBar.val(progress);
-               }
-           });
+          if (video && progressBar.length) {
+              // Update progress bar as video plays
+              $(video).on('timeupdate', function() {
+                  if (video.duration && !isNaN(video.duration)) {
+                      const progress = (video.currentTime / video.duration) * 100;
+                      progressBar.val(progress);
+                  }
+              });
 
-           // Scrubbing (seeking) via the progress bar
-           progressBar.on('input', function() {
-               if (video.duration && !isNaN(video.duration)) {
-                   const time = (progressBar.val() / 100) * video.duration;
-                   video.currentTime = time;
-               }
-           });
+              // Scrubbing (seeking) via the progress bar
+              progressBar.on('input', function() {
+                  if (video.duration && !isNaN(video.duration)) {
+                      const time = (progressBar.val() / 100) * video.duration;
+                      video.currentTime = time;
+                  }
+              });
 
-           // Update play/pause icon when video is played or paused
-           $(video).on('play', updatePlayPauseIcon);
-           $(video).on('pause', updatePlayPauseIcon);
+              // Update play/pause icon when video is played or paused
+              $(video).on('play', updatePlayPauseIcon);
+              $(video).on('pause', updatePlayPauseIcon);
 
-           // Handle video loading errors
-           $(video).on('error', function(e) {
-               console.error('Video failed to load:', e);
-               alert('Sorry, there was an error loading the video. Please check your connection and try again.');
-           });
+              // Handle video loading errors
+              $(video).on('error', function(e) {
+                  console.error('Video failed to load:', e);
+                  alert('Sorry, there was an error loading the video. Please check your connection and try again.');
+              });
 
-           // Handle when the video is ready to play
-           $(video).on('canplay', function() {
-               console.log('Video is ready to play');
-           });
-       }
+              // Handle when the video is ready to play
+              $(video).on('canplay', function() {
+                  console.log('Video is ready to play');
+              });
+          }
 
-       // Event Listeners for the buttons
-       $('#startEpisodeBtn').on('click', startEpisode); // Assuming button has an id of startEpisodeBtn
-       $('#toggleVideoBtn').on('click', toggleVideo);   // Assuming button has an id of toggleVideoBtn
-       $('#closeVideoBtn').on('click', closeVideo);     // Assuming button has an id of closeVideoBtn
-    });
-    </script>*/ ?>
+          // Event Listeners for the buttons
+          $('#startEpisodeBtn').on('click', startEpisode); // Assuming button has an id of startEpisodeBtn
+          $('#toggleVideoBtn').on('click', toggleVideo);   // Assuming button has an id of toggleVideoBtn
+          $('#closeVideoBtn').on('click', closeVideo);     // Assuming button has an id of closeVideoBtn
+       });
+       </script>*/ ?>
 
     <script>
         function startEpisode() {
@@ -323,5 +324,4 @@
             }
         });
     </script>
-
 @endsection
