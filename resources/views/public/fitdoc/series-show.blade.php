@@ -69,8 +69,9 @@
                         <button class="btn btn-outline-light btn-lg">
                             <i class="fas fa-plus me-2"></i>Add to Watchlist
                         </button>
-                        <button class="btn btn-outline-light btn-lg">
-                            <i class="fas fa-share me-2"></i>Share
+                        <!-- Share Button with Share Icon -->
+                        <button class="btn btn-outline-light btn-lg" onclick="shareSeries({{ $fitDoc->id }})">
+                            <i class="fas fa-share"></i> Share
                         </button>
                     </div>
                 </div>
@@ -258,6 +259,13 @@ function playEpisode_old(episodeId, episodeTitle, videoUrl) {
     // Remove modal from DOM when hidden
     modal.addEventListener('hidden.bs.modal', function() {
         document.body.removeChild(modal);
+    });
+}
+
+function shareSeries(seriesId) {
+    navigator.share({
+        title: document.title,
+        url: window.location.href
     });
 }
 

@@ -77,8 +77,8 @@
                         <button class="btn btn-outline-light btn-lg">
                             <i class="fas fa-bookmark me-2"></i>Save Guide
                         </button>
-                        <button class="btn btn-outline-light btn-lg">
-                            <i class="fas fa-share me-2"></i>Share
+                        <button class="btn btn-outline-light btn-lg" onclick="shareCasts({{ $fgSingle->id }})">
+                            <i class="fas fa-share"></i> Share
                         </button>
                     </div>
                 </div>
@@ -236,7 +236,7 @@
     @endif
 
     <!-- Related Guides -->
-    <div class="related-section py-5 bg-secondary">
+    <!-- <div class="related-section py-5 bg-secondary">
         <div class="container">
             <h2 class="section-title mb-4">
                 <i class="fas fa-dumbbell me-2"></i>Related Guides
@@ -259,7 +259,7 @@
                 @endforeach
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
 
 <style>
@@ -399,5 +399,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function shareCasts(castId) {
+    navigator.share({
+        title: document.title,
+        url: window.location.href
+    });
+}
+
 </script>
 @endsection
