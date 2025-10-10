@@ -525,13 +525,16 @@
                     <!-- Article Actions -->
                     <div class="article-actions">
                         <!-- Save Button with Share Icon -->
-                        <button class="action-btn action-btn-share" id="shareBtn" onclick="saveBlog({{ $blog->id }})">
+                        <!-- <button class="action-btn action-btn-share" id="shareBtn" onclick="saveBlog({{ $blog->id }})">
                             <i class="far fa-heart"></i>
                             <span>Save</span>
-                        </button>
+                        </button> -->
                         <!-- Like Button with Thumbs Up Icon -->
-                        <button class="action-btn action-btn-like" id="likeBtn" onclick="likeBlog({{ $blog->id }})">
-                            <i class="far fa-thumbs-up"></i> <!-- Outline thumbs-up icon -->
+                        <button 
+                            class="action-btn action-btn-like" 
+                            id="likeBtn-{{ $blog->id }}" 
+                            onclick="toggleLike({{ $blog->id }})">
+                            <i class="{{ session('liked_blogs', []) && in_array($blog->id, session('liked_blogs', [])) ? 'fas' : 'far' }} fa-thumbs-up"></i>
                             <span>Like ({{ $blog->likes_count }})</span>
                         </button>
 
@@ -742,7 +745,11 @@
             showNotification('Blog saved successfully!', 'success');
         }
 
-        function likeBlog(blogId) {
+        function toggleLike(blogId) {
+            const likeBtn = document.getElementById(`likeBtn-${blogId}`);
+            const icon = likeBtn.querySelector('i');
+            const likeBtnText = likeBtn.querySelector('span');
+        
             fetch(`/fitinsight/${blogId}/like`, {
                 method: 'POST',
                 headers: {
@@ -750,33 +757,33 @@
                     'Content-Type': 'application/json',
                 },
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Toggle liked state and switch icon class
-                        const likeBtn = document.getElementById('likeBtn');
-                        const icon = likeBtn.querySelector('i');
-
-                        // Toggle between outline and filled thumbs up icon
-                        icon.classList.toggle('far'); // Toggle outline class
-                        icon.classList.toggle('fas'); // Toggle filled class
-
-                        // Optionally update like count here
-                        const likeBtnText = likeBtn.querySelector('span');
-                        if (likeBtnText) {
-                            likeBtnText.textContent = `Like (${data.likes_count})`;
-                        }
-
-                        // Show success message
-                        showNotification('Blog liked successfully!', 'success');
-                    } else {
-                        showNotification(data.message || 'Failed to like blog', 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('An error occurred', 'error');
-                });
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) {
+                    showNotification(data.message || 'Failed to toggle like', 'error');
+                    return;
+                }
+        
+                // Update icon based on is_liked from server
+                if (data.is_liked) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                }
+        
+                // Update count
+                if (likeBtnText) {
+                    likeBtnText.textContent = `Like (${data.likes_count})`;
+                }
+        
+                showNotification(data.message, 'success');
+            })
+            .catch(err => {
+                console.error(err);
+                showNotification('An error occurred', 'error');
+            });
         }
 
         function likeBlog_old(blogId) {

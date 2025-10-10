@@ -238,24 +238,51 @@ class FitInsightController extends Controller
     /**
      * Like a blog (AJAX).
      */
-    public function like(FiBlog $blog)
+    public function like(Request $request, FiBlog $blog)
     {
         if (!$blog->isPublished()) {
             return response()->json(['success' => false, 'message' => 'Blog not found'], 404);
         }
-
+    
+        // Keep track of liked blog IDs in session for this user/visitor
+        $liked = $request->session()->get('liked_blogs', []); // array of blog IDs
+    
+        $isCurrentlyLiked = in_array($blog->id, $liked, true);
+    
         try {
-            $blog->incrementLikes();
-
-            return response()->json([
-                'success' => true,
-                'likes_count' => $blog->fresh()->likes_count,
-                'message' => 'Blog liked successfully!'
-            ]);
+            if ($isCurrentlyLiked) {
+                // UNLIKE
+                if ($blog->likes_count > 0) {
+                    $blog->decrement('likes_count');
+                }
+                // remove from session
+                $liked = array_values(array_diff($liked, [$blog->id]));
+                $request->session()->put('liked_blogs', $liked);
+    
+                return response()->json([
+                    'success'      => true,
+                    'is_liked'     => false,
+                    'likes_count'  => $blog->fresh()->likes_count,
+                    'message'      => 'Blog unliked!',
+                ]);
+            } else {
+                // LIKE
+                $blog->increment('likes_count');
+                // add to session
+                $liked[] = $blog->id;
+                $request->session()->put('liked_blogs', array_values(array_unique($liked)));
+    
+                return response()->json([
+                    'success'      => true,
+                    'is_liked'     => true,
+                    'likes_count'  => $blog->fresh()->likes_count,
+                    'message'      => 'Blog liked successfully!',
+                ]);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to like blog'
+                'message' => 'Failed to toggle like',
             ], 500);
         }
     }
