@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\FiBlog;
 use App\Models\FiCategory;
+use App\Models\PostComment;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class FitInsightController extends Controller
@@ -190,6 +192,71 @@ class FitInsightController extends Controller
             'popularBlogs'  // pass this too
         ));
     }
+    
+    /**
+     * Return comments for a blog (AJAX JSON).
+     */
+    public function comments(FiBlog $blog)
+    {
+        if (!$blog->isPublished()) {
+            return response()->json(['success' => false, 'message' => 'Blog not found'], 404);
+        }
+    
+        $comments = PostComment::forFitInsight()
+            ->active()
+            ->where('post_id', $blog->id)
+            ->with('user:id,name')
+            ->latest()
+            ->get();
+    
+        return response()->json([
+            'success' => true,
+            'comments' => $comments->map(function ($c) {
+                return [
+                    'id'      => $c->id,
+                    'author'  => optional($c->user)->name ?? 'Guest',
+                    'content' => $c->content,
+                    'time'    => $c->created_at->diffForHumans(),
+                ];
+            }),
+        ]);
+    }
+    
+    /**
+     * Store a new comment for a blog (AJAX JSON).
+     */
+    public function storeComment(Request $request, FiBlog $blog)
+    {
+        if (!$blog->isPublished()) {
+            return response()->json(['success' => false, 'message' => 'Blog not found'], 404);
+        }
+    
+        $validated = $request->validate([
+            'content'   => 'required|string|max:1000',
+            'parent_id' => 'nullable|integer', // (optional) for threading
+        ]);
+    
+        $comment = PostComment::create([
+            'user_id'   => Auth::id(),          // null for guests
+            'post_type' => 'fit_insight_video', // IMPORTANT
+            'post_id'   => $blog->id,
+            'parent_id' => $validated['parent_id'] ?? null,
+            'content'   => $validated['content'],
+            'likes_count' => 0,
+            'is_active'   => true,
+        ]);
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Comment added successfully!',
+            'comment' => [
+                'id'      => $comment->id,
+                'author'  => Auth::user()->name ?? 'Guest',
+                'content' => $comment->content,
+                'time'    => $comment->created_at->diffForHumans(),
+            ],
+        ]);
+    }
 
     public function show_old(FiBlog $blog)
     {
@@ -238,6 +305,7 @@ class FitInsightController extends Controller
     /**
      * Like a blog (AJAX).
      */
+
     public function like(Request $request, FiBlog $blog)
     {
         if (!$blog->isPublished()) {
