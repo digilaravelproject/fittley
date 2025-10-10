@@ -963,16 +963,22 @@
             </div>
 
             <!-- Mobile search icon button (visible on mobile only) -->
-            <button class="btn btn-outline-light d-block d-md-none ms-3" type="button" data-bs-toggle="modal"
-                data-bs-target="#searchModal" aria-label="Open search"
-                style="left: 3rem;position: relative;border-color: var(--fittelly-orange);color: var(--fittelly-orange);">
-                <i class="fas fa-search"></i>
-            </button>
+            <!--<button class="btn btn-outline-light d-block d-md-none ms-3" type="button" data-bs-toggle="modal"-->
+            <!--    data-bs-target="#searchModal" aria-label="Open search"-->
+            <!--    style="left: 10%;position: relative;border-color: var(--fittelly-orange);color: var(--fittelly-orange);padding: .3rem .5rem;"">-->
+            <!--    <i class="fas fa-search"></i>-->
+            <!--</button>-->
 
 
 
             {{-- Mobile Auth Section (Visible only on Mobile) --}}
             <div class="d-flex d-lg-none align-items-center" style="margin-right: -1rem;">
+                <!-- Mobile search icon button (visible on mobile only) -->
+                <button class="btn btn-outline-light d-block d-md-none ms-3 btn-sm me-2" type="button"
+                    data-bs-toggle="modal" data-bs-target="#searchModal" aria-label="Open search"
+                    style="position: relative;border-color: var(--fittelly-orange);color: var(--fittelly-orange);">
+                    <i class="fas fa-search"></i>
+                </button>
                 @auth
                     @php
                         $user = auth()->user();
@@ -1097,7 +1103,7 @@
                 <!-- Close Button -->
                 <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
                     data-bs-dismiss="modal" aria-label="Close"
-                    style="background-color: rgba(0,0,0,0.4); padding: 0.7rem; border-radius: 50%;">
+                    style="background-color: rgba(0,0,0,0.4);padding: 0.8rem;border-radius: 50%;z-index: 9;">
                 </button>
 
                 <!-- Search Input with Icon -->

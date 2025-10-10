@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\FgCategory;
 use App\Models\FgSeries;
 use App\Models\FgSingle;
 use App\Models\FiBlog;
+use App\Models\FitArenaEvent;
 use App\Models\FitDoc;
 use App\Models\FitFlixShorts;
 use App\Models\FitLiveSession;
 use App\Models\FitNews;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -319,16 +323,213 @@ class SearchController extends Controller
                 return response()->json([], 400); // Return a 400 if no query is provided
             }
 
-            // Searching across multiple models like FitDoc, FitNews, FitLiveSession
+            $results = collect();
+
+            // Search fg_categories (categories) first and track their slugs
+            $matchingFgCategories = FgCategory::where('name', 'LIKE', "%$query%")->take(5)->get();
+
+            $addedCategorySlugs = [];
+
+            $matchingFgCategories->each(function ($category) use (&$results, &$addedCategorySlugs) {
+                $addedCategorySlugs[] = $category->slug;
+
+                if ($category->slug === 'fitcast-live' || $category->slug === 'fitcast') {
+                    $url = route('fitguide.fitcast');
+                } else {
+                    $url = route('fitguide.index', ['category' => $category->slug]);
+                }
+
+                $results->push([
+                    'title' => $category->name,
+                    'url' => $url,
+                ]);
+            });
+            $today = Carbon::today()->toDateString();
+            // Now search other models
             $fitDocResults = FitDoc::where('title', 'LIKE', "%$query%")->take(5)->get();
-            $fitNewsResults = FitNews::where('title', 'LIKE', "%$query%")->take(5)->get();
-            $fitLiveResults = FitLiveSession::where('title', 'LIKE', "%$query%")->take(5)->get();
-            $fgSingleResults = FgSingle::where('title', 'LIKE', "%$query%")->take(5)->get();
-            $fgSeriesResults = FgSeries::where('title', 'LIKE', "%$query%")->take(5)->get();
-            $fiBlogResults = FiBlog::where('title', 'LIKE', "%$query%")->take(5)->get();
+            $fitNewsResults = FitNews::where('title', 'LIKE', "%$query%")
+                ->whereDate('scheduled_at', $today)  // ya published_at agar available hai
+                ->take(5)
+                ->get();
+            $fgSingleResults = FgSingle::with('category')->where('title', 'LIKE', "%$query%")->take(5)->get();
+            $fgSeriesResults = FgSeries::with('category')->where('title', 'LIKE', "%$query%")->take(5)->get();
+            $fitArenaResults = FitArenaEvent::Where('title', 'LIKE', "%$query%")
+                ->where('visibility', 'public')
+                ->take(5)
+                ->get();
+            $fitBlogResults = FiBlog::Where('title', 'LIKE', "%$query%")
+                ->where('status', 'published')
+                ->take(5)
+                ->get();
+
+            // Search subcategories
+            $matchingSubCategories = \App\Models\SubCategory::where('name', 'LIKE', "%$query%")->take(5)->get();
+            foreach ($matchingSubCategories as $subCategory) {
+                $results->push([
+                    'title' => $subCategory->name,
+                    'url' => route('fitlive.daily-classes.show', $subCategory->id),
+                ]);
+            }
+
+            // Process fitLiveCategories (same as your existing logic)
+            $fitLiveCategories = collect();
+            if (class_exists('App\Models\Category')) {
+                $fitLiveCategories = Category::with(['subCategories' => function ($subQuery) use ($query) {
+                    $subQuery->with(['fitLiveSessions' => function ($sessionQuery) use ($query) {
+                        $sessionQuery->where('visibility', 'public')
+                            ->where('title', 'LIKE', "%$query%")
+                            ->orderByRaw("CASE status WHEN 'live' THEN 1 WHEN 'scheduled' THEN 2 WHEN 'ended' THEN 3 END")
+                            ->orderBy('scheduled_at', 'desc');
+                    }]);
+                }])
+                    ->where('id', '!=', 17)
+                    ->orderByDesc('sort_order')
+                    ->take(5)
+                    ->get();
+
+                foreach ($fitLiveCategories as $category) {
+                    foreach ($category->subCategories as $subCategory) {
+                        foreach ($subCategory->fitLiveSessions as $session) {
+                            if ($session->category_id == 21) {
+                                if (Carbon::parse($session->scheduled_at)->isSameDay($today)) {
+                                    $timeFormatted = Carbon::parse($session->scheduled_at)->format('h:i A');
+                                    $titleWithTime = $session->title . ' - ' . $timeFormatted;
+
+                                    $route = route('fitlive.daily-classes.show', $session->sub_category_id);
+
+                                    $results->push([
+                                        'title' => $titleWithTime,
+                                        'url' => $route,
+                                    ]);
+                                }
+                            } else {
+                                $route = route('fitlive.session', $session->id);
+
+                                $results->push([
+                                    'title' => $session->title,
+                                    'url' => $route,
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Add results from FitAreena
+            $fitArenaResults->each(function ($item) use ($results) {
+                $results->push([
+                    'title' => $item->title,
+                    'url' => route('fitarena.show', $item->id),
+                ]);
+            });
+            // Add results from FitDoc
+            $fitDocResults->each(function ($item) use ($results) {
+                $results->push([
+                    'title' => $item->title,
+                    'url' => route('fitdoc.single.show', $item->id),
+                ]);
+            });
+
+            // Add results from FitNews
+            $fitNewsResults->each(function ($item) use ($results) {
+                $results->push([
+                    'title' => $item->title,
+                    'url' => route('fitnews.show', $item->id),
+                ]);
+            });
+            // Add results from Fit Blog
+            $fitBlogResults->each(function ($item) use ($results) {
+                $results->push([
+                    'title' => $item->title,
+                    'url' => route('fitinsight.show', $item->id),
+                ]);
+            });
+
+            // Add results from FgSingle only if category slug not already added
+            $fgSingleResults->each(function ($item) use (&$results, $addedCategorySlugs) {
+                $category = $item->category; // Relationship to fg_categories
+                if ($category && ! in_array($category->slug, $addedCategorySlugs)) {
+                    $results->push([
+                        'title' => $item->title,
+                        'url' => route('fitguide.single.show', $item->slug),
+                    ]);
+                }
+            });
+
+            // Add results from FgSeries only if category slug not already added
+            $fgSeriesResults->each(function ($item) use (&$results, $addedCategorySlugs) {
+                $category = $item->category; // Relationship to fg_categories
+                if ($category && ! in_array($category->slug, $addedCategorySlugs)) {
+                    $results->push([
+                        'title' => $item->title,
+                        'url' => route('fitguide.series.show', $item->slug),
+                    ]);
+                }
+            });
+
+            // Optional: FiBlog results here if needed
+
+            // Remove duplicates by URL and reset keys
+            $results = $results->unique('url')->values();
+
+            return response()->json($results);
+        } catch (\Exception $e) {
+            Log::error('Search Error: ' . $e->getMessage());
+
+            return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
+        }
+    }
+
+    public function search_old_2(Request $request)
+    {
+        try {
+            $query = $request->get('query'); // Get the search query
+
+            if (! $query) {
+                return response()->json([], 400); // Return a 400 if no query is provided
+            }
 
             // Initialize an empty collection to store the results
             $results = collect();
+
+            // Searching across multiple models like FitDoc, FitNews, FitLiveSession
+            $fitDocResults = FitDoc::where('title', 'LIKE', "%$query%")->take(5)->get();
+            $fitNewsResults = FitNews::where('title', 'LIKE', "%$query%")->take(5)->get();
+            // $fitLiveResults = FitLiveSession::where('title', 'LIKE', "%$query%")->take(5)->get();
+            $fgSingleResults = FgSingle::where('title', 'LIKE', "%$query%")->take(5)->get();
+            $fgSeriesResults = FgSeries::where('title', 'LIKE', "%$query%")->take(5)->get();
+            $fiBlogResults = FiBlog::where('title', 'LIKE', "%$query%")->take(5)->get();
+            // Additional FitLive Results via Category > SubCategory > FitLiveSession structure
+            $fitLiveCategories = collect();
+            if (class_exists('App\Models\Category')) {
+                $fitLiveCategories = Category::with(['subCategories' => function ($subQuery) use ($query) {
+                    $subQuery->with(['fitLiveSessions' => function ($sessionQuery) use ($query) {
+                        $sessionQuery->where('visibility', 'public')
+                            ->where('title', 'LIKE', "%$query%")
+                            ->orderByRaw("CASE status WHEN 'live' THEN 1 WHEN 'scheduled' THEN 2 WHEN 'ended' THEN 3 END")
+                            ->orderBy('scheduled_at', 'desc');
+                    }]);
+                }])
+                    ->where('id', '!=', 17)
+                    ->orderByDesc('sort_order')
+                    ->get();
+
+                // Process nested results
+                foreach ($fitLiveCategories as $category) {
+                    foreach ($category->subCategories as $subCategory) {
+                        foreach ($subCategory->fitLiveSessions as $session) {
+                            $route = $session->category_id == 21
+                                ? route('fitlive.daily-classes.show', $session->id)
+                                : route('fitlive.session', $session->id);
+
+                            $results->push([
+                                'title' => $session->title,
+                                'url' => $route,
+                            ]);
+                        }
+                    }
+                }
+            }
 
             // Add results from FitDoc
             $fitDocResults->each(function ($item) use ($results) {
@@ -346,17 +547,17 @@ class SearchController extends Controller
                 ]);
             });
 
-            // Add results from FitLiveSession
-            $fitLiveResults->each(function ($item) use ($results) {
-                $route = $item->category_id == 21
-                    ? route('fitlive.daily-classes.show', $item->id)
-                    : route('fitlive.fitexpert', $item->id); // Default route for other categories
+            // // Add results from FitLiveSession
+            // $fitLiveResults->each(function ($item) use ($results) {
+            //     $route = $item->category_id == 21
+            //         ? route('fitlive.daily-classes.show', $item->id)
+            //         : route('fitlive.session', $item->id); // Default route for other categories
 
-                $results->push([
-                    'title' => $item->title,
-                    'url' => $route, // Dynamic FitLiveSession URL
-                ]);
-            });
+            //     $results->push([
+            //         'title' => $item->title,
+            //         'url' => $route, // Dynamic FitLiveSession URL
+            //     ]);
+            // });
 
             // Add results from FgSingle
             // Add results from FgSingle
@@ -390,12 +591,13 @@ class SearchController extends Controller
             //         'url' => route('fiblog.show', $item->id), // FiBlog URL
             //     ]);
             // });
+            $results = $results->unique('url')->values();
 
             // Return the results as JSON
             return response()->json($results);
         } catch (\Exception $e) {
             // Log the exception message
-            Log::error('Search Error: '.$e->getMessage());
+            Log::error('Search Error: ' . $e->getMessage());
 
             // Return a 500 response with error message
             return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
@@ -452,7 +654,7 @@ class SearchController extends Controller
             return response()->json($results);
         } catch (\Exception $e) {
             // Log the exception message
-            Log::error('Search Error: '.$e->getMessage());
+            Log::error('Search Error: ' . $e->getMessage());
 
             // Return a 500 response with error message
             return response()->json(['error' => 'Something went wrong. Please try again later.'], 500);
