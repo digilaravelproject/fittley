@@ -1199,7 +1199,8 @@
                 </div>
                 <div class="modal-body">
                     <div class="container d-flex justify-content-center align-items-center">
-                        <div class="card shadow p-4 text-center" style="max-width: 500px; width: 100%;">
+                        <div class="card shadow p-4 text-center"
+                            style="max-width: 500px;width: 100%;color: #000000;background: #ffffff !important;">
                             <h2 class="mb-3 text-danger">Feature Unavailable on Web</h2>
                             <p class="mb-4">
                                 This feature isn’t accessible in the web version. <br>
