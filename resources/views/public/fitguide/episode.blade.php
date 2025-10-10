@@ -39,7 +39,7 @@
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-clock me-2 text-primary"></i>
                                 <div>
-                                    <small class="text-muted d-block">Duration</small>
+                                    <small class="text-white d-block">Duration</small>
                                     <span>{{ $episode->formatted_duration }}</span>
                                 </div>
                             </div>
@@ -50,7 +50,7 @@
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-list me-2 text-primary"></i>
                                 <div>
-                                    <small class="text-muted d-block">Episode</small>
+                                    <small class="text-white d-block">Episode</small>
                                     <span>{{ $episode->episode_number }}</span>
                                 </div>
                             </div>
@@ -217,7 +217,7 @@
                             <p class="card-text small text-muted">{{ Str::limit($ep->description ?? 'Episode
                                 description', 80) }}</p>
                             @if($ep->id === $episode->id)
-                            <span class="btn btn-primary btn-sm w-75 d-flex m-auto">
+                            <span class="btn btn-primary btn-sm w-75 d-flex m-auto" onclick="startEpisode()">
                                 <i class="fas fa-play me-1"></i>Currently Watching
                             </span>
                             @else
@@ -277,7 +277,7 @@
 </style>
 
 
-<script>
+<?php /*<script>
     $(document).ready(function() {
 
     // Function to start the episode
@@ -378,7 +378,77 @@
     $('#toggleVideoBtn').on('click', toggleVideo);   // Assuming button has an id of toggleVideoBtn
     $('#closeVideoBtn').on('click', closeVideo);     // Assuming button has an id of closeVideoBtn
 });
-</script>
+</script>*/ ?>
 
+<script>
+    function startEpisode() {
+        const videoType = @json($videoType);
+    
+        if (videoType) {
+            $('#videoSection').fadeIn();
+            document.getElementById('videoSection').scrollIntoView({ behavior: 'smooth' });
+    
+            if (videoType === 'youtube') {
+                console.log('YouTube video loaded');
+            } else {
+                const video = $('#episodeVideo')[0];
+                if (video) {
+                    video.play().catch(error => console.log('Auto-play prevented:', error));
+                    updatePlayPauseIcon();
+                }
+            }
+        } else {
+            alert('Video not available for this episode');
+        }
+    }
+    
+    function toggleVideo() {
+        const video = $('#episodeVideo')[0];
+        if (video.paused) {
+            video.play();
+        } else {
+            video.pause();
+        }
+        updatePlayPauseIcon();
+    }
+    
+    function closeVideo() {
+        const video = $('#episodeVideo')[0];
+        if (video) video.pause();
+        $('#videoSection').fadeOut();
+        $('html, body').animate({ scrollTop: 0 }, 'smooth');
+    }
+    
+    function updatePlayPauseIcon() {
+        const video = $('#episodeVideo')[0];
+        const icon = $('#playPauseIcon');
+        if (video && icon.length) {
+            icon.attr('class', video.paused ? 'fas fa-play' : 'fas fa-pause');
+        }
+    }
+    
+    $(document).ready(function() {
+        const video = $('#episodeVideo')[0];
+        const progressBar = $('#progressBar');
+    
+        if (video && progressBar.length) {
+            $(video).on('timeupdate', function() {
+                if (video.duration && !isNaN(video.duration)) {
+                    progressBar.val((video.currentTime / video.duration) * 100);
+                }
+            });
+    
+            progressBar.on('input', function() {
+                if (video.duration && !isNaN(video.duration)) {
+                    video.currentTime = (progressBar.val() / 100) * video.duration;
+                }
+            });
+    
+            $(video).on('play pause', updatePlayPauseIcon);
+            $(video).on('canplay', () => console.log('Video ready'));
+            $(video).on('error', e => console.error('Video load error:', e));
+        }
+    });
+</script>
 
 @endsection
