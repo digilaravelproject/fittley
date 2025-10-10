@@ -24,7 +24,7 @@
             {{-- All --}}
             @if ($subCategories->count() > 0)
                 <div class="media-grid-wrapper">
-                    @foreach ($subCategories->sortByDesc('id') as $subCategory)
+                    @foreach ($subCategories as $subCategory)
 
                         @php
                             $now = \Carbon\Carbon::now();

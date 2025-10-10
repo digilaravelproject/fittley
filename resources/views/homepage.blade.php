@@ -154,7 +154,7 @@
                             <div class="category-section mb-1">
                             @if ($category->id == 21)
                                 @php
-                                    $route = route('fitlive.daily-classes.show', 19);
+                                    $route = route('fitlive.fitlive');
                                 @endphp
                             @else
                                 @php
