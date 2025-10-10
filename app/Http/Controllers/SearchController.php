@@ -414,12 +414,11 @@ class SearchController extends Controller
                     }
                 }
             }
-
             // Add results from FitAreena
             $fitArenaResults->each(function ($item) use ($results) {
                 $results->push([
                     'title' => $item->title,
-                    'url' => route('fitarena.show', $item->id),
+                    'url' => route('fitarena.show', $item->slug),
                 ]);
             });
             // Add results from FitDoc

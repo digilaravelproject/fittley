@@ -17,8 +17,8 @@ class CreateDailyFitNewsSessions extends Command
      *  php artisan fitnews:create-daily-news --date=2025-10-06
      *  php artisan fitnews:create-daily-news --dry-run
      */
-    protected $signature = 'fitnews:create-daily-news 
-        {--date= : Create Fit News for specific date (Y-m-d format)} 
+    protected $signature = 'fitnews:create-daily-news
+        {--date= : Create Fit News for specific date (Y-m-d format)}
         {--dry-run : Show what would be created without saving}';
 
     /**
@@ -79,7 +79,7 @@ class CreateDailyFitNewsSessions extends Command
             }
 
             // Prepare payload (make sure your FitNews model has $fillable for these)
-            if($k == 0){
+            if ($k == 0) {
                 $title = "Fitness Industry Growth in 2025: What's Next?";
                 $news_img = 'fitnews/thumbnails/MndlIdUxwR7bsWZSAuRbdD4hwIHxvlOVXgNlUj9q.jpg';
             } else {
@@ -96,7 +96,7 @@ class CreateDailyFitNewsSessions extends Command
                 'is_published'     => 1,
                 'published_at'     => $scheduledAt,
                 'scheduled_at'     => $scheduledAt,
-                'recording_enabled'=> false,
+                'recording_enabled' => false,
                 'viewer_count'     => 0,
                 'views_count'      => 0,
                 'likes_count'      => 0,
