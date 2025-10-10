@@ -77,7 +77,12 @@ class HomepageController extends Controller
                 ->orderBy('started_at', 'desc')
                 ->get();
             
-            $fitNewsArchive = FitNews::whereIn('status', ['ended', 'scheduled'])
+            $fitNewsArchive = FitNews::whereIn('status', ['scheduled'])
+                ->with('creator')
+                ->orderBy('created_at', 'desc')
+                ->get();
+                
+            $fitNewsArchiveCard = FitNews::whereIn('status', ['ended'])
                 ->with('creator')
                 ->orderBy('created_at', 'desc')
                 ->get();
@@ -136,6 +141,7 @@ class HomepageController extends Controller
             'fitarenaliveEvents',
             'fitNewsLive',
             'fitNewsArchive',
+            'fitNewsArchiveCard',
             'fitGuideCategories',
             'fitGuides',
             'fitInsights'

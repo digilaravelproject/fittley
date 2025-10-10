@@ -462,7 +462,7 @@
                                                 $statusLabel = 'Live';
                                                 $badgeClass = 'badge-live';
                                             } else {
-                                                $statusLabel = 'Archive';
+                                                $statusLabel = 'Ended';
                                                 $badgeClass = 'badge-archive';
                                             }
                                         @endphp
@@ -476,7 +476,21 @@
                                 @endif
                             @endforeach
 
+                            @foreach ($fitNewsArchiveCard as $ArcNews)
+                                @if (\Carbon\Carbon::parse($ArcNews->scheduled_at)->isToday())
+                                    @php
+                                        $statusLabel = 'Archive';
+                                        $badgeClass = 'badge-archive';
+                                    @endphp
 
+                                        <x-home.landscape-card :route="route('fitnews.show', $ArcNews)" :title="$ArcNews->title"
+                                            :image="$ArcNews->thumbnail ? asset('storage/app/public/' . $ArcNews->thumbnail) : null"
+                                            :badge="['label' => $statusLabel, 'class' => $badgeClass]" :meta="[
+                                        '<i class=\'fas fa-user\'></i> ' . ($ArcNews->creator->name ?? 'Admin'),
+                                        '<i class=\'fas fa-calendar\'></i> ' . ($ArcNews->scheduled_at ? $ArcNews->scheduled_at->format('M d, h:i A') : 'TBD')
+                                    ]" />
+                                @endif
+                            @endforeach
 
                         </div>
                         <button class="slider-controls slider-prev" onclick="slideContent('fitnews-slider', -1)">
