@@ -35,13 +35,14 @@
                     <h2 class="section-title">
                         Live Now
                     </h2>
-                    <div class="media-grid-wrapper">
-                        @foreach ($liveSessions as $session)
+                    <div class="media-grid-wrapper landscape">
+                        @foreach ($liveSessions->where('sub_category_id', '!=', 21) as $session)
+
                             <x-home.media-grid :title="$session->title" :image="$session->banner_image
-                                ? asset('storage/app/public/' . $session->banner_image)
+                                ? getImagePath($session->banner_image)
                                 : null" :url="route('fitlive.session', $session)" :type="'live'"
                                 :duration="null" :year="null" :rating="$session->viewer_peak" :description="'By ' . $session->instructor->name"
-                                badgeClass="live-badge" />
+                                badgeClass="live-badge" :class="'landscape'" />
                         @endforeach
                     </div>
                 </section>
@@ -56,13 +57,13 @@
 
                     {{-- Daily-Live --}}
                     @if ($dailylive->count() > 0)
-                       
-                        <div class="media-grid-wrapper mb-4">
+
+                        <div class="media-grid-wrapper mb-4 landscape">
                             @foreach ($dailylive as $session)
                                 <x-home.media-grid :title="$session->name" :image="$session->banner_image
-                                    ? asset('storage/app/public/' . $session->banner_image)
+                                    ? getImagePath($session->banner_image)
                                     : null" :url="route('fitlive.daily-classes.show', $session->id)" :type="'live'"
-                                    :duration="null"  :rating="null" badgeClass="live-badge"
+                                    :duration="null"  :rating="null" badgeClass="live-badge" :class="'landscape'"
                                     />
                             @endforeach
                         </div>
@@ -75,7 +76,7 @@
                         <div class="media-grid-wrapper">
                             @foreach ($fitexpert->sortByDesc('id') as $session)
                                 <x-home.media-grid :title="$session->title" :image="$session->banner_image
-                                    ? asset('storage/app/public/' . $session->banner_image)
+                                    ? getImagePath($session->banner_image)
                                     : null" :url="route('fitlive.session', $session)"
                                     :type="'live'" :duration="null" :year="$session->updated_at->format('Y')" :rating="null"
                                     badgeClass="live-badge" :description="'By ' .

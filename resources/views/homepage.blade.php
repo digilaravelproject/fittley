@@ -155,14 +155,16 @@
                             @if ($category->id == 21)
                                 @php
                                     $route = route('fitlive.fitlive');
+                                    $title = "Daily Live Classes";
                                 @endphp
                             @else
                                 @php
                                     $route = route('fitlive.fitexpert');
+                                    $title = $category->name;
                                 @endphp
                             @endif
                             <a href="{{ $route }}" class="text-decoration-none">
-                                <h3 class="category-title">{{ $category->name }}</h3>
+                                <h3 class="category-title">{{ $title }}</h3>
                             </a>
                                 <div class="content-slider">
                                     <div class="slider-container" id="fitlive-{{ $category->id }}-slider">
@@ -221,7 +223,7 @@
                                             <x-home.landscape-card
                                                 :route="route('fitlive.daily-classes.show', $subCategory->id)"
                                                 :title="$subCategory->name"
-                                                :image="$subCategory->banner_image ? asset('storage/app/public/' . $subCategory->banner_image) : null"
+                                                :image="$subCategory->banner_image ? getImagePath($subCategory->banner_image) : null"
                                                 :badge="['label' => $badge, 'class' => $badgeClass]"
                                                 :meta="['<i class=\'fas fa-calendar\'></i> ' . ($subCategory->created_at?->format('M d, Y') ?? '')]"
                                             />
@@ -389,7 +391,7 @@
 
                                             @if ($isFitcastLive)
                                                 <x-home.landscape-card :route="route('fitguide.single.show', $content->slug)"
-                                                    :title="$content->title" :image="$content->banner_image_path ? asset('storage/app/public/' . $content->banner_image_path) : null" :meta="['<i class=\'fas fa-calendar\'></i> ' . ($content->created_at?->format('M d, Y') ?? '')]" />
+                                                    :title="$content->title" :image="$content->banner_image_path ? getImagePath($content->banner_image_path) : null" :meta="['<i class=\'fas fa-calendar\'></i> ' . ($content->created_at?->format('M d, Y') ?? '')]" />
                                             @else
                                                 <x-home.portrait-card :video="$content" url="fitguide.series.show" :routeParams="['fgSeries' => $content->slug]" />
                                             @endif
@@ -431,7 +433,7 @@
                         <div class="slider-container" id="fitnews-slider">
                             @foreach ($fitNewsLive as $news)
                                         <x-home.landscape-card :route="route('fitnews.show', $news)" :title="$news->title"
-                                            :image="$news->thumbnail ? asset('storage/app/public/' . $news->thumbnail) : null"
+                                            :image="$news->thumbnail ? getImagePath($news->thumbnail) : null"
                                             :badge="['label' => 'LIVE', 'class' => 'badge-live']" :meta="[
                                     '<i class=\'fas fa-user\'></i> ' . ($news->creator->name ?? 'Admin'),
                                     '<i class=\'fas fa-eye\'></i> ' . ($news->viewer_count ?? 0) . ' watching'
@@ -468,7 +470,7 @@
                                         @endphp
 
                                         <x-home.landscape-card :route="route('fitnews.show', $news)" :title="$news->title"
-                                            :image="$news->thumbnail ? asset('storage/app/public/' . $news->thumbnail) : null"
+                                            :image="$news->thumbnail ? getImagePath($news->thumbnail) : null"
                                             :badge="['label' => $statusLabel, 'class' => $badgeClass]" :meta="[
                                         '<i class=\'fas fa-user\'></i> ' . ($news->creator->name ?? 'Admin'),
                                         '<i class=\'fas fa-calendar\'></i> ' . ($news->scheduled_at ? $news->scheduled_at->format('M d, h:i A') : 'TBD')
@@ -484,7 +486,7 @@
                                     @endphp
 
                                         <x-home.landscape-card :route="route('fitnews.show', $ArcNews)" :title="$ArcNews->title"
-                                            :image="$ArcNews->thumbnail ? asset('storage/app/public/' . $ArcNews->thumbnail) : null"
+                                            :image="$ArcNews->thumbnail ? getImagePath($ArcNews->thumbnail) : null"
                                             :badge="['label' => $statusLabel, 'class' => $badgeClass]" :meta="[
                                         '<i class=\'fas fa-user\'></i> ' . ($ArcNews->creator->name ?? 'Admin'),
                                         '<i class=\'fas fa-calendar\'></i> ' . ($ArcNews->scheduled_at ? $ArcNews->scheduled_at->format('M d, h:i A') : 'TBD')
