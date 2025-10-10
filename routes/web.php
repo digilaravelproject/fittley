@@ -110,7 +110,7 @@ Route::middleware(['auth', 'role:instructor'])->prefix('instructor')->name('inst
 // Public FitLive Routes
 Route::prefix('fitlive')->name('fitlive.')->group(function () {
     Route::get('/', [FitLiveController::class, 'index'])->name('index');
-    Route::get('/fitexpert', [FitLiveController::class, 'fitexpert'])->name('fitexpert');
+      Route::get('/fitexpert', [FitLiveController::class, 'fitexpert'])->name('fitexpert');
     // Scroll the fitflix vdo
     Route::get('/vdo', [FitLiveController::class, 'fitflixShortsVdo'])->name('vdo');
 
@@ -124,6 +124,7 @@ Route::prefix('fitlive')->name('fitlive.')->group(function () {
     });
 
     Route::get('/{id}', [FitLiveController::class, 'show'])->name('daily-classes.show');
+
 });
 
 
@@ -150,6 +151,10 @@ Route::prefix('fitinsight')->name('fitinsight.')->group(function () {
         Route::get('/{blog}', [FitInsightController::class, 'show'])->name('show');
         Route::post('/{blog}/like', [FitInsightController::class, 'like'])->name('like');
         Route::post('/{blog}/share', [FitInsightController::class, 'share'])->name('share');
+        
+        Route::get('/{blog}/comments', [FitInsightController::class, 'comments'])->name('fitinsight.comments');
+
+        Route::post('/{blog}/comments', [FitInsightController::class, 'storeComment'])->name('fitinsight.comments.store');
     });
 });
 

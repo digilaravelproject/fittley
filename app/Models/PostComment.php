@@ -33,6 +33,14 @@ class PostComment extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
+    /**
+     * Scope for FitInsight comments only.
+     */
+    public function scopeForFitInsight($query)
+    {
+        return $query->where('post_type', 'fit_insight_video');
+    }
 
     public function post()
     {

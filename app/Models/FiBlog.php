@@ -87,6 +87,15 @@ class FiBlog extends Model
             }
         });
     }
+    
+    public function comments()
+    {
+        return $this->hasMany(\App\Models\PostComment::class, 'post_id')
+            ->where('post_type', 'fit_insight_video')
+            ->where('is_active', true)
+            ->latest();
+    }
+
 
     // Relationships
     public function category()

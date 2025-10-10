@@ -20,6 +20,62 @@
         }
 
         /* Article Header */
+        
+        .article-comments .comment {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .article-comments .comment:hover {
+            background: rgba(255,255,255,0.06);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+        }
+        
+        .article-comments .comment-author {
+            font-weight: 600;
+            color: #f7a31a;
+        }
+        
+        .article-comments .comment-time {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .article-comments .comment-text {
+            color: #ddd;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-top: 0.5rem;
+            white-space: pre-line;
+        }
+        
+        .article-comments .user-avatar {
+            box-shadow: 0 0 8px rgba(247, 163, 26, 0.3);
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        .article-comments textarea:focus {
+            box-shadow: 0 0 6px rgba(247,163,26,0.7);
+            outline: none;
+        }
+        
+        .comment {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.4s ease forwards;
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         .article-header {
             /* background: url('https://fittelly.com/storage/app/public/fitinsight/blogs/featured/8rWZnU453WG7kEHZwiZKOr6WCUHLx85PNOXAX0me.jpg') center/cover; */
@@ -525,10 +581,10 @@
                     <!-- Article Actions -->
                     <div class="article-actions">
                         <!-- Save Button with Share Icon -->
-                        <!-- <button class="action-btn action-btn-share" id="shareBtn" onclick="saveBlog({{ $blog->id }})">
-                            <i class="far fa-heart"></i>
-                            <span>Save</span>
-                        </button> -->
+                        <!--<button class="action-btn action-btn-share" id="shareBtn" onclick="saveBlog({{ $blog->id }})">-->
+                        <!--    <i class="far fa-heart"></i>-->
+                        <!--    <span>Save</span>-->
+                        <!--</button>-->
                         <!-- Like Button with Thumbs Up Icon -->
                         <button 
                             class="action-btn action-btn-like" 
@@ -556,54 +612,49 @@
                             <span>Share ({{ $blog->shares_count }})</span>
                         </button>
                     </div> --}}
-                    <section class="article-comments mt-2">
+                    
+                    <section class="article-comments mt-4">
                         <div class="container p-0">
-                            <h3 class="section-title">Comments</h3>
-
+                            <h3 class="section-title mb-3 d-flex align-items-center gap-2">
+                                <i class="fas fa-comments text-warning"></i> Discussion Zone
+                            </h3>
+                    
                             <!-- Comment Form -->
-                            <div class="comment-form mb-2">
-                                <form action="#" method="POST">
+                            <div class="comment-form mb-4 p-3 rounded-3" 
+                                 style="background: var(--netflix-dark-gray); border: 1px solid #333;">
+                                <form id="commentForm">
                                     @csrf
-                                    <div class="input-group">
-                                        <textarea name="comment" class="form-control" rows="1"
-                                            placeholder="Write a comment..." required></textarea>
-                                        <button type="submit" class="btn btn-primary ms-2"
-                                            style="padding: 0 7px;">Submit</button>
+                                    <div class="d-flex align-items-start gap-2">
+                                        <div class="user-avatar flex-shrink-0 rounded-circle bg-warning text-dark fw-bold d-flex align-items-center justify-content-center" 
+                                             style="width:45px; height:45px; font-size:1.1rem;">
+                                            {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <textarea name="content" id="commentContent" 
+                                                      class="form-control bg-dark text-light border-0 shadow-sm rounded-3" 
+                                                      rows="2"
+                                                      placeholder="Share your thoughts..." required></textarea>
+                                            <div class="text-end mt-2">
+                                                <button type="submit" 
+                                                        class="btn btn-warning btn-sm fw-semibold text-dark px-3 py-1 rounded-pill">
+                                                    <i class="fas fa-paper-plane me-1"></i> Comment
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
-                            @php
-                                // Temporary random data generation
-                                $comments = collect([
-                                    (object) [
-                                        'user' => (object) ['name' => 'John Doe'],
-                                        'created_at' => now()->subMinutes(rand(1, 120)), // Random time between 1 minute to 2 hours ago
-                                        'comment' => 'This is a random comment ' . rand(1, 100)
-                                    ],
-                                    (object) [
-                                        'user' => (object) ['name' => 'Jane Smith'],
-                                        'created_at' => now()->subMinutes(rand(1, 120)),
-                                        'comment' => 'Another random comment here ' . rand(101, 200)
-                                    ],
-                                    (object) [
-                                        'user' => (object) ['name' => 'Alice Brown'],
-                                        'created_at' => now()->subMinutes(rand(1, 120)),
-                                        'comment' => 'Random comment generated using PHP Faker ' . rand(201, 300)
-                                    ]
-                                ]);
-                            @endphp
-
-                            <!-- Displaying Comments -->
-                            <div class="comments-list">
-                                @foreach ($comments as $comment)
-                                    <div class="comment">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="comment-author">{{ $comment->user->name }}</span>
-                                            <span class="comment-time">{{ $comment->created_at->diffForHumans() }}</span>
-                                        </div>
-                                        <p class="comment-text">{{ $comment->comment }}</p>
-                                    </div>
-                                @endforeach
+                    
+                            <!-- Comments List -->
+                            <div id="commentsList" class="comments-list"></div>
+                    
+                            <!-- Read More / Less -->
+                            <div class="text-center mt-3">
+                                <button id="commentsToggleBtn" 
+                                        class="btn btn-outline-warning rounded-pill px-4 py-1 d-none"
+                                        style="font-size:0.9rem;">
+                                    Read more
+                                </button>
                             </div>
                         </div>
                     </section>
@@ -741,6 +792,123 @@
 
 @push('scripts')
     <script>
+        document.addEventListener("DOMContentLoaded", () => {
+    const blogId = {{ $blog->id }};
+    const commentsList = document.getElementById('commentsList');
+    const commentForm = document.getElementById('commentForm');
+    const commentContent = document.getElementById('commentContent');
+    const toggleBtn = document.getElementById('commentsToggleBtn');
+
+    // how many to show when collapsed
+    const VISIBLE_COUNT = 5;
+
+    // state
+    let allComments = [];   // array from server
+    let expanded = false;   // collapsed by default
+
+    // Load from server once
+    function loadComments() {
+        fetch(`/fitinsight/${blogId}/comments`)
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) {
+                    commentsList.innerHTML = `<p class="text-danger">Failed to load comments.</p>`;
+                    return;
+                }
+                allComments = data.comments || [];
+                renderComments();
+            })
+            .catch(() => {
+                commentsList.innerHTML = `<p class="text-danger">Failed to load comments.</p>`;
+            });
+    }
+
+    // Render respecting expanded/collapsed state
+    function renderComments() {
+        if (!allComments.length) {
+            commentsList.innerHTML = `<p class="text-muted">No comments yet. Be the first to comment!</p>`;
+            toggleBtn.classList.add('d-none');
+            return;
+        }
+
+        const toShow = expanded ? allComments : allComments.slice(0, VISIBLE_COUNT);
+
+        commentsList.innerHTML = toShow.map(c => commentHtml(c)).join('');
+
+        // Toggle button visibility + label
+        if (allComments.length > VISIBLE_COUNT) {
+            toggleBtn.classList.remove('d-none');
+            toggleBtn.textContent = expanded ? 'Read less' : `Read more (${allComments.length - VISIBLE_COUNT})`;
+        } else {
+            toggleBtn.classList.add('d-none');
+        }
+    }
+
+    // Create a single comment HTML block
+    function commentHtml(c) {
+        return `
+            <div class="comment mb-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="comment-author">${escapeHtml(c.author)}</span>
+                    <span class="comment-time">${escapeHtml(c.time)}</span>
+                </div>
+                <p class="comment-text mb-0">${nl2br(escapeHtml(c.content))}</p>
+            </div>
+        `;
+    }
+
+    // Toggle expand/collapse
+    toggleBtn.addEventListener('click', () => {
+        expanded = !expanded;
+        renderComments();
+    });
+
+    // Submit a new comment
+    commentForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const content = commentContent.value.trim();
+        if (!content) return;
+
+        fetch(`/fitinsight/${blogId}/comments`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.success) {
+                showNotification(data.message || 'Failed to add comment', 'error');
+                return;
+            }
+            // Prepend new comment to the in-memory list
+            allComments.unshift(data.comment);
+            commentContent.value = '';
+            // Stay in current mode (expanded/collapsed) and re-render
+            renderComments();
+            showNotification(data.message, 'success');
+        })
+        .catch(() => showNotification('An error occurred', 'error'));
+    });
+
+    // Helpers to avoid XSS and keep line breaks
+    function escapeHtml(str) {
+        return String(str)
+            .replaceAll('&','&amp;')
+            .replaceAll('<','&lt;')
+            .replaceAll('>','&gt;')
+            .replaceAll('"','&quot;')
+            .replaceAll("'","&#039;");
+    }
+    function nl2br(str) {
+        return String(str).replace(/\n/g, '<br>');
+    }
+
+    loadComments();
+});
+
         function saveBlog(blogId) {
             showNotification('Blog saved successfully!', 'success');
         }
