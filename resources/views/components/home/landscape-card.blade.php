@@ -1,8 +1,17 @@
 @props(['route', 'title', 'image', 'badge' => null, 'meta' => []])
 
 @php
-    $fallbackImage = asset('storage/app/public/fitlive/banners/' . 'default-banner.jpg');
-    $finalImage = !empty($image) ? $image : $fallbackImage;
+    $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');
+
+    // If $image exists, ensure it includes '/storage/app/public/'
+    if (!empty($image)) {
+        if (strpos($image, '/storage/app/public/') === false) {
+            $image = '/storage/app/public/' . ltrim($image, '/');
+        }
+        $finalImage = asset($image);
+    } else {
+        $finalImage = $fallbackImage;
+    }
 @endphp
 
 {{-- Wrapper includes both image card and title below --}}

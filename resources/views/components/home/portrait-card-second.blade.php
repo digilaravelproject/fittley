@@ -13,8 +13,15 @@
     $fallbackImage = asset('storage/app/public/fitlive/banners/default-banner.jpg');
 
     // Final image logic
-    $finalImage = !empty($video->banner_image_path)
-        ? asset($video->banner_image_path)
+    $path = $video->banner_image_path;
+
+    // Check if the path already contains '/storage/app/public/'
+    if (strpos($path, '/storage/app/public/') === false) {
+        $path = '/storage/app/public/' . ltrim($path, '/');
+    }
+
+    $finalImage = !empty($path)
+        ? asset($path)
         : $fallbackImage;
 
     // Route parameter logic
