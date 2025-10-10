@@ -1,3 +1,26 @@
+<style>
+    /* Default portrait layout (already exists) */
+/* Landscape mode for grid */
+@media (min-width: 992px) {
+    .media-grid-wrapper.landscape {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 767px) {
+    .media-grid-wrapper.landscape {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Landscape aspect ratio */
+.content-card.landscape {
+    aspect-ratio: 16 / 9;
+}
+
+</style>
 @props([
 'title',
 'image' => 'https://via.placeholder.com/300x450?text=No+Image',
@@ -8,15 +31,17 @@
 'rating' => null,
 'description' => null,
 'badgeClass' => null,
+'class' => null,
 ])
 
 
 @php
 $typeText = ucfirst($type);
 // $badgeClass = $type === 'series' ? 'series-badge' : '';
+//  $isLandscape = $class === 'landscape';
 @endphp
-<div class="content-card-wrapper ccw-portrait">
-    <div class="content-card" onclick="window.location.href='{{ $url }}'">
+<div class="content-card-wrapper ccw-portrait {{ $class}}">
+    <div class="content-card {{ $class}}" onclick="window.location.href='{{ $url }}'">
         @if($badgeClass)
         <div class="type-badge {{ $badgeClass }}">
             {{ ucfirst($type) }}

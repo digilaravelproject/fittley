@@ -17,12 +17,12 @@
             @if ($fitcast->count() > 0)
                 <section class="content-section">
                     {{-- <h5 class="section-title">Latest FitCast Episodes</h5> --}}
-                    <div class="media-grid-wrapper">
+                    <div class="media-grid-wrapper landscape">
                         @foreach ($fitcast->sortByDesc('id') as $episode)
                             <x-home.media-grid :title="$episode->title" :image="$episode->banner_image_url ?? 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3'"
                                 :url="route('fitguide.single.show', $episode->slug)"
                                 :year="optional($episode->created_at)->format('Y')" :rating="null"
-                                :description="Str::limit($episode->description ?? 'Podcast episode', 100)" />
+                                :description="Str::limit($episode->description ?? 'Podcast episode', 100)" :class="'landscape'" />
                         @endforeach
                     </div>
                 </section>

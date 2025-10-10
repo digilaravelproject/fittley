@@ -23,7 +23,7 @@
 
             {{-- All --}}
             @if ($subCategories->count() > 0)
-                <div class="media-grid-wrapper">
+                <div class="media-grid-wrapper landscape">
                     @foreach ($subCategories as $subCategory)
 
                         @php
@@ -70,7 +70,8 @@
                         {{-- Use media-grid to display the subcategory --}}
                         <x-home.media-grid :title="$subCategory->name" :image="$subCategory->banner_image ? asset('storage/app/public/' . $subCategory->banner_image) : null"
                             :url="route('fitlive.daily-classes.show', $subCategory->id)" :type="$badgeLabel" :duration="null"
-                            :year="$subCategory->updated_at->format('Y')" :rating="null" :badgeClass="$badgeClass" />
+                            :year="$subCategory->updated_at->format('Y')" :rating="null" :badgeClass="$badgeClass"
+                            :class="'landscape'" />
                     @endforeach
 
 
