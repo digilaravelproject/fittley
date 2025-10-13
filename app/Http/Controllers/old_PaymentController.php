@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ReferralCode;
 use App\Models\SubscriptionPlan;
 use App\Models\UserSubscription;
 use App\Services\PaymentService;
@@ -11,9 +10,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierController;
 use Exception;
-use Razorpay\Api\Api;
-use App\Models\PaymentTransaction;
-use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
@@ -76,6 +72,7 @@ class PaymentController extends Controller
                     'error' => $result['error']
                 ], 400);
             }
+
         } catch (Exception $e) {
             Log::error('Payment intent creation failed: ' . $e->getMessage());
             return response()->json([
@@ -85,135 +82,10 @@ class PaymentController extends Controller
         }
     }
 
-
-
-    public function createOrder(Request $request)
-    {
-        $plan = SubscriptionPlan::findOrFail($request->plan_id);
-        $user = Auth::user();
-
-        // ✅ Step 1: Original price in ₹
-        $priceInRupees = $plan->price;
-
-        // ✅ Step 2: Apply referral code (if any)
-        $referralCode = $request->referral_code ?? null;
-        $discountAmount = 0;
-
-        if ($referralCode) {
-            $referral = ReferralCode::where('code', $referralCode)->first();
-
-            if ($referral && $referral->is_active) {
-                // 💰 Example: 10% discount
-                $discountPercent = $referral->discount_percentage ?? 10;
-
-                $discountAmount = round(($priceInRupees * $discountPercent) / 100, 2); // Round to 2 decimal places
-                $priceInRupees -= $discountAmount;
-            }
-        }
-
-        // ✅ Step 3: Convert to paise for Razorpay
-        $priceInPaise = round($priceInRupees * 100);
-
-        // ❌ Prevent minimum payment being too low
-        if ($priceInPaise < 100) {
-            $priceInPaise = 100; // Minimum ₹1
-        }
-
-        // ✅ Step 4: Create Razorpay order
-        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
-
-        $order = $api->order->create([
-            'receipt' => uniqid(),
-            'amount' => $priceInPaise,
-            'currency' => 'INR',
-            'payment_capture' => 1,     // Auto capture
-        ]);
-
-        return response()->json([
-            'order_id' => $order['id'],
-            'razorpay_key' => config('services.razorpay.key'),
-            'amount' => $priceInPaise, // for display on frontend
-            'plan' => $plan
-        ]);
-    }
-
-    public function paymentSuccess(Request $request)
-    {
-        $api = new Api(config('services.razorpay.key'), config('services.razorpay.secret'));
-
-        try {
-            $attributes = [
-                'razorpay_order_id' => $request->razorpay_order_id,
-                'razorpay_payment_id' => $request->razorpay_payment_id,
-                'razorpay_signature' => $request->razorpay_signature
-            ];
-
-            $api->utility->verifyPaymentSignature($attributes);
-
-            $plan = SubscriptionPlan::findOrFail($request->plan_id);
-            $user = Auth::user();
-
-            // 💾 Save payment
-            PaymentTransaction::create([
-                'user_id' => $user->id,
-                'transaction_id' => $request->razorpay_payment_id,
-                'payment_method' => 'razorpay',
-                'payment_gateway' => 'razorpay',
-                'amount' => $plan->price,
-                'currency' => 'INR',
-                'status' => 'completed',
-                'gateway_transaction_id' => $request->razorpay_order_id,
-                'gateway_response' => json_encode($request->all()),
-                'processed_at' => now()
-            ]);
-
-            // 🧾 Create Subscription
-            $durationMonths = $plan->duration_months ?? 1;
-            $startDate = now();
-            $endDate = now()->addMonths($durationMonths);
-
-            UserSubscription::create([
-                'user_id' => $user->id,
-                'subscription_plan_id' => $plan->id,
-                'status' => 'active',
-                'amount_paid' => $plan->price,
-                'payment_method' => 'razorpay',
-                'transaction_id' => $request->razorpay_payment_id,
-                'started_at' => $startDate,
-                'ends_at' => $endDate,
-                'subscription_data' => json_encode($request->all())
-            ]);
-
-            // 🟢 Return JSON for AJAX requests
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Payment verified and subscription activated.'
-                ]);
-            }
-
-            // 🟢 Fallback redirect (if user accessed directly)
-            return redirect()->route('subscription.index')
-                ->with('success', 'Payment successful! Your plan is now active.');
-        } catch (Exception $e) {
-            Log::error('Razorpay Payment Error: ' . $e->getMessage());
-
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Payment verification failed.'
-                ], 400);
-            }
-
-            return redirect()->route('payment.cancel')
-                ->with('error', 'Payment verification failed. Please contact support.');
-        }
-    }
-
     /**
      * Handle successful payment
      */
-    public function paymentSuccess_old(Request $request)
+    public function paymentSuccess(Request $request)
     {
         $user = auth()->user();
         $subscription = $user->currentSubscription;
@@ -241,7 +113,7 @@ class PaymentController extends Controller
     {
         try {
             $user = auth()->user();
-
+            
             if (!$user->hasStripeId()) {
                 return response()->json([
                     'success' => true,
@@ -266,6 +138,7 @@ class PaymentController extends Controller
                     ];
                 })
             ]);
+
         } catch (Exception $e) {
             Log::error('Error fetching payment methods: ' . $e->getMessage());
             return response()->json([
@@ -307,6 +180,7 @@ class PaymentController extends Controller
                 'success' => true,
                 'message' => 'Payment method added successfully'
             ]);
+
         } catch (Exception $e) {
             Log::error('Error adding payment method: ' . $e->getMessage());
             return response()->json([
@@ -349,6 +223,7 @@ class PaymentController extends Controller
                 'success' => true,
                 'message' => 'Payment method removed successfully'
             ]);
+
         } catch (Exception $e) {
             Log::error('Error removing payment method: ' . $e->getMessage());
             return response()->json([
@@ -402,6 +277,7 @@ class PaymentController extends Controller
                     'trial_days' => $plan->trial_days,
                 ]
             ]);
+
         } catch (Exception $e) {
             Log::error('Error calculating pricing: ' . $e->getMessage());
             return response()->json([
@@ -423,11 +299,11 @@ class StripeWebhookController extends CashierController
     public function handleInvoicePaymentSucceeded($payload)
     {
         Log::info('Stripe invoice payment succeeded', $payload);
-
+        
         // Update subscription status
         $invoice = $payload['data']['object'];
         $customerId = $invoice['customer'];
-
+        
         $user = \App\Models\User::where('stripe_id', $customerId)->first();
         if ($user) {
             $user->updateSubscriptionStatus('active');
@@ -442,10 +318,10 @@ class StripeWebhookController extends CashierController
     public function handleInvoicePaymentFailed($payload)
     {
         Log::warning('Stripe invoice payment failed', $payload);
-
+        
         $invoice = $payload['data']['object'];
         $customerId = $invoice['customer'];
-
+        
         $user = \App\Models\User::where('stripe_id', $customerId)->first();
         if ($user) {
             // Handle payment failure (retry, grace period, etc.)
@@ -459,10 +335,10 @@ class StripeWebhookController extends CashierController
     public function handleCustomerSubscriptionDeleted($payload)
     {
         Log::info('Stripe customer subscription deleted', $payload);
-
+        
         $subscription = $payload['data']['object'];
         $customerId = $subscription['customer'];
-
+        
         $user = \App\Models\User::where('stripe_id', $customerId)->first();
         if ($user) {
             $user->updateSubscriptionStatus('cancelled');

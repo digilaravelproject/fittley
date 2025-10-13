@@ -1,29 +1,24 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\Instructor\InstructorController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\Admin\FiBlogController;
+use App\Http\Controllers\Admin\FiCategoryController;
 use App\Http\Controllers\Admin\FitLiveSessionAdminController;
 use App\Http\Controllers\Admin\FitNewsController as AdminFitNewsController;
-use App\Http\Controllers\Admin\FiCategoryController;
-use App\Http\Controllers\Admin\FiBlogController;
-use App\Http\Controllers\Admin\FitDocController;
-use App\Http\Controllers\Admin\FitDocSingleController;
-use App\Http\Controllers\Admin\FitDocSeriesController;
+use App\Http\Controllers\Admin\HomepageHeroController;
+use App\Http\Controllers\Admin\SubCategoryController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\HomepageController;
+use App\Http\Controllers\Instructor\InstructorController;
+use App\Http\Controllers\Public\FitInsightController;
 use App\Http\Controllers\Public\FitLiveController;
 use App\Http\Controllers\Public\FitNewsController;
-use App\Http\Controllers\Public\FitInsightController;
-use App\Http\Controllers\HomepageController;
-use App\Http\Controllers\ToolsController;
-use App\Http\Controllers\StrengthController;
-use App\Http\Controllers\Admin\HomepageHeroController;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Admin\FitArenaController;
-use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ToolsController;
+use App\Http\Controllers\TwoFactorController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 // Home route
 Route::get('/time', function () {
@@ -46,7 +41,6 @@ Route::get('/protein-requirement', [ToolsController::class, 'protein_requirement
 Route::get('/tdee', [ToolsController::class, 'tdee'])->name('tdee');
 Route::get('/water-intake', [ToolsController::class, 'water_intake'])->name('water-intake');
 Route::get('/one-rm', [ToolsController::class, 'one_rm'])->name('one-rm');
-
 
 Route::view('/legal-notice', 'static/legal_notice')->name('legal_notice');
 Route::view('/cookie-preference', 'static/cookie_preference')->name('cookie_preference');
@@ -112,6 +106,7 @@ Route::prefix('fitlive')->name('fitlive.')->group(function () {
     Route::get('/', [FitLiveController::class, 'index'])->name('index');
     Route::get('/fitexpert', [FitLiveController::class, 'fitexpert'])->name('fitexpert');
     Route::get('/daily-live-classes', [FitLiveController::class, 'fitlive'])->name('fitlive');
+
     // Scroll the fitflix vdo
     Route::get('/vdo', [FitLiveController::class, 'fitflixShortsVdo'])->name('vdo');
 
@@ -126,7 +121,6 @@ Route::prefix('fitlive')->name('fitlive.')->group(function () {
 
     Route::get('/{id}', [FitLiveController::class, 'show'])->name('daily-classes.show');
 });
-
 
 // Public FitNews Routes
 Route::prefix('fitnews')->name('fitnews.')->group(function () {
@@ -173,7 +167,6 @@ Route::prefix('fitguide')->name('fitguide.')->group(function () {
         Route::get('/series/{fgSeries}/episode/{episode}', [\App\Http\Controllers\Public\FitGuideController::class, 'showEpisode'])->name('series.episode');
     });
 });
-
 
 // Public FitDoc Routes (User-facing)
 Route::prefix('fitdoc')->name('fitdoc.')->group(function () {
@@ -366,7 +359,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         // Subcategories
         Route::resource('subcategories', SubCategoryController::class);
 
-
         // Sessions
         Route::resource('sessions', FitLiveSessionAdminController::class)->parameters(['sessions' => 'fitLiveSession']);
         Route::post('sessions/{fitLiveSession}/start', [FitLiveSessionAdminController::class, 'startSession'])->name('sessions.start');
@@ -388,6 +380,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             $subcategories = App\Models\SubCategory::where('category_id', $categoryId)
                 ->select('id', 'name')
                 ->get();
+
             return response()->json($subcategories);
         })->name('fitlive.categories.subcategories');
     });
@@ -661,11 +654,16 @@ Route::middleware('auth')->prefix('subscription')->name('subscription.')->group(
         Route::get('/my-code', [\App\Http\Controllers\SubscriptionController::class, 'myReferralCode'])->name('my-code');
     });
 });
-
+Route::middleware('auth')->prefix('/razorpay')->name('razorpay.')->group(function () {
+    Route::post('/order', [\App\Http\Controllers\RazorpayController::class, 'createOrder'])->name('order');
+    Route::post('/confirm', [\App\Http\Controllers\RazorpayController::class, 'paymentSuccess'])->name('confirm');
+});
 // Payment Routes (Authenticated users)
 Route::middleware('auth')->prefix('payment')->name('payment.')->group(function () {
+
     // Payment processing
     Route::post('/create-intent', [\App\Http\Controllers\PaymentController::class, 'createPaymentIntent'])->name('create-intent');
+    Route::post('/create-order', [\App\Http\Controllers\PaymentController::class, 'createOrder'])->name('create-order');
     Route::get('/success', [\App\Http\Controllers\PaymentController::class, 'paymentSuccess'])->name('success');
     Route::get('/cancel', [\App\Http\Controllers\PaymentController::class, 'paymentCancel'])->name('cancel');
 
@@ -732,6 +730,7 @@ Route::middleware(['auth', 'role:instructor'])->prefix('admin')->name('admin.')-
             $subcategories = App\Models\SubCategory::where('category_id', $categoryId)
                 ->select('id', 'name')
                 ->get();
+
             return response()->json($subcategories);
         })->name('instructor.categories.subcategories');
     });
@@ -764,7 +763,7 @@ Route::post('/debug/fitdoc', function (Request $request) {
     return response()->json([
         'success' => true,
         'message' => 'Debug data logged',
-        'data' => $request->all()
+        'data' => $request->all(),
     ]);
 })->name('debug.fitdoc');
 

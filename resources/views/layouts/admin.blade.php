@@ -1,55 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Dashboard') - fitlley</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="icon" href="{{ asset('public/favicon.ico') }}" type="image/x-icon">
+
     <style>
         :root {
             /* Netflix-inspired Color Palette */
             --primary-color: #f7a31a;
             --primary-dark: #e8941a;
             --primary-light: #f9b847;
-            
+
             /* Background Colors */
             --bg-primary: #0a0a0a;
             --bg-secondary: #141414;
             --bg-tertiary: #1a1a1a;
             --bg-card: #1f1f1f;
             --bg-hover: #2a2a2a;
-            
+
             /* Text Colors */
             --text-primary: #ffffff;
             --text-secondary: #e5e5e5;
             --text-muted: #b3b3b3;
             --text-disabled: #6b6b6b;
-            
+
             /* Border Colors */
             --border-primary: #333333;
             --border-secondary: #404040;
             --border-accent: #f7a31a;
-            
+
             /* Status Colors */
             --success: #00d084;
             --error: #e50914;
             --warning: #ffb020;
             --info: #00a8ff;
-            
+
             /* Shadows */
             --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
             --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
             --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
             --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.6);
-            
+
             /* Transitions */
             --transition-fast: 0.15s ease-in-out;
             --transition-normal: 0.3s ease-in-out;
@@ -126,7 +128,8 @@
         .sidebar-nav {
             padding: 1.5rem 0;
             overflow-y: auto;
-            height: calc(100vh - 140px); /* Subtract header height */
+            height: calc(100vh - 140px);
+            /* Subtract header height */
             scrollbar-width: thin;
             scrollbar-color: var(--border-secondary) transparent;
         }
@@ -167,7 +170,8 @@
         }
 
         .fitarena_status {
-            color: #000; /* black */
+            color: #000;
+            /* black */
         }
 
         .nav-link::before {
@@ -242,6 +246,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -310,10 +315,21 @@
             border-color: var(--border-accent);
         }
 
-        .stat-card-primary::before { background: linear-gradient(90deg, var(--primary-color), var(--primary-light)); }
-        .stat-card-success::before { background: linear-gradient(90deg, var(--success), #00e693); }
-        .stat-card-info::before { background: linear-gradient(90deg, var(--info), #33b8ff); }
-        .stat-card-warning::before { background: linear-gradient(90deg, var(--warning), #ffc84d); }
+        .stat-card-primary::before {
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+        }
+
+        .stat-card-success::before {
+            background: linear-gradient(90deg, var(--success), #00e693);
+        }
+
+        .stat-card-info::before {
+            background: linear-gradient(90deg, var(--info), #33b8ff);
+        }
+
+        .stat-card-warning::before {
+            background: linear-gradient(90deg, var(--warning), #ffc84d);
+        }
 
         .stat-card-body {
             padding: 2rem;
@@ -553,8 +569,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
         }
 
         /* Activity Placeholder */
@@ -667,7 +690,7 @@
             .sidebar {
                 width: 260px;
             }
-            
+
             .main-content {
                 margin-left: 260px;
             }
@@ -678,23 +701,23 @@
                 transform: translateX(-100%);
                 width: 280px;
             }
-            
+
             .sidebar.show {
                 transform: translateX(0);
             }
-            
+
             .main-content {
                 margin-left: 0;
             }
-            
+
             .content-wrapper {
                 padding: 1.5rem;
             }
-            
+
             .dashboard-title {
                 font-size: 2rem;
             }
-            
+
             .stat-card-body {
                 padding: 1.5rem;
             }
@@ -704,32 +727,32 @@
             .content-wrapper {
                 padding: 1rem;
             }
-            
+
             .dashboard-header {
                 margin-bottom: 2rem;
             }
-            
+
             .dashboard-title {
                 font-size: 1.75rem;
             }
-            
+
             .dashboard-subtitle {
                 font-size: 1rem;
             }
-            
+
             .stat-card-body {
                 flex-direction: column;
                 text-align: center;
                 gap: 1rem;
             }
-            
+
             .stats-grid {
                 margin-bottom: 2rem;
             }
         }
 
         /* Netflix-inspired Material Design Components */
-        
+
         /* Enhanced Page Header */
         .page-header {
             margin-bottom: 2.5rem;
@@ -1908,7 +1931,7 @@
         }
 
         /* ===== CONSISTENT UI COMPONENTS ===== */
-        
+
         /* Page Header Styles */
         .page-header {
             background: linear-gradient(135deg, var(--bg-card), var(--bg-tertiary));
@@ -2340,6 +2363,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -2423,7 +2447,7 @@
             font-size: 0.8rem;
             color: var(--text-muted);
         }
-        
+
         /* New css for badges cards */
         /* Dashboard Card Styles */
         .dashboard-card {
@@ -2464,6 +2488,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="admin-layout">
         <!-- Sidebar -->
@@ -2476,7 +2501,7 @@
                     <div class="brand-text">fitlley</div>
                 </a>
             </div>
-            
+
             <div class="sidebar-nav">
                 <div class="nav-item">
                     <a class="nav-link active" href="{{ route('admin.dashboard') }}">
@@ -2502,12 +2527,12 @@
                         <span>Permissions</span>
                     </a>
                 </div>
-                
+
                 <!-- Content Studio Section -->
                 <div class="nav-section">
                     <div class="nav-section-title">Content Studio</div>
                 </div>
-                
+
                 <!-- FitLive Section -->
                 <div class="nav-section">
                     <div class="nav-section-title">FitLive</div>
@@ -2536,7 +2561,7 @@
                         <span>Archive</span>
                     </a>
                 </div>
-                
+
                 <!-- FitNews Section -->
                 <div class="nav-section">
                     <div class="nav-section-title">FitNews</div>
@@ -2553,7 +2578,7 @@
                         <span>Archive</span>
                     </a>
                 </div>
-                
+
                 <!-- FitGuide Section -->
                 <div class="nav-section">
                     <div class="nav-section-title">FitGuide</div>
@@ -2588,7 +2613,7 @@
                         <span>Series</span>
                     </a>
                 </div>
-                
+
                 <!-- FitDoc Section -->
                 <div class="nav-section">
                     <div class="nav-section-title">FitDoc</div>
@@ -2611,7 +2636,7 @@
                         <span>Series</span>
                     </a>
                 </div>
-                
+
                 <!-- FitInsight Section -->
                 <div class="nav-section">
                     <div class="nav-section-title">FitInsight</div>
@@ -2628,7 +2653,7 @@
                         <span>Blogs</span>
                     </a>
                 </div>
-                
+
                 <!-- FitArena Live Section -->
                 <div class="nav-section">
                     <div class="nav-section-title">FitArena Live</div>
@@ -2663,7 +2688,7 @@
                         <span>Featured Events</span>
                     </a>
                 </div>
-                
+
                 <!-- Community Section -->
                 <div class="nav-section">
                     <div class="nav-section-title">Community</div>
@@ -2722,7 +2747,7 @@
                         <span>Shorts Categories</span>
                     </a>
                 </div>
-                
+
                 <!-- Website Management Section -->
                 <div class="nav-section">
                     <div class="nav-section-title">Website</div>
@@ -2825,7 +2850,7 @@
                         <span>Shorts Categories</span>
                     </a>
                 </div>
-                
+
 
             </div>
         </nav>
@@ -2844,7 +2869,7 @@
                     <div class="brand-text">fitlley</div>
                 </div>
             </div>
-            
+
             <div class="content-wrapper">
                 @yield('content')
             </div>
@@ -2858,12 +2883,12 @@
         function toggleSidebar() {
             document.querySelector('.sidebar').classList.toggle('show');
         }
-        
+
         // Active navigation highlighting
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.nav-link');
-            
+
             navLinks.forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('href') === currentPath) {
@@ -2874,4 +2899,5 @@
     </script>
     @stack('scripts')
 </body>
-</html> 
+
+</html>

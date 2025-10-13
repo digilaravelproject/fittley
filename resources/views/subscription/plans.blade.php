@@ -1,152 +1,233 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Choose Your Plan - Fittelly</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://js.stripe.com/v3/"></script>
+@extends('layouts.public')
+
+@section('title', 'Choose Your Plan')
+
+@section('content')
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
-        .plan-card { transition: all 0.3s ease; }
-        .plan-card:hover { transform: translateY(-4px); }
-        .popular-badge { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        :root {
+            --primary-dark: #e8941a;
+            --primary-light: #f9b847;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-tertiary: #1a1a1a;
+            --bg-card: #1f1f1f;
+            --bg-hover: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #e5e5e5;
+            --text-muted: #b3b3b3;
+            --border-primary: #333333;
+            --border-accent: #f7a31a;
+            --success: #00d084;
+            --error: #e50914;
+            --white-color: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .plan-card {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .plan-card:hover {
+            background-color: var(--bg-hover);
+            transform: translateY(-6px);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-dark);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+            color: var(--bg-primary);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-dark);
+            color: var(--white-color);
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            border-radius: 6px;
+        }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
     </style>
-</head>
-<body class="bg-gray-50 min-h-screen">
-    <div class="max-w-7xl mx-auto px-4 py-12">
-        <!-- Header -->
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-gray-900 mb-4">Choose Your Fitness Plan</h1>
-            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                Get unlimited access to live sessions, expert content, and premium features
-            </p>
+
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-white">Choose Your Subscription</h1>
+            <p class="text-muted">Get full access to live sessions, expert content, and more</p>
         </div>
 
-        <!-- Plans Grid -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div class="row g-4">
             @foreach($plans as $plan)
-            <div class="plan-card bg-white rounded-xl shadow-lg overflow-hidden relative {{ $plan->is_popular ? 'ring-2 ring-purple-500' : '' }}">
-                @if($plan->is_popular)
-                <div class="popular-badge text-white text-center py-2 text-sm font-semibold">
-                    Most Popular
-                </div>
-                @endif
-                
-                <div class="p-6">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ $plan->name }}</h3>
-                    <p class="text-gray-600 text-sm mb-4">{{ $plan->description }}</p>
-                    
-                    <div class="mb-6">
-                        <div class="flex items-baseline">
-                            <span class="text-3xl font-bold text-gray-900">Rs.{{ number_format($plan->price, 0) }}</span>
-                            <span class="text-gray-500 ml-1">/{{ $plan->billing_cycle }}</span>
+                <div class="col-md-6 col-lg-3">
+                    <div class="position-relative plan-card h-100">
+                        @if($plan->is_popular)
+                            <div class="popular-badge">Most Popular</div>
+                        @endif
+
+                        <h4 class="fw-bold">{{ $plan->name }}</h4>
+                        <p class="text-muted small">{{ $plan->description }}</p>
+
+                        <div class="mb-3">
+                            <h5 class="fw-bold">₹{{ number_format($plan->price, 0) }} <small
+                                    class="text-muted">/{{ $plan->billing_cycle }}</small></h5>
+                            @if($plan->trial_days > 0)
+                                <div class="text-success small">{{ $plan->trial_days }}-day free trial</div>
+                            @endif
                         </div>
-                        @if($plan->trial_days > 0)
-                        <p class="text-sm text-green-600 font-medium mt-1">{{ $plan->trial_days }}-day free trial</p>
-                        @endif
-                    </div>
 
-                    <!-- Features -->
-                    <ul class="space-y-2 mb-6">
-                        @if($plan->features['access_fitlive'] ?? false)
-                        <li class="flex items-center text-sm">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Live Fitness Sessions
-                        </li>
-                        @endif
-                        
-                        <li class="flex items-center text-sm">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            {{ $plan->features['max_devices'] ?? 1 }} Device(s)
-                        </li>
+                        <ul class="list-unstyled small mb-4">
+                            @if($plan->features['access_fitlive'] ?? false)
+                                <li><i class="bi bi-check2-circle text-success me-2"></i> Live Fitness Sessions</li>
+                            @endif
 
-                        <ul class="space-y-2">
-                            @foreach($plan->features ?? [] as $feature)
-                                <li class="flex items-center text-sm">
-                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" 
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
-                                            clip-rule="evenodd">
-                                        </path>
-                                    </svg>
-                                    {{ $feature }}
-                                </li>
+                            <li><i class="bi bi-check2-circle text-success me-2"></i> {{ $plan->features['max_devices'] ?? 1 }}
+                                Device(s)</li>
+
+                            @foreach($plan->features as $key => $feature)
+                                @if(!in_array($key, ['access_fitlive', 'max_devices']))
+                                    <li><i class="bi bi-check2-circle text-success me-2"></i> {{ $feature }}</li>
+                                @endif
                             @endforeach
                         </ul>
 
-                    </ul>
-
-                    <button onclick="selectPlan('{{ $plan->id }}', '{{ $plan->name }}', {{ $plan->price }})" 
-                            class="w-full py-3 px-4 rounded-lg font-semibold {{ $plan->is_popular ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-gray-900 hover:bg-gray-800 text-white' }} transition-colors">
-                        Choose Plan
-                    </button>
+                        <button class="btn btn-primary w-100"
+                            onclick="startRazorpay('{{ $plan->id }}', '{{ $plan->name }}', {{ $plan->price }})">
+                            Choose {{ $plan->name }}
+                        </button>
+                    </div>
                 </div>
-            </div>
             @endforeach
         </div>
 
-        <!-- Referral Code Section -->
-        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Have a referral code? Save money! 💰</h3>
-            <div class="flex gap-4">
-                <input type="text" id="referralCode" placeholder="Enter referral code" 
-                       class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                <button onclick="applyReferralCode()" 
-                        class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors">
-                    Apply Code
-                </button>
+        <!-- Referral Code -->
+        <div class="mt-5 bg-dark p-4 rounded">
+            <h5>Have a referral code?</h5>
+            <div class="input-group mt-2">
+                <input type="text" id="referralCode" class="form-control bg-secondary text-white border-secondary"
+                    placeholder="Enter referral code">
+                <button class="btn btn-outline-success" onclick="applyReferral()">Apply</button>
             </div>
-            <div id="referralMessage" class="mt-2 text-sm"></div>
+            <div id="referralMessage" class="text-success mt-2 small"></div>
         </div>
     </div>
 
-    <!-- Payment Modal -->
-    <div id="paymentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Complete Your Subscription</h3>
-            
-            <div id="selectedPlanDetails" class="bg-gray-50 rounded-lg p-4 mb-4"></div>
-            
-            <form id="payment-form">
-                <div id="card-element" class="p-3 border border-gray-300 rounded-lg mb-4">
-                    <!-- Stripe Elements will create form elements here -->
-                </div>
-                <div id="card-errors" role="alert" class="text-red-600 text-sm mb-4"></div>
-                
-                <div class="flex gap-3">
-                    <button type="button" onclick="closePaymentModal()" 
-                            class="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
-                        Cancel
-                    </button>
-                    <button type="submit" id="submit-button" 
-                            class="flex-1 py-2 px-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold">
-                        Subscribe Now
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <!-- Razorpay Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <script>
-        // Payment functionality would go here
-        function selectPlan(planId, planName, price) {
-            document.getElementById('selectedPlanDetails').innerHTML = `
-                <h4 class="font-semibold">${planName}</h4>
-                <p class="text-lg font-bold">Price: $${price}</p>
-            `;
-            document.getElementById('paymentModal').classList.remove('hidden');
-            document.getElementById('paymentModal').classList.add('flex');
+        function applyReferral() {
+            const code = document.getElementById('referralCode').value.trim();
+            if (!code) {
+                document.getElementById('referralMessage').innerText = 'Please enter a valid code.';
+                return;
+            }
+            document.getElementById('referralMessage').innerText = 'Referral applied! You’ll see the discount at checkout.';
         }
 
-        function closePaymentModal() {
-            document.getElementById('paymentModal').classList.add('hidden');
-            document.getElementById('paymentModal').classList.remove('flex');
+        function startRazorpay(planId, planName, planPrice) {
+            try {
+                fetch("/razorpay/order", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        plan_id: planId,
+                        referral_code: document.getElementById("referralCode").value.trim(),
+                    }),
+                })
+                    .then(res => res.json())
+                    .then(orderData => {
+
+                        const options = {
+                            key: orderData.razorpay_key,
+                            amount: orderData.amount,
+                            currency: "INR",
+                            name: "Fittelly",
+                            description: "Subscription: " + planName,
+                            image: "{{ asset('images/logo.png') }}",
+                            order_id: orderData.order_id, // ✅ FIXED
+                            handler: function (response) {
+                                confirmPayment(response, planId);
+                            },
+                            prefill: {
+                                name: "{{ auth()->user()->name }}",
+                                email: "{{ auth()->user()->email }}"
+                            },
+                            theme: {
+                                color: "#f7a31a"
+                            }
+                        };
+
+                        const rzp = new Razorpay(options);
+                        rzp.open();
+                    })
+                    .catch(err => {
+                        console.error("Failed to create Razorpay order", err);
+                        alert("Something went wrong while initiating payment.");
+                    });
+
+            } catch (err) {
+                console.error("Razorpay JS Error:", err);
+                alert("Something went wrong. Try again later.");
+            }
+        }
+
+        function confirmPayment(response, planId) {
+            try {
+                fetch("/razorpay/confirm", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature,
+                        plan_id: planId,
+                        referral_code: document.getElementById("referralCode").value.trim(),
+                    }),
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = "/dashboard";
+                        } else {
+                            alert("Subscription failed: " + (data.message || "Please contact support."));
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Subscription confirmation failed", err);
+                        alert("Could not confirm subscription.");
+                    });
+            } catch (err) {
+                console.error("Error confirming Razorpay payment:", err);
+                alert("Something went wrong. Try again later.");
+            }
         }
     </script>
-</body>
-</html>
+@endsection

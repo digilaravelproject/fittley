@@ -17,6 +17,7 @@
         "laravel/reverb": "^1.5",
         "laravel/sanctum": "^4.1",
         "laravel/tinker": "^2.10.1",
+        "razorpay/razorpay": "^2.9",
         "spatie/laravel-permission": "^6.20",
         "taylanunutmaz/agora-token-builder": "^1.1"
     },

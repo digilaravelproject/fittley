@@ -108,7 +108,7 @@
                     <label class="filter-label">Search</label>
                     <div class="search-input-wrapper">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" name="search" class="form-control filter-input" 
+                        <input type="text" name="search" class="form-control filter-input"
                                placeholder="Search sessions..." value="{{ request('search') }}">
                     </div>
                 </div>
@@ -205,7 +205,7 @@
                                             <div class="instructor-info">
                                                 <div class="instructor-avatar">
                                                     @if($session->instructor->avatar)
-                                                        <img src="{{ asset('storage/app/public/' . $session->instructor->avatar) }}" alt="Instructor">
+                                                        <img src="{{ getImagePath($session->instructor->avatar) }}" alt="Instructor">
                                                     @else
                                                         <div class="avatar-placeholder-sm">
                                                             <i class="fas fa-user"></i>
@@ -273,23 +273,23 @@
                                         <div class="action-buttons-enhanced">
                                             <div class="primary-actions">
                                                 @if($session->status == 'live')
-                                                    <a href="{{ route('admin.fitlive.sessions.stream', $session) }}" 
-                                                       class="btn btn-action-enhanced btn-live" 
+                                                    <a href="{{ route('admin.fitlive.sessions.stream', $session) }}"
+                                                       class="btn btn-action-enhanced btn-live"
                                                        title="Stream Control">
                                                         <i class="fas fa-video me-2"></i>Control
                                                     </a>
                                                 @elseif($session->status == 'scheduled')
-                                                    <form action="{{ route('admin.fitlive.sessions.start', $session) }}" 
+                                                    <form action="{{ route('admin.fitlive.sessions.start', $session) }}"
                                                           method="POST" class="d-inline">
                                                         @csrf
-                                                        <button type="submit" class="btn btn-action-enhanced btn-start" 
+                                                        <button type="submit" class="btn btn-action-enhanced btn-start"
                                                                 title="Start Session">
                                                             <i class="fas fa-play me-2"></i>Start
                                                         </button>
                                                     </form>
                                                 @else
-                                                    <a href="{{ route('admin.fitlive.sessions.show', $session) }}" 
-                                                       class="btn btn-action-enhanced btn-view" 
+                                                    <a href="{{ route('admin.fitlive.sessions.show', $session) }}"
+                                                       class="btn btn-action-enhanced btn-view"
                                                        title="View Details">
                                                         <i class="fas fa-eye me-2"></i>View
                                                     </a>
@@ -297,7 +297,7 @@
                                             </div>
                                             <div class="secondary-actions">
                                                 <div class="dropdown">
-                                                    <button class="btn btn-secondary-action dropdown-toggle" type="button" 
+                                                    <button class="btn btn-secondary-action dropdown-toggle" type="button"
                                                             data-bs-toggle="dropdown" aria-expanded="false">
                                                         <i class="fas fa-ellipsis-v"></i>
                                                     </button>
@@ -314,7 +314,7 @@
                                                         </li>
                                                         @if($session->status == 'live')
                                                             <li>
-                                                                <form action="{{ route('admin.fitlive.sessions.end', $session) }}" 
+                                                                <form action="{{ route('admin.fitlive.sessions.end', $session) }}"
                                                                       method="POST" class="d-inline">
                                                                     @csrf
                                                                     <button type="submit" class="dropdown-item text-danger">
@@ -326,7 +326,7 @@
                                                         @if($session->status !== 'live')
                                                             <li><hr class="dropdown-divider"></li>
                                                             <li>
-                                                                <form action="{{ route('admin.fitlive.sessions.destroy', $session) }}" 
+                                                                <form action="{{ route('admin.fitlive.sessions.destroy', $session) }}"
                                                                       method="POST" class="d-inline"
                                                                       onsubmit="return confirm('Are you sure you want to delete this session?')">
                                                                     @csrf
@@ -879,25 +879,25 @@
         grid-template-columns: 1fr;
         gap: 1rem;
     }
-    
+
     .table-modern-enhanced thead th {
         padding: 0.75rem 0.5rem;
         font-size: 0.75rem;
     }
-    
+
     .table-modern-enhanced tbody td {
         padding: 1rem 0.5rem;
     }
-    
+
     .action-buttons-enhanced {
         flex-direction: column;
         gap: 0.5rem;
     }
-    
+
     .btn-action-enhanced {
         width: 100%;
         justify-content: center;
     }
 }
 </style>
-@endsection 
+@endsection

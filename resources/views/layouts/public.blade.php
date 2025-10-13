@@ -699,6 +699,8 @@
             text-transform: capitalize;
         }
 
+
+
         @media (max-width: 768px) {
             .navbar img {
                 width: 10rem;
@@ -755,7 +757,7 @@
             }
 
             .navbar .container .show {
-                height: 85vh;
+                /*height: 85vh;*/
                 padding: 2rem 1rem;
                 overflow: hidden;
             }
@@ -920,6 +922,23 @@
             }
         }
 
+        @media (max-width: 490px) {
+            .navbar .container .show {
+                padding: 0.5rem 0.1rem;
+                overflow: hidden;
+                margin-top: 0 !important;
+            }
+
+            .dropdown-toggle::after {
+                content: none;
+            }
+
+            .dropdown-item {
+                padding: 0;
+            }
+
+        }
+
         /* Remove dark overlay */
         /* .modal-backdrop.show {
             opacity: 0 !important;
@@ -973,12 +992,13 @@
 
             {{-- Mobile Auth Section (Visible only on Mobile) --}}
             <div class="d-flex d-lg-none align-items-center" style="margin-right: -1rem;">
-                <!-- Mobile search icon button (visible on mobile only) -->
+                <!-- Mobile search icon -->
                 <button class="btn btn-outline-light d-block d-md-none ms-3 btn-sm me-2" type="button"
                     data-bs-toggle="modal" data-bs-target="#searchModal" aria-label="Open search"
                     style="position: relative;border-color: var(--fittelly-orange);color: var(--fittelly-orange);">
                     <i class="fas fa-search"></i>
                 </button>
+
                 @auth
                     @php
                         $user = auth()->user();
@@ -988,23 +1008,65 @@
                         );
                     @endphp
 
-                    <a href="{{ route('dashboard') }}" class="d-inline-block text-decoration-none">
-                        @if ($profilePhoto)
-                            <img src="{{ $profilePhoto }}" alt="Profile" class="rounded-circle"
-                                style="width: 36px; height: 36px; object-fit: cover;">
-                        @else
-                            <div class="rounded-circle text-uppercase d-flex align-items-center justify-content-center"
-                                style="width: 36px; height: 36px; background: var(--primary-color); color: white; font-weight: 600;">
-                                {{ $initials }}
-                            </div>
-                        @endif
-                    </a>
+                    <!-- Clean Dropdown -->
+                    <div class="dropdown">
+                        <a class="d-inline-block text-decoration-none dropdown-toggle" href="#" role="button"
+                            id="mobileUserDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            @if ($profilePhoto)
+                                <img src="{{ $profilePhoto }}" alt="Profile" class="rounded-circle shadow-sm"
+                                    style="width: 40px; height: 40px; object-fit: cover;">
+                            @else
+                                <div class="rounded-circle shadow-sm text-uppercase d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px; background: var(--primary-color); color: white; font-weight: 600;">
+                                    {{ $initials }}
+                                </div>
+                            @endif
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow rounded-3 mt-2">
+                            <li class="dropdown-item d-flex align-items-center">
+                                <i class="fas fa-user-circle me-2"></i>{{ $user->name }}
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider bg-white">
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{{ route('dashboard') }}">
+                                    <i class="fas fa-tachometer-alt me-2 text-primary"></i>Dashboard
+                                </a>
+                            </li>
+                            @if ($user->hasRole('admin'))
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.dashboard') }}">
+                                        <i class="fas fa-cog me-2 text-warning"></i>Admin Panel
+                                    </a>
+                                </li>
+                            @endif
+                            @if ($user->hasRole('instructor'))
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center"
+                                        href="{{ route('instructor.dashboard') }}">
+                                        <i class="fas fa-chalkboard-teacher me-2 text-success"></i>Instructor Panel
+                                    </a>
+                                </li>
+                            @endif
+                            <li>
+                                <hr class="dropdown-divider bg-white">
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button class="dropdown-item d-flex align-items-center text-danger" type="submit">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 @else
                     <a href="{{ route('login') }}" class="btn btn-outline-light btn-sm me-2">Login</a>
-                    {{-- <a href="{{ route('register') }}" class="btn btn-outline-warning btn-sm"
-                        style="padding: 0.25rem 0.5rem;border-radius: 0.25rem;">Sign Up</a> --}}
                 @endauth
             </div>
+
 
 
 
@@ -1598,6 +1660,8 @@
         //         }
         //     });
     </script>
+
+
     @stack('scripts')
 </body>
 
