@@ -19,6 +19,7 @@ use App\Http\Controllers\ToolsController;
 use App\Http\Controllers\TwoFactorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AccountController;
 
 // Home route
 Route::get('/time', function () {
@@ -54,19 +55,21 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
+Route::middleware('auth')->get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
 // User dashboard route
-Route::middleware('auth')->get('/dashboard', function () {
-    $user = auth()->user();
+// Route::middleware('auth')->get('/dashboard', function () {
+//     $user = auth()->user();
 
-    if ($user->hasRole('admin')) {
-        return redirect()->route('admin.dashboard');
-    } elseif ($user->hasRole('instructor')) {
-        return redirect()->route('instructor.dashboard');
-    } else {
-        return view('user.dashboard');
-    }
-})->name('dashboard');
+//     if ($user->hasRole('admin')) {
+//         return redirect()->route('admin.dashboard');
+//     } elseif ($user->hasRole('instructor')) {
+//         return redirect()->route('instructor.dashboard');
+//     } else {
+//         return view('user.dashboard');
+//     }
+// })->name('dashboard');
+
 
 // Two-Factor Authentication Routes
 Route::middleware('auth')->group(function () {
@@ -78,6 +81,23 @@ Route::middleware('auth')->group(function () {
     Route::post('/two-factor/recovery-codes', [TwoFactorController::class, 'regenerateRecoveryCodes'])->name('two-factor.regenerate-recovery-codes');
     Route::get('/two-factor/challenge', [TwoFactorController::class, 'challenge'])->name('two-factor.challenge');
     Route::post('/two-factor/verify', [TwoFactorController::class, 'verify'])->name('two-factor.verify');
+});
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/account', [AccountController::class, 'index'])->name('account.index');
+    Route::get('/account/settings', [AccountController::class, 'settings'])->name('account.settings');
+    Route::post('/account/profile', [AccountController::class, 'updateProfile'])->name('account.updateProfile');
+    Route::post('/account/password', [AccountController::class, 'updatePassword'])->name('account.updatePassword');
+    Route::post('/account/preferences', [AccountController::class, 'updatePreferences'])->name('account.updatePreferences');
+
+    Route::get('/account/privacy', [AccountController::class, 'privacy'])->name('account.privacy');
+    Route::get('/account/security', [AccountController::class, 'security'])->name('account.security');
+
+    Route::get('/account/delete', [AccountController::class, 'deleteAccount'])->name('account.delete');
+    Route::post('/account/delete', [AccountController::class, 'destroyAccount'])->name('account.destroy');
+
+    Route::get('/account/download', [AccountController::class, 'downloadData'])->name('account.download');
 });
 
 // Instructor routes

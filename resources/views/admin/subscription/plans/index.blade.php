@@ -34,148 +34,183 @@
     @endif
 
     <!-- Plans Table Card -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">All Subscription Plans</h6>
-            <div class="dropdown no-arrow">
-                <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+<!-- Plans Table Card -->
+<div class="card shadow mb-4 bg-dark text-light">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-secondary text-light">
+        <h6 class="m-0 font-weight-bold text-light">All Subscription Plans</h6>
+        <div class="dropdown no-arrow">
+            <a class="dropdown-toggle text-light" href="#" role="button" data-toggle="dropdown">
+                <i class="fas fa-ellipsis-v fa-sm fa-fw"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in">
+                <div class="dropdown-header">Actions:</div>
+                <a class="dropdown-item" href="{{ route('admin.subscriptions.analytics') }}">
+                    <i class="fas fa-chart-bar fa-sm fa-fw mr-2 text-gray-400"></i>View Analytics
                 </a>
-                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in">
-                    <div class="dropdown-header">Actions:</div>
-                    <a class="dropdown-item" href="{{ route('admin.subscriptions.analytics') }}">
-                        <i class="fas fa-chart-bar fa-sm fa-fw mr-2 text-gray-400"></i>View Analytics
-                    </a>
-                </div>
             </div>
         </div>
-        <div class="card-body">
-            @if($plans->count() > 0)
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Plan Name</th>
-                                <th>Price</th>
-                                <th>Billing Cycle</th>
-                                <th>Trial Days</th>
-                                <th>Subscribers</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($plans as $plan)
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            @if($plan->is_popular)
-                                                <span class="badge badge-warning mr-2">
-                                                    <i class="fas fa-star"></i> Popular
-                                                </span>
-                                            @endif
-                                            <div>
-                                                <strong>{{ $plan->name }}</strong>
-                                                @if($plan->description)
-                                                    <br><small class="text-muted">{{ Str::limit($plan->description, 50) }}</small>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="text-dark font-weight-bold">
-                                            ₹{{ number_format($plan->price, 2) }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge badge-info">
-                                            {{ ucfirst($plan->billing_cycle) }}
-                                            @if($plan->billing_cycle_count > 1)
-                                                ({{ $plan->billing_cycle_count }}x)
-                                            @endif
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if($plan->trial_days > 0)
-                                            <span class="badge badge-success">{{ $plan->trial_days }} days</span>
-                                        @else
-                                            <span class="text-muted">No trial</span>
+    </div>
+    <div class="card-body bg-dark">
+        @if($plans->count() > 0)
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover text-light bg-dark" width="100%" cellspacing="0">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Plan Name</th>
+                            <th>Price</th>
+                            <th>Billing Cycle</th>
+                            <th>Trial Days</th>
+                            <th>Subscribers</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($plans as $plan)
+                            <tr class="hover-row">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        @if($plan->is_popular)
+                                            <span class="badge badge-warning mr-2">
+                                                <i class="fas fa-star"></i> Popular
+                                            </span>
                                         @endif
-                                    </td>
-                                    <td>
                                         <div>
-                                            <strong>{{ $plan->active_subscriptions_count }}</strong> active
-                                            <br><small class="text-muted">{{ $plan->subscriptions_count }} total</small>
+                                            <strong>{{ $plan->name }}</strong>
+                                            @if($plan->description)
+                                                <br><small class="text-muted">{{ Str::limit($plan->description, 50) }}</small>
+                                            @endif
                                         </div>
-                                    </td>
-                                    <td>
-                                        <div class="custom-control custom-switch">
-                                            <input type="checkbox" 
-                                                   class="custom-control-input status-toggle" 
-                                                   id="status-{{ $plan->id }}"
-                                                   data-plan-id="{{ $plan->id }}"
-                                                   {{ $plan->is_active ? 'checked' : '' }}>
-                                            <label class="custom-control-label" for="status-{{ $plan->id }}">
-                                                <span class="badge badge-{{ $plan->is_active ? 'success' : 'secondary' }}">
-                                                    {{ $plan->is_active ? 'Active' : 'Inactive' }}
-                                                </span>
-                                            </label>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ route('admin.subscriptions.plans.show', $plan) }}" 
-                                               class="btn btn-sm btn-outline-info" title="View Details">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('admin.subscriptions.plans.edit', $plan) }}" 
-                                               class="btn btn-sm btn-outline-primary" title="Edit Plan">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            @if($plan->active_subscriptions_count == 0)
-                                                <form method="POST" 
-                                                      action="{{ route('admin.subscriptions.plans.destroy', $plan) }}" 
-                                                      class="d-inline"
-                                                      onsubmit="return confirm('Are you sure you want to delete this plan?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Plan">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <button class="btn btn-sm btn-outline-secondary" 
-                                                        title="Cannot delete - has active subscribers" disabled>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-light font-weight-bold">
+                                        ₹{{ number_format($plan->price, 2) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-info">
+                                        {{ ucfirst($plan->billing_cycle) }}
+                                        @if($plan->billing_cycle_count > 1)
+                                            ({{ $plan->billing_cycle_count }}x)
+                                        @endif
+                                    </span>
+                                </td>
+                                <td>
+                                    @if($plan->trial_days > 0)
+                                        <span class="badge badge-success">{{ $plan->trial_days }} days</span>
+                                    @else
+                                        <span class="text-muted">No trial</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>{{ $plan->active_subscriptions_count }}</strong> active
+                                        <br><small class="text-muted">{{ $plan->subscriptions_count }} total</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox"
+                                               class="custom-control-input status-toggle"
+                                               id="status-{{ $plan->id }}"
+                                               data-plan-id="{{ $plan->id }}"
+                                               {{ $plan->is_active ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="status-{{ $plan->id }}">
+                                            <span class="badge badge-{{ $plan->is_active ? 'success' : 'secondary' }}">
+                                                {{ $plan->is_active ? 'Active' : 'Inactive' }}
+                                            </span>
+                                        </label>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ route('admin.subscriptions.plans.show', $plan) }}"
+                                           class="btn btn-sm btn-outline-info text-light" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ route('admin.subscriptions.plans.edit', $plan) }}"
+                                           class="btn btn-sm btn-outline-primary text-light" title="Edit Plan">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        @if($plan->active_subscriptions_count == 0)
+                                            <form method="POST"
+                                                  action="{{ route('admin.subscriptions.plans.destroy', $plan) }}"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Are you sure you want to delete this plan?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger text-light" title="Delete Plan">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                                            </form>
+                                        @else
+                                            <button class="btn btn-sm btn-outline-secondary text-light"
+                                                    title="Cannot delete - has active subscribers" disabled>
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-                <!-- Pagination -->
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <div class="text-muted small">
-                        Showing {{ $plans->firstItem() }} to {{ $plans->lastItem() }} of {{ $plans->total() }} plans
-                    </div>
-                    {{ $plans->links() }}
+            <!-- Pagination -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="text-muted small">
+                    Showing {{ $plans->firstItem() }} to {{ $plans->lastItem() }} of {{ $plans->total() }} plans
                 </div>
-            @else
-                <div class="text-center py-5">
-                    <i class="fas fa-credit-card fa-3x text-gray-300 mb-3"></i>
-                    <h5 class="text-gray-500">No subscription plans found</h5>
-                    <p class="text-gray-400">Create your first subscription plan to get started.</p>
-                    <a href="{{ route('admin.subscriptions.plans.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus mr-2"></i>Create First Plan
-                    </a>
-                </div>
-            @endif
-        </div>
+                {{ $plans->links() }}
+            </div>
+        @else
+            <div class="text-center py-5">
+                <i class="fas fa-credit-card fa-3x text-gray-300 mb-3"></i>
+                <h5 class="text-gray-500">No subscription plans found</h5>
+                <p class="text-gray-400">Create your first subscription plan to get started.</p>
+                <a href="{{ route('admin.subscriptions.plans.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus mr-2"></i>Create First Plan
+                </a>
+            </div>
+        @endif
     </div>
+</div>
+
+<style>
+    /* Custom Dark Mode Table Styles */
+    .table {
+        background-color: #222 !important; /* Force dark background for table */
+        --bs-table-bg: #222 !important;
+    }
+    .table th, .table td {
+        color: #eaeaea; /* Light text for table cells */
+    }
+    .table-hover tbody tr:hover {
+        background-color: #444 !important; /* Darker hover effect */
+    }
+    .btn-outline-info, .btn-outline-primary, .btn-outline-danger {
+        color: #fff;
+        border-color: #555;
+    }
+    .btn-outline-info:hover, .btn-outline-primary:hover, .btn-outline-danger:hover {
+        background-color: #444;
+    }
+    .badge-warning {
+        background-color: #f39c12;
+    }
+    .badge-info {
+        background-color: #17a2b8;
+    }
+    .badge-success {
+        background-color: #28a745;
+    }
+    .badge-secondary {
+        background-color: #6c757d;
+    }
+</style>
+
 </div>
 
 @push('scripts')
@@ -187,7 +222,7 @@ $(document).ready(function() {
         const isActive = $(this).is(':checked');
         const toggle = $(this);
         const label = toggle.next('label').find('.badge');
-        
+
         $.ajax({
             url: `/admin/subscriptions/plans/${planId}/toggle-status`,
             method: 'PATCH',
@@ -205,7 +240,7 @@ $(document).ready(function() {
                     } else {
                         label.removeClass('badge-success').addClass('badge-secondary').text('Inactive');
                     }
-                    
+
                     // Show success message
                     showAlert('success', response.message);
                 } else {
@@ -224,11 +259,11 @@ $(document).ready(function() {
             }
         });
     });
-    
+
     function showAlert(type, message) {
         const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
         const iconClass = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle';
-        
+
         const alert = `
             <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
                 <i class="fas ${iconClass} mr-2"></i>${message}
@@ -237,9 +272,9 @@ $(document).ready(function() {
                 </button>
             </div>
         `;
-        
+
         $('.container-fluid').prepend(alert);
-        
+
         // Auto-hide after 5 seconds
         setTimeout(function() {
             $('.alert').alert('close');
@@ -248,4 +283,4 @@ $(document).ready(function() {
 });
 </script>
 @endpush
-@endsection 
+@endsection

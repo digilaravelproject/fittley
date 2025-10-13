@@ -22,14 +22,14 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
+
             $user = Auth::user();
-            
+
             // Redirect based on user role
             if ($user->hasRole('admin')) {
                 return redirect()->intended('/admin');
             }
-            
+
             return redirect()->intended('/dashboard');
         }
 
@@ -70,7 +70,7 @@ class AuthController extends Controller
         $data['password'] = Hash::make($data['password']);
 
         $user = User::create($data);
-        
+
         // Assign default role
         $user->assignRole('user');
 
@@ -88,7 +88,7 @@ class AuthController extends Controller
         $data['password'] = Hash::make($data['password']);
 
         $user = User::create($data);
-        
+
         // Assign default role
         $user->assignRole('user');
 

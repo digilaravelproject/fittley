@@ -37,23 +37,26 @@ class AccountController extends Controller
             'phone' => 'nullable|string|max:20',
             'date_of_birth' => 'nullable|date|before:today',
             'gender' => 'nullable|in:male,female,other',
-            'fitness_level' => 'nullable|in:beginner,intermediate,advanced',
-            'goals' => 'nullable|string|max:500',
-            'timezone' => 'nullable|string|max:50',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            // 'fitness_level' => 'nullable|in:beginner,intermediate,advanced',
+            // 'goals' => 'nullable|string|max:500',
+            // 'timezone' => 'nullable|string|max:50',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-        $data = $request->only(['name', 'email', 'phone', 'date_of_birth', 'gender', 'fitness_level', 'goals', 'timezone']);
+        $data = $request->only(['name', 'email', 'phone', 'date_of_birth', 'gender']);
+        // $data = $request->only(['name', 'email', 'phone', 'date_of_birth', 'gender', 'fitness_level', 'goals', 'timezone']);
 
         // Handle profile picture upload
-        if ($request->hasFile('profile_picture')) {
+        if ($request->hasFile('avatar')) {
             // Delete old profile picture
-            if ($user->profile_picture) {
-                Storage::disk('public')->delete($user->profile_picture);
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
             }
 
-            $path = $request->file('profile_picture')->store('profile-pictures', 'public');
-            $data['profile_picture'] = $path;
+            $path = $request->file('avatar')->store('profile-pictures', 'public');
+
+            $data['avatar'] = $path;
+            // $data['profile_picture'] = $path;
         }
 
         $user->update($data);
@@ -107,7 +110,7 @@ class AccountController extends Controller
         // Update preferences
         $preferences = array_merge($preferences, $request->only([
             'email_notifications',
-            'push_notifications', 
+            'push_notifications',
             'marketing_emails',
             'workout_reminders',
             'live_session_alerts',
@@ -174,7 +177,7 @@ class AccountController extends Controller
     public function downloadData()
     {
         $user = Auth::user();
-        
+
         $data = [
             'personal_information' => [
                 'name' => $user->name,
@@ -196,7 +199,7 @@ class AccountController extends Controller
         ];
 
         $filename = 'fittelly_data_' . $user->id . '_' . now()->format('Y-m-d') . '.json';
-        
+
         return response()
             ->json($data, 200, [], JSON_PRETTY_PRINT)
             ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
@@ -218,5 +221,10 @@ class AccountController extends Controller
     {
         $user = Auth::user();
         return view('account.security', compact('user'));
+    }
+    public function settings()
+    {
+        $user = Auth::user();
+        return view('account.settings', compact('user'));
     }
 }

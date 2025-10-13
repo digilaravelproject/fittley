@@ -80,7 +80,7 @@
 
         <div class="row g-4">
             @foreach($plans as $plan)
-                <div class="col-md-6 col-lg-3">
+                <div class="col-md-6 col-lg-4">
                     <div class="position-relative plan-card h-100">
                         @if($plan->is_popular)
                             <div class="popular-badge">Most Popular</div>
@@ -168,7 +168,8 @@
                             currency: "INR",
                             name: "Fittelly",
                             description: "Subscription: " + planName,
-                            image: "{{ asset('images/logo.png') }}",
+                            image: "{{ getImagePath('default-profile1.png') }}",
+                            // image: "{{ asset('images/logo.png') }}",
                             order_id: orderData.order_id, // ✅ FIXED
                             handler: function (response) {
                                 confirmPayment(response, planId);

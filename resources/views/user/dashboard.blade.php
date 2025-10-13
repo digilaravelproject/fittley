@@ -12,13 +12,10 @@
         $diff = $createdAt->diff($now);
         $daysSinceJoin = $createdAt->diffInDays($now);
 
-        $interval = CarbonInterval::create(
-            $diff->y,
-            $diff->m,
-            $diff->d
-        )->cascade();
+        $interval = CarbonInterval::create($diff->y, $diff->m, $diff->d)->cascade();
 
-        $humanReadable = $daysSinceJoin === 0
+        $humanReadable =
+            $daysSinceJoin === 0
             ? 'Joined Today'
             : $interval->forHumans([
                 'parts' => 2,
@@ -34,7 +31,7 @@
 
     <div class="user-dashboard fade-in-up">
         <!-- Header Section -->
-        <div class="page-header mb-5">
+        <div class="page-header mb-5 d-none">
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <h1 class="page-title">
@@ -51,6 +48,43 @@
                 </div>
             </div>
         </div>
+        <div class="profile-section mb-4 d-flex flex-wrap align-items-center justify-content-between stat-card p-4">
+            <!--<div class="profile-section mb-4 d-flex flex-wrap align-items-center justify-content-between stat-card " style="background:#fff; border-radius:12px; padding:12px 16px; box-shadow:0 2px 10px rgba(0,0,0,0.04);">-->
+
+            <!-- Left: Avatar + Name + Email -->
+            <div class="d-flex align-items-center">
+                <!-- Avatar -->
+                @if ($user->avatar)
+                    <img src="{{ getImagePath($user->avatar) }}" alt="Avatar" class="rounded-circle"
+                        style="width:60px; height:60px; object-fit:cover; border:3px solid #f0f0f0;">
+                @else
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white"
+                        style="width:60px; height:60px; font-size:1.3rem; font-weight:600; background:linear-gradient(135deg, #4e73df, #1cc88a);">
+                        {{ $initials }}
+                    </div>
+                @endif
+
+                <!-- User Info -->
+                <div class="ms-3" style="line-height:1.2;">
+                    <h5 class="mb-1" style="font-weight:600; font-size:1.05rem; color:#e0e0e0;">
+                        {{ $user->name }}
+                    </h5>
+                    <span style="font-size:0.9rem; color:#666;">
+                        {{ $user->email }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Right: Edit Button -->
+            <div class="mt-3 mt-md-0">
+                <a href="https://fittelly.com/account/settings#profile" class="btn btn-sm"
+                    style="border: 1px solid #f7a31a;color: #f7a31a;padding:6px 14px;border-radius:6px;font-size:0.85rem;">
+                    <i class="fas fa-pencil-alt me-1"></i> Edit Profile
+                </a>
+            </div>
+        </div>
+
+
 
         <!-- Quick Stats -->
         <div class="stats-grid mb-5">
@@ -176,14 +210,15 @@
                                 <i class="fas fa-newspaper me-2"></i>
                                 Read Fitness News
                             </a>
-                            <a href="#" class="btn btn-outline-info">
-                                <i class="fas fa-user-edit me-2"></i>
-                                Update Profile
-                            </a>
-                            <a href="#" class="btn btn-outline-warning">
+                            <!--<a href="{{ route('account.index') }}" class="btn btn-outline-info">-->
+                            <!--    <i class="fas fa-user-edit me-2"></i>-->
+                            <!--    Update Profile-->
+                            <!--</a>-->
+                            <a href="{{ route('account.settings') }}" class="btn btn-outline-warning">
                                 <i class="fas fa-cog me-2"></i>
                                 Account Settings
                             </a>
+
                         </div>
                     </div>
                 </div>
@@ -198,19 +233,28 @@
                     </div>
                     <div class="content-card-body">
                         <div class="user-info mb-3 d-flex align-items-center">
-                            <div class="user-avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 50px; height: 50px; font-size: 1.25rem; font-weight: bold;">
-                                {{ $initials }}
-                            </div>
+                            @if ($user->avatar)
+                                <!-- Show uploaded profile image -->
+                                <img src="{{ getImagePath($user->avatar) }}" alt="Avatar" class="rounded-circle"
+                                    style="width: 50px; height: 50px; object-fit: cover;">
+                            @else
+                                <!-- Show initials fallback -->
+                                <div class="user-avatar bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                    style="width: 50px; height: 50px; font-size: 1.25rem; font-weight: bold;">
+                                    {{ $initials }}
+                                </div>
+                            @endif
+
                             <div class="user-details ms-3">
                                 <div class="user-name">{{ $user->name }}</div>
                                 <div class="user-id">{{ $user->email }}</div>
                             </div>
                         </div>
+
                         <div class="role-badges">
-                            @foreach($user->roles as $role)
+                            @foreach ($user->roles as $role)
                                 <span class="role-badge role-{{ $role->name }}">
-                                    @if($role->name === 'admin')
+                                    @if ($role->name === 'admin')
                                         <i class="fas fa-crown"></i>
                                     @elseif($role->name === 'instructor')
                                         <i class="fas fa-chalkboard-teacher"></i>
@@ -221,6 +265,28 @@
                                 </span>
                             @endforeach
                         </div>
+
+                        @if ($planName)
+                            <div class="mt-3 text-white">
+                                <i class="fas fa-star"></i>
+                                Current Plan: <strong>{{ $planName }}</strong>
+                            </div>
+
+                            <div class="mt-1 text-white">
+                                <i class="fas fa-clock"></i>
+                                Expires {{ $timeLeft }}
+                            </div>
+                        @else
+                            <div class="mt-3 text-white">
+                                <i class="fas fa-star"></i>
+                                No Active Plan
+                            </div>
+                        @endif
+
+
+
+
+
                         <div class="mt-3">
                             <small class="text-white">
                                 <i class="fas fa-calendar"></i>

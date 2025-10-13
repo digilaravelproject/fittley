@@ -33,6 +33,7 @@ class User extends Authenticatable
         'gender',
         'fitness_level',
         'goals',
+        'avatar',
         'preferences',
         'timezone',
         'is_available_for_fittalk',
@@ -107,7 +108,7 @@ class User extends Authenticatable
 
         return !$ongoingSession;
     }
-    
+
     /**
      * Get sessions where this user is the instructor
      */
@@ -352,10 +353,10 @@ class User extends Authenticatable
     {
         // Generate unique code
         $code = $this->generateUniqueReferralCode();
-        
+
         // Get discount percentage based on referral count
         $discountPercent = $this->calculateReferralDiscount();
-        
+
         return $this->referralCode()->create([
             'code' => $code,
             'discount_type' => 'percentage',
@@ -375,12 +376,12 @@ class User extends Authenticatable
         $baseCode = strtoupper(substr($this->name, 0, 3)) . $this->id;
         $code = $baseCode;
         $counter = 1;
-        
+
         while (ReferralCode::where('code', $code)->exists()) {
             $code = $baseCode . $counter;
             $counter++;
         }
-        
+
         return $code;
     }
 
@@ -392,7 +393,7 @@ class User extends Authenticatable
         $successfulReferrals = $this->referralUsages()
             ->whereNotNull('used_at')
             ->count();
-            
+
         // Tiered discount system
         if ($successfulReferrals >= 4) {
             return 30; // 4+ users = 30% off
@@ -401,7 +402,7 @@ class User extends Authenticatable
         } elseif ($successfulReferrals >= 2) {
             return 20; // 2 users = 20% off
         }
-        
+
         return 15; // Default starting discount
     }
 
@@ -444,13 +445,13 @@ class User extends Authenticatable
         $totalUses = $code->usages()->count();
         $successfulUses = $code->usages()->whereNotNull('used_at')->count();
         $currentDiscount = $this->calculateReferralDiscount();
-        
+
         // Calculate next tier
         $nextTierNeeded = 2;
         if ($successfulUses >= 2) $nextTierNeeded = 3;
         if ($successfulUses >= 3) $nextTierNeeded = 4;
         if ($successfulUses >= 4) $nextTierNeeded = null; // Max tier reached
-        
+
         return [
             'total_uses' => $totalUses,
             'successful_uses' => $successfulUses,
@@ -460,7 +461,7 @@ class User extends Authenticatable
     }
 
     // ====== COMMUNITY RELATIONSHIPS ======
-    
+
 
 
     /**
@@ -509,9 +510,9 @@ class User extends Authenticatable
     public function friends()
     {
         return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id')
-                    ->wherePivot('status', 'accepted')
-                    ->withPivot('status', 'accepted_at')
-                    ->withTimestamps();
+            ->wherePivot('status', 'accepted')
+            ->withPivot('status', 'accepted_at')
+            ->withTimestamps();
     }
 
     /**
@@ -520,9 +521,9 @@ class User extends Authenticatable
     public function friendsOfMine()
     {
         return $this->belongsToMany(User::class, 'friendships', 'friend_id', 'user_id')
-                    ->wherePivot('status', 'accepted')
-                    ->withPivot('status', 'accepted_at')
-                    ->withTimestamps();
+            ->wherePivot('status', 'accepted')
+            ->withPivot('status', 'accepted_at')
+            ->withTimestamps();
     }
 
     /**
@@ -539,9 +540,9 @@ class User extends Authenticatable
     public function groups()
     {
         return $this->belongsToMany(CommunityGroup::class, 'group_members')
-                    ->wherePivot('status', 'approved')
-                    ->withPivot('role', 'status', 'joined_at')
-                    ->withTimestamps();
+            ->wherePivot('status', 'approved')
+            ->withPivot('role', 'status', 'joined_at')
+            ->withTimestamps();
     }
 
     /**
@@ -566,8 +567,8 @@ class User extends Authenticatable
     public function badges()
     {
         return $this->belongsToMany(Badge::class, 'user_badges')
-                    ->withPivot('earned_at', 'achievement_data', 'is_visible')
-                    ->withTimestamps();
+            ->withPivot('earned_at', 'achievement_data', 'is_visible')
+            ->withTimestamps();
     }
 
     /**
@@ -629,9 +630,9 @@ class User extends Authenticatable
     public function hasSentFriendRequestTo($userId)
     {
         return $this->sentFriendRequests()
-                    ->where('friend_id', $userId)
-                    ->where('status', 'pending')
-                    ->exists();
+            ->where('friend_id', $userId)
+            ->where('status', 'pending')
+            ->exists();
     }
 
     /**
@@ -640,9 +641,9 @@ class User extends Authenticatable
     public function hasReceivedFriendRequestFrom($userId)
     {
         return $this->receivedFriendRequests()
-                    ->where('user_id', $userId)
-                    ->where('status', 'pending')
-                    ->exists();
+            ->where('user_id', $userId)
+            ->where('status', 'pending')
+            ->exists();
     }
 
     /**
@@ -763,9 +764,9 @@ class User extends Authenticatable
     public function isMemberOf($groupId)
     {
         return $this->groupMemberships()
-                    ->where('community_group_id', $groupId)
-                    ->where('status', 'approved')
-                    ->exists();
+            ->where('community_group_id', $groupId)
+            ->where('status', 'approved')
+            ->exists();
     }
 
     /**
@@ -782,9 +783,9 @@ class User extends Authenticatable
     public function getUnreadMessagesCount()
     {
         return $this->receivedMessages()
-                    ->where('is_read', false)
-                    ->where('is_deleted_by_receiver', false)
-                    ->count();
+            ->where('is_read', false)
+            ->where('is_deleted_by_receiver', false)
+            ->count();
     }
 
     /**
@@ -793,8 +794,8 @@ class User extends Authenticatable
     public function getPendingFriendRequestsCount()
     {
         return $this->receivedFriendRequests()
-                    ->where('status', 'pending')
-                    ->count();
+            ->where('status', 'pending')
+            ->count();
     }
 
     /**
@@ -803,9 +804,9 @@ class User extends Authenticatable
     public function getConversationsAttribute()
     {
         return Conversation::where('user_one_id', $this->id)
-                          ->orWhere('user_two_id', $this->id)
-                          ->orderBy('last_message_at', 'desc')
-                          ->get();
+            ->orWhere('user_two_id', $this->id)
+            ->orderBy('last_message_at', 'desc')
+            ->get();
     }
 
     /**
@@ -825,10 +826,10 @@ class User extends Authenticatable
         for ($i = 0; $i < 8; $i++) {
             $codes[] = strtoupper(Str::random(10));
         }
-        
+
         $this->recovery_codes = $codes;
         $this->save();
-        
+
         return $codes;
     }
 
@@ -838,13 +839,13 @@ class User extends Authenticatable
     public function useRecoveryCode(string $code): bool
     {
         $codes = $this->recovery_codes ?? [];
-        
+
         if (in_array(strtoupper($code), $codes)) {
             $this->recovery_codes = array_values(array_diff($codes, [strtoupper($code)]));
             $this->save();
             return true;
         }
-        
+
         return false;
     }
 }
