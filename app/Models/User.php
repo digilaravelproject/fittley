@@ -45,6 +45,7 @@ class User extends Authenticatable
         'recovery_codes',
         'two_factor_confirmed_at',
         'referral_code',
+        'email_verified_at',
     ];
 
     /**

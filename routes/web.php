@@ -60,6 +60,11 @@ Route::get('password/reset', [AuthController::class, 'showLinkRequestForm'])->na
 Route::post('/password/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
 Route::post('password/reset', [AuthController::class, 'reset'])->name('password.update');
+// routes/web.php
+Route::post('/check-email', [AuthController::class, 'checkEmail'])->name('check.email');
+Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('send.otp');
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp');
+
 
 
 

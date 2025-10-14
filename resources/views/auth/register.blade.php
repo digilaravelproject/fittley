@@ -153,6 +153,11 @@
             z-index: 2;
             font-size: 1rem;
         }
+
+        .form-control:disabled {
+            background-color: #525456;
+            opacity: 1;
+        }
     </style>
 </head>
 
@@ -187,11 +192,23 @@
                         autofocus placeholder="Enter your full name">
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-3 position-relative">
                     <label for="email" class="form-label"><i class="fas fa-envelope"></i> Email Address</label>
-                    <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required
-                        placeholder="Enter your email">
+                    <div class="input-group">
+                        <input type="email" class="form-control" id="email" name="email" required
+                            placeholder="Enter your email">
+                        <button type="button" class="btn btn-outline-warning" id="sendOtpBtn">Send OTP</button>
+                    </div>
+                    <div id="emailCheck" class="small mt-1"></div>
                 </div>
+
+                <div class="mb-3" id="otpSection" style="display:none;">
+                    <label for="otp" class="form-label"><i class="fas fa-key"></i> Enter OTP</label>
+                    <input type="text" class="form-control" id="otp" placeholder="Enter 6-digit OTP">
+                    <div id="otpFeedback" class="small mt-1"></div>
+                    <div id="timer" class="text-warning small mt-1"></div>
+                </div>
+
 
                 <!-- Password Field -->
                 <div class="mb-3">
@@ -292,6 +309,123 @@
             });
 
         });
+
+        //
+        $(function () {
+            let timerInterval;
+            const timerDuration = 300; // 5 minutes
+            let timeLeft = timerDuration;
+            let emailVerified = false;
+
+            const otpInput = $("#otp");
+            const sendOtpBtn = $("#sendOtpBtn");
+            const otpFeedback = $("#otpFeedback");
+            const timerDisplay = $("#timer");
+
+            // Check email existence
+            $("#email").on("blur", function () {
+                const email = $(this).val();
+                if (!email) return;
+                $.post("{{ route('check.email') }}", { email, _token: "{{ csrf_token() }}" }, function (res) {
+                    if (res.exists) {
+                        $("#emailCheck").text("❌ Email already exists.").removeClass("text-success").addClass("text-danger");
+                        sendOtpBtn.prop("disabled", true);
+                    } else {
+                        $("#emailCheck").text("✅ Email available.").removeClass("text-danger").addClass("text-success");
+                        sendOtpBtn.prop("disabled", false);
+                    }
+                });
+            });
+
+            // Send / Resend OTP
+            sendOtpBtn.click(function () {
+                const email = $("#email").val();
+                if (!email) {
+                    alert("Please enter your email first.");
+                    return;
+                }
+
+                $(this).prop("disabled", true).text("Sending...");
+                $.post("{{ route('send.otp') }}", { email, _token: "{{ csrf_token() }}" }, function (res) {
+                    if (res.success) {
+                        $("#otpSection").slideDown();
+                        otpFeedback.text("OTP sent successfully!").removeClass("text-danger").addClass("text-success");
+
+                        // ✅ Enable OTP input & reset verification
+                        otpInput.prop("disabled", false).val('');
+                        emailVerified = false;
+
+                        // ✅ Restart timer
+                        startTimer();
+                    } else {
+                        otpFeedback.text(res.message).removeClass("text-success").addClass("text-danger");
+                    }
+                    sendOtpBtn.prop("disabled", false).text("Resend OTP");
+                });
+            });
+
+            // Verify OTP
+            otpInput.on("keyup", function () {
+                const otp = $(this).val();
+                const email = $("#email").val();
+                if (otp.length === 6) {
+                    $.post("{{ route('verify.otp') }}", { email, otp, _token: "{{ csrf_token() }}" }, function (res) {
+                        if (res.success) {
+                            emailVerified = true;
+
+                            otpFeedback.text("✅ OTP verified successfully!").removeClass("text-danger").addClass("text-success");
+
+                            // ✅ Disable OTP input & stop timer
+                            otpInput.prop("disabled", true);
+                            clearInterval(timerInterval);
+                            timerDisplay.hide();
+                        } else {
+                            emailVerified = false;
+                            otpFeedback.text(res.message).removeClass("text-success").addClass("text-danger");
+                        }
+                    });
+                }
+            });
+
+            // Prevent form submit if OTP not verified
+            $("form").on("submit", function (e) {
+                if (!emailVerified) {
+                    e.preventDefault();
+                    alert("Please verify your email with OTP first.");
+                }
+            });
+
+            // Timer function
+            function startTimer() {
+                timeLeft = timerDuration;
+                clearInterval(timerInterval);
+                timerDisplay.show();
+                timerDisplay.removeClass("text-danger");
+
+                timerInterval = setInterval(() => {
+                    if (emailVerified) {
+                        clearInterval(timerInterval); // ✅ Stop timer if OTP already verified
+                        return;
+                    }
+
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        timerDisplay.text("OTP expired. Please resend.").addClass("text-danger");
+
+                        // ✅ Re-enable OTP input on expiry so user can resend
+                        otpInput.prop("disabled", false);
+                        emailVerified = false;
+                        return;
+                    }
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    timerDisplay.text(`OTP valid for ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`);
+                    timeLeft--;
+                }, 1000);
+            }
+        });
+
+
     </script>
 </body>
 

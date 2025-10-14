@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use App\Mail\OtpMail; // Create this new mail
 
 
 class AuthController extends Controller
@@ -75,22 +77,48 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $data = $request->validated();
+
+        // ✅ 1. Check OTP verification
+        $otpVerified = session()->get('otp_verified_' . $request->email, false);
+
+        if (!$otpVerified) {
+            return back()
+                ->withErrors(['email' => 'Please verify your email with OTP before registering.'])
+                ->withInput();
+        }
+
+        // ✅ 2. Encrypt password
         $data['password'] = Hash::make($data['password']);
 
+        // ✅ 3. Mark email as verified
+        $data['email_verified_at'] = now();
+
+        // ✅ 4. Create the user
         $user = User::create($data);
 
-
-        // Assign default role
+        // ✅ 5. Assign default role
         $user->assignRole('user');
 
-        // Directly send the welcome email
-        Mail::to($user->email)->send(new WelcomeMail($user));
+        // ✅ 6. Send welcome mail
+        try {
+            Mail::to($user->email)->send(new WelcomeMail($user));
+        } catch (\Exception $e) {
+            \Log::error('Welcome email failed: ' . $e->getMessage());
+        }
+
+        // ✅ 7. Trigger event
         event(new Registered($user));
 
+        // ✅ 8. Clean up session key
+        session()->forget('otp_verified_' . $data['email']);
+
+        // ✅ 9. Auto-login user
         Auth::login($user);
 
-        return redirect('/dashboard');
+        // ✅ 10. Redirect
+        return redirect('/dashboard')->with('success', 'Welcome to Fitlley!');
     }
+
 
     /**
      * Handle user registration (API)
@@ -246,5 +274,63 @@ class AuthController extends Controller
         }
 
         return response()->json(['success' => false, 'message' => 'Failed to reset password.'], 400);
+    }
+
+
+    // Check if email exists
+    public function checkEmail(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+        $exists = \App\Models\User::where('email', $request->email)->exists();
+        return response()->json(['exists' => $exists]);
+    }
+
+    // Send OTP
+    public function sendOtp(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        // Prevent sending if already registered
+        if (User::where('email', $request->email)->exists()) {
+            return response()->json(['success' => false, 'message' => 'Email already registered.']);
+        }
+
+        // Generate 6-digit OTP
+        $otp = random_int(100000, 999999);
+
+        // Store in cache for 5 mins
+        Cache::put('otp_' . $request->email, $otp, now()->addMinutes(5));
+
+        // Send mail
+        Mail::to($request->email)->send(new OtpMail($otp));
+
+        return response()->json(['success' => true, 'message' => 'OTP sent successfully.']);
+    }
+
+    // Verify OTP
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|digits:6',
+        ]);
+
+        $cachedOtp = Cache::get('otp_' . $request->email);
+
+        if (!$cachedOtp) {
+            return response()->json(['success' => false, 'message' => 'OTP expired. Please resend.']);
+        }
+
+        if ($cachedOtp != $request->otp) {
+            return response()->json(['success' => false, 'message' => 'Invalid OTP.']);
+        }
+
+        // ✅ Mark as verified for this session
+        session(['otp_verified_' . $request->email => true]);
+
+        // ✅ Remove OTP so it can’t be reused
+        Cache::forget('otp_' . $request->email);
+
+        return response()->json(['success' => true, 'message' => 'OTP verified successfully.']);
     }
 }
