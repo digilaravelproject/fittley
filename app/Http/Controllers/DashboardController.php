@@ -43,6 +43,8 @@ class DashboardController extends Controller
                 ]
             );
         }
+        // Call the function to generate or get the referral code
+        $referralCode = $user->generateReferralCode();
 
         // Ensure profile exists or null (we won't auto-create here; updates will create if missing)
         $profile = $user->profile;
@@ -113,7 +115,8 @@ class DashboardController extends Controller
             'showBodyStats',
             'showInterests',
             'showGoals',
-            'profile'
+            'profile',
+            'referralCode'
         ));
     }
 
@@ -125,67 +128,67 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        $validator = Validator::make($request->all(), [
-            'key' => ['required', Rule::in(['height', 'weight', 'body_fat', 'chest_waist_hips', 'arms_thighs'])],
-            'value' => ['required', 'string', 'max:255'],
+        // ✅ 1) Allowed keys
+        $allowedKeys = ['height', 'weight', 'body_fat_percentage', 'chest_waist_hips', 'arms_thighs'];
+
+        // ✅ 2) Validate using $request->validate (auto handles errors)
+        $request->validate([
+            'key'   => 'required|in:' . implode(',', $allowedKeys),
+            'value' => 'required|string|max:255',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'message' => 'Invalid input', 'errors' => $validator->errors()], 422);
-        }
-
-        $key = $request->input('key');
+        $key   = $request->input('key');
         $value = trim($request->input('value'));
 
-        // Ensure profile exists - create if missing
+        // ✅ 3) Ensure profile exists
         $profile = $user->profile ?? UserProfile::create(['user_id' => $user->id]);
 
-        // Map keys to DB columns and normalize values
         try {
             DB::beginTransaction();
 
+            // ✅ 4) Handle each key
             if ($key === 'height') {
-                // Accept formats like "175" or "175 cm"
-                $num = $this->extractNumber($value);
-                $profile->height = $num !== null ? $num : null;
+                $profile->height = $this->extractNumber($value);
             } elseif ($key === 'weight') {
-                $num = $this->extractNumber($value);
-                $profile->weight = $num !== null ? $num : null;
-            } elseif ($key === 'body_fat') {
-                $num = $this->extractNumber($value);
-                $profile->body_fat_percentage = $num !== null ? $num : null;
+                $profile->weight = $this->extractNumber($value);
+            } elseif ($key === 'body_fat_percentage') {
+                $profile->body_fat_percentage = $this->extractNumber($value);
             } elseif ($key === 'chest_waist_hips') {
-                // Expect "95 / 80 / 94 cm" or "95/80/94"
-                $parts = preg_split('/[\/,]+/', str_replace('cm', '', $value));
-                $parts = array_map(function ($p) {
-                    return trim($p);
-                }, $parts);
-                $profile->chest_measurement = isset($parts[0]) && $parts[0] !== '' ? $this->extractNumber($parts[0]) : null;
-                $profile->waist_measurement  = isset($parts[1]) && $parts[1] !== '' ? $this->extractNumber($parts[1]) : null;
-                $profile->hips_measurement   = isset($parts[2]) && $parts[2] !== '' ? $this->extractNumber($parts[2]) : null;
+                $value = str_replace('cm', '', $value);
+                $parts = array_map('trim', preg_split('/[\/,]+/', $value));
+                $profile->chest_measurement = isset($parts[0]) ? $this->extractNumber($parts[0]) : null;
+                $profile->waist_measurement = isset($parts[1]) ? $this->extractNumber($parts[1]) : null;
+                $profile->hips_measurement  = isset($parts[2]) ? $this->extractNumber($parts[2]) : null;
             } elseif ($key === 'arms_thighs') {
-                // Expect "34 / 58 cm"
-                $parts = preg_split('/[\/,]+/', str_replace('cm', '', $value));
-                $parts = array_map(function ($p) {
-                    return trim($p);
-                }, $parts);
-                $profile->arms_measurement = isset($parts[0]) && $parts[0] !== '' ? $this->extractNumber($parts[0]) : null;
-                $profile->thighs_measurement = isset($parts[1]) && $parts[1] !== '' ? $this->extractNumber($parts[1]) : null;
+                $value = str_replace('cm', '', $value);
+                $parts = array_map('trim', preg_split('/[\/,]+/', $value));
+                $profile->arms_measurement   = isset($parts[0]) ? $this->extractNumber($parts[0]) : null;
+                $profile->thighs_measurement = isset($parts[1]) ? $this->extractNumber($parts[1]) : null;
             }
 
+            // ✅ 5) Save profile
             $profile->save();
             DB::commit();
 
-            // Rebuild response value in the same format as controller's index
+            // ✅ 6) Return formatted response like index()
             $responseValue = $this->buildResponseValueForKey($profile, $key);
 
-            return response()->json(['success' => true, 'key' => $key, 'value' => $responseValue]);
+            return response()->json([
+                'success' => true,
+                'key'     => $key,
+                'value'   => $responseValue,
+            ]);
         } catch (\Throwable $e) {
             DB::rollBack();
             \Log::error('updateStat error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Could not update.'], 500);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not update.',
+            ], 500);
         }
     }
+
 
     /**
      * Add an interest (AJAX).

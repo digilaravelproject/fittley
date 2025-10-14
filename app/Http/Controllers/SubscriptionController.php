@@ -19,16 +19,60 @@ class SubscriptionController extends Controller
     /**
      * Show subscription plans page
      */
+    /**
+     * Show subscription plans page
+     */
     public function index(Request $request)
+    {
+        $user = Auth::user();
+        $isUpgrade = false;
+        $userSubscription = null;
+
+        if ($user) {
+            $hasActivePlan = $user->hasActiveSubscription() || $user->isOnTrial();
+
+            // Check upgrade mode (user clicked "Upgrade Plan")
+            if ($hasActivePlan) {
+                if ($request->has('upgrade') && $request->get('upgrade') == 1) {
+                    // ✅ Allow showing plans for upgrade
+                    $isUpgrade = true;
+                } else {
+                    // ✅ Normal visit with active subscription → redirect
+                    return redirect()->route('dashboard')
+                        ->with('info', 'You already have an active subscription.');
+                }
+            }
+
+            // Get the user's current subscription (if any)
+            $userSubscription = $user->currentSubscription;
+        }
+
+        // ✅ Get all active plans
+        $plans = SubscriptionPlan::active()->ordered()->get();
+
+        // ✅ Referral / Influencer data remains the same
+        $referralCode = session('referral_code');
+        $influencerLink = session('influencer_link');
+
+        return view('subscription.plans', compact(
+            'plans',
+            'userSubscription',
+            'referralCode',
+            'influencerLink',
+            'isUpgrade'
+        ));
+    }
+
+    public function index_old(Request $request)
     {
         if (Auth::check()) {
             $user = Auth::user();
-            
+
             // Redirect users with active subscriptions to dashboard
             if ($user->hasActiveSubscription() || $user->isOnTrial()) {
                 return redirect()->route('dashboard')->with('info', 'You already have an active subscription.');
             }
-            
+
             $userSubscription = $user->currentSubscription;
         }
 
@@ -59,7 +103,7 @@ class SubscriptionController extends Controller
         }
 
         $user = Auth::user();
-        
+
         // Check if user already has active subscription
         if ($user->hasActiveSubscription()) {
             return redirect()->route('user.subscription.manage')
@@ -74,7 +118,7 @@ class SubscriptionController extends Controller
         if ($request->has('referral_code') || session('referral_code')) {
             $codeValue = $request->get('referral_code') ?? session('referral_code');
             $referralCode = ReferralCode::findByCode($codeValue);
-            
+
             if ($referralCode && $referralCode->isValid()) {
                 // Use new user discount percentage instead of referrer discount
                 $discountPercentage = $referralCode->new_user_discount_percentage;
@@ -114,7 +158,7 @@ class SubscriptionController extends Controller
         }
 
         DB::beginTransaction();
-        
+
         try {
             $discountAmount = 0;
             $referralUsage = null;
@@ -123,7 +167,7 @@ class SubscriptionController extends Controller
             // Handle referral code
             if ($request->referral_code) {
                 $referralCode = ReferralCode::findByCode($request->referral_code);
-                
+
                 if ($referralCode && $referralCode->isValid() && $referralCode->user_id !== $user->id) {
                     // Use new user discount percentage for the subscribing user
                     $discountPercentage = $referralCode->new_user_discount_percentage;
@@ -167,7 +211,7 @@ class SubscriptionController extends Controller
             // Handle influencer link if exists
             if (session('influencer_link')) {
                 $influencerLink = InfluencerLink::findByCode(session('influencer_link'));
-                
+
                 if ($influencerLink && $influencerLink->isActive()) {
                     $influencerSale = InfluencerSale::createSale(
                         $influencerLink->influencerProfile,
@@ -176,7 +220,7 @@ class SubscriptionController extends Controller
                     );
 
                     $influencerLink->incrementConversions();
-                    
+
                     // Clear influencer link from session
                     session()->forget('influencer_link');
                 }
@@ -193,11 +237,10 @@ class SubscriptionController extends Controller
                 'subscription_id' => $subscription->id,
                 'redirect_url' => route('user.subscription.manage')
             ]);
-
         } catch (\Exception $e) {
             DB::rollback();
             \Log::error('Subscription payment error: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Payment processing failed. Please try again.'
@@ -217,9 +260,9 @@ class SubscriptionController extends Controller
         $referralStats = $this->getReferralStats($user);
 
         return view('user.subscription.manage', compact(
-            'currentSubscription', 
-            'subscriptionHistory', 
-            'referralCode', 
+            'currentSubscription',
+            'subscriptionHistory',
+            'referralCode',
             'referralStats'
         ));
     }
@@ -426,7 +469,7 @@ class SubscriptionController extends Controller
         }
 
         DB::beginTransaction();
-        
+
         try {
             $discountAmount = 0;
             $referralUsage = null;
@@ -434,7 +477,7 @@ class SubscriptionController extends Controller
             // Handle referral code
             if ($request->referral_code) {
                 $referralCode = ReferralCode::findByCode($request->referral_code);
-                
+
                 if ($referralCode && $referralCode->isValid() && $referralCode->user_id !== $user->id) {
                     $discountPercentage = $referralCode->new_user_discount_percentage ?? 10;
                     $discountAmount = ($plan->price * $discountPercentage) / 100;
@@ -481,11 +524,10 @@ class SubscriptionController extends Controller
                 'subscription' => $subscription->load('subscriptionPlan'),
                 'discount_applied' => $discountAmount > 0 ? $discountAmount : null
             ]);
-
         } catch (\Exception $e) {
             DB::rollback();
             \Log::error('API Subscription error: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Subscription processing failed. Please try again.'
@@ -526,7 +568,7 @@ class SubscriptionController extends Controller
             ]);
         } catch (\Exception $e) {
             \Log::error('API Subscription cancellation error: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error cancelling subscription'
@@ -562,12 +604,12 @@ class SubscriptionController extends Controller
         }
 
         try {
-            $plan = $request->plan_id ? 
-                SubscriptionPlan::findOrFail($request->plan_id) : 
+            $plan = $request->plan_id ?
+                SubscriptionPlan::findOrFail($request->plan_id) :
                 $currentSubscription->subscriptionPlan;
 
             $newEndDate = $this->calculateEndDate($plan);
-            
+
             $currentSubscription->renew($newEndDate, $plan->price);
             $user->updateSubscriptionStatus('active', $newEndDate);
 
@@ -578,7 +620,7 @@ class SubscriptionController extends Controller
             ]);
         } catch (\Exception $e) {
             \Log::error('API Subscription renewal error: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error renewing subscription'
@@ -615,7 +657,7 @@ class SubscriptionController extends Controller
         }
 
         $perPage = $request->get('per_page', 10);
-        
+
         $referrals = $referralCode->usages()
             ->with(['referredUser:id,name,email', 'subscription.subscriptionPlan'])
             ->orderBy('created_at', 'desc')
@@ -664,7 +706,7 @@ class SubscriptionController extends Controller
         }
 
         $user = Auth::user();
-        
+
         if ($referralCode->user_id === $user->id) {
             return response()->json([
                 'success' => false,
@@ -893,16 +935,15 @@ class SubscriptionController extends Controller
     private function calculateEndDate(SubscriptionPlan $plan)
     {
         $startDate = now();
-        
-        switch ($plan->billing_cycle) {
-            case 'monthly':
-                return $startDate->addMonths($plan->billing_cycle_count);
-            case 'quarterly':
-                return $startDate->addMonths($plan->billing_cycle_count * 3);
-            case 'yearly':
-                return $startDate->addYears($plan->billing_cycle_count);
-            default:
-                return $startDate->addMonth();
+
+        if ($plan->billing_cycle == 'monthly') {
+            return $startDate->copy()->addMonth();
+        }
+        if ($plan->billing_cycle == 'quarterly') {
+            return $startDate->copy()->addMonths(3);
+        }
+        if ($plan->billing_cycle == 'yearly') {
+            return $startDate->copy()->addYear();
         }
     }
 
@@ -912,7 +953,7 @@ class SubscriptionController extends Controller
     private function getReferralStats($user)
     {
         $referralCode = $user->referralCode;
-        
+
         if (!$referralCode) {
             return [
                 'total_referrals' => 0,
@@ -932,4 +973,4 @@ class SubscriptionController extends Controller
             'available_discount_percentage' => $referralCode->discount_percentage,
         ];
     }
-} 
+}

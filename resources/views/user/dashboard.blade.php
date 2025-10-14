@@ -71,7 +71,7 @@
 
         // ------------------------------
         // 5️⃣ INTERESTS (comes from DB OR fallback)
-        //     Format in DB: JSON or comma separated
+        // Format in DB: JSON or comma separated
         // ------------------------------
         $interests = [];
         if ($profile && $profile->interests) {
@@ -139,8 +139,8 @@
 
     <main role="main" class="user-dashboard fade-in-up" aria-label="User dashboard main content">
         <!-- ====================
-                         UPDATED PROFILE SECTION (replaces previous markup for profile-section)
-                         ==================== -->
+                                             UPDATED PROFILE SECTION (replaces previous markup for profile-section)
+                                             ==================== -->
         <div class="profile-section mb-4 stat-card p-4"
             style="border-radius:12px; background: linear-gradient(180deg,#0f0f0f,#070707);">
             <div class="d-flex flex-wrap align-items-center justify-content-between">
@@ -176,21 +176,75 @@
                 </div>
 
                 <div class="d-flex align-items-center" style="gap:10px; margin-top:8px;">
-                    <a class="btn action-cta" href="#" aria-label="Subscriptions"
-                        style="padding:10px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
-                        <i class="fas fa-th-large me-2"></i> Subscriptions
+                    <a class="btn action-cta"
+                        href="{{ $planName ? route('subscription.plans', ['upgrade' => 1]) : route('subscription.plans') }}">
+                        <i class="fas fa-th-large me-2"></i>
+                        {{ $planName ? 'Upgrade Plan' : 'Subscribe' }}
                     </a>
+
+
+                    <!-- Referrals Button -->
                     <a class="btn action-cta" href="#" aria-label="Referrals"
-                        style="padding:10px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);">
+                        style="padding:10px 16px; border-radius:10px; border:1px solid rgba(255,255,255,0.06);"
+                        data-bs-toggle="modal" data-bs-target="#referralModal">
                         <i class="fas fa-user-friends me-2"></i> Referrals
                     </a>
                 </div>
             </div>
         </div>
 
+        <!-- Modal -->
+        <div class="modal fade" id="referralModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered d-flex justify-content-center">
+                <div class="modal-content" style="
+                            background:#1d1d1d;
+                            color:#fff;
+                            border-radius:12px;
+                            padding:20px;
+                            width:100%;
+                            max-width:350px;
+                            text-align:center;
+                            border:1px solid rgba(255,255,255,0.1);
+                        ">
+
+                    <!-- Referral Text -->
+                    <div style="font-size:1rem; opacity:0.8; margin-bottom:8px;">
+                        Your Referral Code
+                    </div>
+
+                    <!-- Code Box -->
+                    <div id="referralCodeBox" style="
+                                background:#2a2a2a;
+                                padding:12px;
+                                border-radius:6px;
+                                font-size:1.1rem;
+                                user-select:all;
+                                word-break:break-all;
+                            ">
+                        {{ $referralCode->code }}
+                    </div>
+
+                    <!-- Copy Button -->
+                    <button id="copyReferralBtn" style="
+                                margin-top:15px;
+                                padding:8px 16px;
+                                border-radius:6px;
+                                border:none;
+                                cursor:pointer;
+                                background:#3a3a3a;
+                                color:#fff;
+                                transition:0.2s;
+                            " onmouseover="this.style.background='#4a4a4a'" onmouseout="this.style.background='#3a3a3a'">
+                        Copy
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
         <!-- ====================
-                         INTERESTS SECTION (temporary static tags)
-                         ==================== -->
+                                             INTERESTS SECTION (temporary static tags)
+                                             ==================== -->
         <section class="interests-section mb-3">
             <h5 style="color:#fff; margin-bottom:8px; font-weight:700;">Interests</h5>
 
@@ -219,8 +273,8 @@
 
 
         <!-- ====================
-                         BODY STATS (editable inline, structure ready for DB)
-                         ==================== -->
+                                             BODY STATS (editable inline, structure ready for DB)
+                                             ==================== -->
         <section class="body-stats-section mb-4">
             <h5 style="color:#fff; margin-bottom:10px; font-weight:700;">Body Stats & Check-ins</h5>
 
@@ -252,9 +306,9 @@
         </section>
 
         <!-- ====================
-                         NOW continue with your existing content (Quick Stats ... Recent Activity ... Account Info)
-                         (I will paste your existing code below exactly as you provided, but with small accessibility / style merges preserved)
-                         ==================== -->
+                                             NOW continue with your existing content (Quick Stats ... Recent Activity ... Account Info)
+                                             (I will paste your existing code below exactly as you provided, but with small accessibility / style merges preserved)
+                                             ==================== -->
 
         <!-- Quick Stats -->
         <div class="stats-grid mb-5">
@@ -472,8 +526,8 @@
     </main>
 
     <!-- ====================
-                     Styles (merged - new styles first, then preserved existing tweaks)
-                     ==================== -->
+                                         Styles (merged - new styles first, then preserved existing tweaks)
+                                         ==================== -->
     <style>
         :root {
             --bg: #0b0b0b;
@@ -619,10 +673,24 @@
     </style>
 
     <!-- ====================
-                     JavaScript: inline editing + live AJAX update (placeholder URL)
-                     ==================== -->
+                                         JavaScript: inline editing + live AJAX update (placeholder URL)
+                                         ==================== -->
     <!-- jQuery must be loaded before this script. If you include jQuery globally, omit the CDN include. -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script>
+        document.getElementById('copyReferralBtn').addEventListener('click', function () {
+            const code = document.getElementById('referralCodeBox').innerText.trim();
+
+            navigator.clipboard.writeText(code)
+                .then(() => {
+                    this.textContent = 'Copied!';
+                    setTimeout(() => this.textContent = 'Copy', 2000);
+                })
+                .catch(() => alert('Copy failed!'));
+        });
+    </script>
+
 
     <script>
         (function ($) {

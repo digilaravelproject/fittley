@@ -3,7 +3,6 @@
 @section('title', 'Choose Your Plan')
 
 @section('content')
-    <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
@@ -36,23 +35,34 @@
             border: 1px solid var(--border-primary);
             border-radius: 12px;
             padding: 24px;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
 
-        .plan-card:hover {
+        /* Hover only for enabled cards */
+        .plan-card.enabled:hover {
             background-color: var(--bg-hover);
             transform: translateY(-6px);
         }
 
-        .btn-primary {
-            background-color: var(--primary-dark);
-            border: none;
+        .plan-card.disabled-card {
+            background: #151515;
+            border-color: #232323;
+            opacity: 0.72;
+            pointer-events: none;
+            transform: none !important;
+            box-shadow: none;
         }
 
-        .btn-primary:hover {
-            background-color: var(--primary-light);
-            color: var(--bg-primary);
+        .plan-card .plan-body {
+            flex: 1 1 auto;
+        }
+
+        .plan-card .plan-footer {
+            margin-top: 14px;
         }
 
         .popular-badge {
@@ -67,14 +77,41 @@
             border-radius: 6px;
         }
 
-        .dropdown-toggle::after {
-            content: none;
+        .btn-primary {
+            background-color: var(--primary-dark);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+            color: var(--bg-primary);
         }
 
         .text-muted {
             color: var(--text-muted) !important;
         }
 
+        .disabled-btn {
+            background: #242424 !important;
+            color: #8a8a8a !important;
+            border: 1px solid #2b2b2b !important;
+            cursor: not-allowed;
+            opacity: .9;
+        }
+
+        .current-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--success);
+            color: #000;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        /* small screens tweak */
         @media (max-width: 780px) {
             .main-content {
                 padding-top: 1rem;
@@ -83,6 +120,12 @@
     </style>
 
     <div class="container py-5">
+        @if(isset($isUpgrade) && $isUpgrade)
+            <div class="alert alert-info text-center">
+                Select a new plan to upgrade your current subscription.
+            </div>
+        @endif
+
         <div class="text-center mb-5">
             <h1 class="fw-bold text-white">Choose Your Subscription</h1>
             <p class="text-muted">Get full access to live sessions, expert content, and more</p>
@@ -90,42 +133,119 @@
 
         <div class="row g-4">
             @foreach($plans as $plan)
+                @php
+                    // Determine if user has a current subscription and current plan price
+                    $isCurrentPlan = false;
+                    $isDisabledForUpgrade = false;
+                    $isEnabledCard = true;
+
+                    if (isset($userSubscription) && $userSubscription) {
+                        // Try common relation names to fetch plan/price safely
+                        $currentPlanPrice = optional(optional($userSubscription)->subscriptionPlan)->price
+                            ?? optional(optional($userSubscription)->plan)->price
+                            ?? ($userSubscription->amount_paid ?? null);
+
+                        // If userSubscription includes subscription_plan_id, try fallback lookup (safe)
+                        if (!isset($currentPlanPrice) && isset($userSubscription->subscription_plan_id)) {
+                            try {
+                                $tmpPlan = \App\Models\SubscriptionPlan::find($userSubscription->subscription_plan_id);
+                                $currentPlanPrice = $tmpPlan ? $tmpPlan->price : null;
+                            } catch (\Throwable $e) {
+                                $currentPlanPrice = null;
+                            }
+                        }
+
+                        // If current plan id matches this plan id -> current plan
+                        if (isset($userSubscription->subscription_plan_id) && $userSubscription->subscription_plan_id == $plan->id) {
+                            $isCurrentPlan = true;
+                        } elseif (isset($userSubscription->subscription_plan_id) && $userSubscription->subscription_plan_id != $plan->id) {
+                            $isCurrentPlan = false;
+                        }
+
+                        // Decide if this plan should be disabled in upgrade mode:
+                        if (!empty($currentPlanPrice) && isset($isUpgrade) && $isUpgrade) {
+                            // disable same or lower price plans (prevent downgrade or same plan)
+                            if ($plan->price <= $currentPlanPrice) {
+                                $isDisabledForUpgrade = true;
+                            }
+                        }
+                    } else {
+                        $currentPlanPrice = null;
+                    }
+
+                    // final card enabled flag
+                    $isEnabledCard = !($isDisabledForUpgrade || $isCurrentPlan && isset($isUpgrade) && $isUpgrade);
+                @endphp
+
                 <div class="col-md-6 col-lg-4">
-                    <div class="position-relative plan-card h-100">
+                    <div class="position-relative plan-card {{ $isEnabledCard ? 'enabled' : 'disabled-card' }}">
+                        {{-- Current Plan badge --}}
+                        @if(isset($userSubscription) && $isCurrentPlan)
+                            <div class="current-badge">Current Plan</div>
+                        @endif
+
+                        {{-- Popular badge --}}
                         @if($plan->is_popular)
                             <div class="popular-badge">Most Popular</div>
                         @endif
 
-                        <h4 class="fw-bold">{{ $plan->name }}</h4>
-                        <p class="text-muted small">{{ $plan->description }}</p>
+                        <div class="plan-body">
+                            <h4 class="fw-bold">{{ $plan->name }}</h4>
+                            <p class="text-muted small">{{ $plan->description }}</p>
 
-                        <div class="mb-3">
-                            <h5 class="fw-bold">₹{{ number_format($plan->price, 0) }} <small
-                                    class="text-muted">/{{ $plan->billing_cycle }}</small></h5>
-                            @if($plan->trial_days > 0)
-                                <div class="text-success small">{{ $plan->trial_days }}-day free trial</div>
-                            @endif
+                            <div class="mb-3">
+                                <h5 class="fw-bold">₹{{ number_format($plan->price, 0) }}
+                                    <small class="text-muted">/ {{ $plan->billing_cycle }}</small>
+                                </h5>
+                                @if($plan->trial_days > 0)
+                                    <div class="text-success small">{{ $plan->trial_days }}-day free trial</div>
+                                @endif
+                            </div>
+
+                            <ul class="list-unstyled small mb-4">
+                                @if($plan->features['access_fitlive'] ?? false)
+                                    <li><i class="bi bi-check2-circle text-success me-2"></i> Live Fitness Sessions</li>
+                                @endif
+
+                                <li><i class="bi bi-check2-circle text-success me-2"></i>
+                                    {{ $plan->features['max_devices'] ?? 1 }} Device(s)
+                                </li>
+
+                                @foreach($plan->features as $key => $feature)
+                                    @if(!in_array($key, ['access_fitlive', 'max_devices']))
+                                        <li><i class="bi bi-check2-circle text-success me-2"></i> {{ $feature }}</li>
+                                    @endif
+                                @endforeach
+                            </ul>
                         </div>
 
-                        <ul class="list-unstyled small mb-4">
-                            @if($plan->features['access_fitlive'] ?? false)
-                                <li><i class="bi bi-check2-circle text-success me-2"></i> Live Fitness Sessions</li>
-                            @endif
+                        <div class="plan-footer">
+                            {{-- Button / Disabled logic --}}
+                            @if(isset($isUpgrade) && $isUpgrade && isset($userSubscription) && $userSubscription)
+                                @if($isCurrentPlan)
+                                    {{-- Current plan: show disabled "Current Plan" button --}}
+                                    <button class="btn btn-success w-100" disabled>Current Plan</button>
 
-                            <li><i class="bi bi-check2-circle text-success me-2"></i> {{ $plan->features['max_devices'] ?? 1 }}
-                                Device(s)</li>
+                                @elseif($isDisabledForUpgrade)
+                                    {{-- Downgrade / same price: whole card already disabled; show Not Available --}}
+                                    <button class="btn disabled-btn w-100" disabled>Not Available</button>
 
-                            @foreach($plan->features as $key => $feature)
-                                @if(!in_array($key, ['access_fitlive', 'max_devices']))
-                                    <li><i class="bi bi-check2-circle text-success me-2"></i> {{ $feature }}</li>
+                                @else
+                                    {{-- Valid upgrade: active card --}}
+                                    <button class="btn btn-primary w-100"
+                                        onclick="startRazorpay('{{ $plan->id }}', '{{ $plan->name }}', {{ $plan->price }})">
+                                        Upgrade to {{ $plan->name }}
+                                    </button>
                                 @endif
-                            @endforeach
-                        </ul>
 
-                        <button class="btn btn-primary w-100"
-                            onclick="startRazorpay('{{ $plan->id }}', '{{ $plan->name }}', {{ $plan->price }})">
-                            Choose {{ $plan->name }}
-                        </button>
+                            @else
+                                {{-- Normal subscribe flow (no existing plan / not in upgrade mode) --}}
+                                <button class="btn btn-primary w-100"
+                                    onclick="startRazorpay('{{ $plan->id }}', '{{ $plan->name }}', {{ $plan->price }})">
+                                    Choose {{ $plan->name }}
+                                </button>
+                            @endif
+                        </div>
                     </div>
                 </div>
             @endforeach
@@ -171,6 +291,11 @@
                 })
                     .then(res => res.json())
                     .then(orderData => {
+                        if (!orderData || !orderData.order_id) {
+                            console.error('Invalid order response', orderData);
+                            alert("Could not initiate payment. Please try again.");
+                            return;
+                        }
 
                         const options = {
                             key: orderData.razorpay_key,
@@ -179,8 +304,7 @@
                             name: "Fittelly",
                             description: "Subscription: " + planName,
                             image: "{{ getImagePath('default-profile1.png') }}",
-                            // image: "{{ asset('images/logo.png') }}",
-                            order_id: orderData.order_id, // ✅ FIXED
+                            order_id: orderData.order_id,
                             handler: function (response) {
                                 confirmPayment(response, planId);
                             },
