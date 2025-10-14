@@ -29,21 +29,22 @@ class UserSubscription extends Model
         'user_id' => 'integer',
         'subscription_plan_id' => 'integer',
         'amount_paid' => 'decimal:2',
+        'subscription_data' => 'array',
         'started_at' => 'datetime',
         'ends_at' => 'datetime',
         'trial_ends_at' => 'datetime',
         'cancelled_at' => 'datetime',
-        'subscription_data' => 'array',
     ];
 
+    /** RELATIONSHIPS */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function subscriptionPlan()
+    public function plan()
     {
-        return $this->belongsTo(SubscriptionPlan::class);
+        return $this->belongsTo(SubscriptionPlan::class, 'subscription_plan_id');
     }
 
     public function referralUsage()
@@ -53,7 +54,7 @@ class UserSubscription extends Model
 
     public function paymentTransaction()
     {
-        return $this->hasOne(paymentTransaction::class, 'user_id');
+        return $this->hasOne(PaymentTransaction::class, 'user_id', 'user_id');
     }
 
     public function influencerSale()
@@ -61,19 +62,20 @@ class UserSubscription extends Model
         return $this->hasOne(InfluencerSale::class, 'user_subscription_id');
     }
 
+    /** SCOPES */
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', 'active')->where('ends_at', '>', now());
     }
 
     public function scopeExpired($query)
     {
-        return $query->where('status', 'expired');
+        return $query->where('status', 'expired')->orWhere('ends_at', '<=', now());
     }
 
     public function scopeTrial($query)
     {
-        return $query->where('status', 'trial');
+        return $query->where('status', 'trial')->where('trial_ends_at', '>', now());
     }
 
     public function scopeCancelled($query)
@@ -81,6 +83,7 @@ class UserSubscription extends Model
         return $query->where('status', 'cancelled');
     }
 
+    /** STATUS CHECKS */
     public function isActive()
     {
         return $this->status === 'active' && $this->ends_at > now();
@@ -101,31 +104,33 @@ class UserSubscription extends Model
         return $this->status === 'cancelled';
     }
 
+    /** REMAINING DAYS */
     public function getRemainingDaysAttribute()
     {
         if ($this->isTrial()) {
             return max(0, $this->trial_ends_at->diffInDays(now()));
         }
-        
+
         if ($this->isActive()) {
             return max(0, $this->ends_at->diffInDays(now()));
         }
-        
+
         return 0;
     }
 
+    /** LABEL */
     public function getStatusLabelAttribute()
     {
-        $labels = [
+        return match ($this->status) {
             'active' => 'Active',
             'trial' => 'Trial',
             'expired' => 'Expired',
             'cancelled' => 'Cancelled',
-        ];
-
-        return $labels[$this->status] ?? 'Unknown';
+            default => 'Unknown',
+        };
     }
 
+    /** ACTIONS */
     public function cancel()
     {
         $this->update([
@@ -147,10 +152,10 @@ class UserSubscription extends Model
             'cancelled_at' => null,
         ];
 
-        if ($amountPaid) {
+        if ($amountPaid !== null) {
             $updateData['amount_paid'] = $amountPaid;
         }
 
         $this->update($updateData);
     }
-} 
+}

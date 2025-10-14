@@ -41,7 +41,7 @@ class SubscriptionPlan extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($plan) {
             if (empty($plan->slug)) {
                 $plan->slug = Str::slug($plan->name);
@@ -89,11 +89,11 @@ class SubscriptionPlan extends Model
     {
         $cycle = $this->billing_cycle;
         $count = $this->billing_cycle_count;
-        
+
         if ($count == 1) {
             return $cycle;
         }
-        
+
         return $count . ' ' . Str::plural($cycle);
     }
 
@@ -117,4 +117,4 @@ class SubscriptionPlan extends Model
         $restrictions = $this->getRestrictionListAttribute();
         return $restrictions[$key] ?? $default;
     }
-} 
+}
