@@ -33,14 +33,14 @@ class PasswordResetMail extends Mailable
      */
     public function build()
     {
-        // You might want to use the token in the view to build a reset link
-        $resetLink = url('/password/reset/' . $this->token);
+        // Generate the reset password link with the user's email
+        $resetLink = url('/password/reset/' . $this->token . '?email=' . urlencode($this->user->email));
 
         return $this->subject('Reset your Fittelly password')
             ->view('emails.password_reset')
             ->with([
                 'user' => $this->user,
-                'resetLink' => $resetLink,
+                'resetLink' => $resetLink, // Pass the reset link to the view
             ]);
     }
 }

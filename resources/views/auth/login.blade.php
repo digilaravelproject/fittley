@@ -155,6 +155,12 @@
                         Remember me
                     </label>
                 </div>
+                <!-- Forgot Password Link -->
+                <div class="text-end mb-3">
+                    <a href="{{ route('password.request') }}" class="text-muted text-decoration-none"><i
+                            class="fas fa-key"></i> Forgot your password?
+                    </a>
+                </div>
 
                 <button type="submit" class="btn btn-primary w-100 mb-3">
                     <i class="fas fa-sign-in-alt"></i> Sign In

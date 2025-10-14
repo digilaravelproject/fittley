@@ -93,11 +93,12 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
-            'expire' => 60,
-            'throttle' => 60,
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'), // You can change the table name if needed
+            'expire' => env('PASSWORD_RESET_EXPIRATION', 10),  // Set expiration to 10 minutes from .env
+            'throttle' => 60,  // Optional: Rate limit password reset requests (60 seconds between requests)
         ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------
