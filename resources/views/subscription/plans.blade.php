@@ -117,6 +117,48 @@
                 padding-top: 1rem;
             }
         }
+
+        /* Referral Code Section */
+        #referralCode {
+            font-size: 1rem;
+            padding: 0.75rem;
+            max-width: 250px;
+            border-radius: 8px;
+        }
+
+        #referralCode:focus {
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 5px rgba(232, 148, 26, 0.5);
+        }
+
+        /* Referral button styling with your root color */
+        .btn-referral {
+            background-color: var(--primary-dark);
+            color: var(--white-color);
+            border: 1px solid var(--primary-dark);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-referral:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary-light);
+            color: var(--bg-primary);
+        }
+
+        /* Make sure it fits smaller screens */
+        @media (max-width: 768px) {
+            #referralCode {
+                max-width: 200px;
+            }
+
+            .btn-referral {
+                width: 100%;
+                margin-top: 10px;
+            }
+        }
     </style>
 
     <div class="container py-5">
@@ -130,6 +172,18 @@
             <h1 class="fw-bold text-white">Choose Your Subscription</h1>
             <p class="text-muted">Get full access to live sessions, expert content, and more</p>
         </div>
+        <!-- Referral Code -->
+        <div class="mb-5 d-flex flex-column align-items-center">
+            <h5 class="text-white mb-3">Have a referral code?</h5>
+            <div class="d-flex flex-column flex-md-row align-items-center w-100 justify-content-center">
+                <input type="text" id="referralCode"
+                    class="form-control bg-transparent text-white border border-secondary rounded-3 me-md-2"
+                    placeholder="Enter referral code" aria-label="Referral Code" style="max-width: 300px;">
+                <button class="btn btn-referral me-md-2 mt-2 mt-md-0" onclick="applyReferral()">Apply</button>
+            </div>
+            <div id="referralMessage" class="text-success mt-2 small"></div>
+        </div>
+
 
         <div class="row g-4">
             @foreach($plans as $plan)
@@ -251,16 +305,7 @@
             @endforeach
         </div>
 
-        <!-- Referral Code -->
-        <div class="mt-5 bg-dark p-4 rounded">
-            <h5>Have a referral code?</h5>
-            <div class="input-group mt-2">
-                <input type="text" id="referralCode" class="form-control bg-secondary text-white border-secondary"
-                    placeholder="Enter referral code">
-                <button class="btn btn-outline-success" onclick="applyReferral()">Apply</button>
-            </div>
-            <div id="referralMessage" class="text-success mt-2 small"></div>
-        </div>
+
     </div>
 
     <!-- Razorpay Script -->
