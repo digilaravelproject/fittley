@@ -61,11 +61,15 @@
             display: inline-block;
             padding: 12px 18px;
             background-color: #f7a31a;
-            color: #000;
+            color: #fff;
             border-radius: 6px;
             text-decoration: none;
             font-size: 16px;
             margin-top: 20px;
+        }
+
+        .cta-button a {
+            text-decoration: none;
         }
 
         .cta-button:hover {
