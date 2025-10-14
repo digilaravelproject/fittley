@@ -7,12 +7,20 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AccountController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+    protected function deleteProfilePicture($user)
+    {
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
     }
 
     /**
@@ -29,7 +37,7 @@ class AccountController extends Controller
      */
     public function updateProfile(Request $request)
     {
-        $user = Auth::user();
+        $user = request()->user();
 
         $request->validate([
             'name' => 'required|string|max:255',
@@ -37,32 +45,25 @@ class AccountController extends Controller
             'phone' => 'nullable|string|max:20',
             'date_of_birth' => 'nullable|date|before:today',
             'gender' => 'nullable|in:male,female,other',
-            // 'fitness_level' => 'nullable|in:beginner,intermediate,advanced',
-            // 'goals' => 'nullable|string|max:500',
-            // 'timezone' => 'nullable|string|max:50',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $data = $request->only(['name', 'email', 'phone', 'date_of_birth', 'gender']);
-        // $data = $request->only(['name', 'email', 'phone', 'date_of_birth', 'gender', 'fitness_level', 'goals', 'timezone']);
 
         // Handle profile picture upload
         if ($request->hasFile('avatar')) {
             // Delete old profile picture
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
+            $this->deleteProfilePicture($user);
 
             $path = $request->file('avatar')->store('profile-pictures', 'public');
-
             $data['avatar'] = $path;
-            // $data['profile_picture'] = $path;
         }
 
         $user->update($data);
 
         return back()->with('success', 'Profile updated successfully.');
     }
+
 
     /**
      * Update password.
@@ -74,7 +75,7 @@ class AccountController extends Controller
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
-        $user = Auth::user();
+        $user = request()->user();
 
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Current password is incorrect.']);
@@ -90,6 +91,7 @@ class AccountController extends Controller
     /**
      * Update preferences.
      */
+
     public function updatePreferences(Request $request)
     {
         $request->validate([
@@ -104,7 +106,7 @@ class AccountController extends Controller
             'allow_friend_requests' => 'boolean'
         ]);
 
-        $user = Auth::user();
+        $user = request()->user();
         $preferences = $user->preferences ?? [];
 
         // Update preferences
@@ -143,67 +145,91 @@ class AccountController extends Controller
             'confirmation' => 'required|in:DELETE'
         ]);
 
-        $user = Auth::user();
+        $user = request()->user();
 
         if (!Hash::check($request->password, $user->password)) {
             return back()->withErrors(['password' => 'Password is incorrect.']);
         }
 
-        // Delete profile picture
-        if ($user->profile_picture) {
-            Storage::disk('public')->delete($user->profile_picture);
+        DB::beginTransaction();
+
+        try {
+            // Delete profile picture if it exists
+            $this->deleteProfilePicture($user);
+
+            $user->email = 'deleted_' . $user->id . '@fittelly.com';
+            $user->name = 'Deleted User';
+            $user->avatar = null;
+            $user->phone = null;
+            $user->google2fa_secret = null;
+            $user->google2fa_enabled = false;
+            $user->recovery_codes = null;
+            $user->deleted_at = now();
+
+            // Example of future related data deletion:
+            // $user->orders()->delete();
+
+            $user->save();
+
+            DB::commit();
+
+            Auth::logout();
+
+            return redirect('/')->with('success', 'Your account has been deleted successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error deleting user account: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Something went wrong. Please try again later.']);
         }
-
-        // Delete related data (soft delete user to maintain referential integrity)
-        $user->email = 'deleted_' . $user->id . '@fittelly.com';
-        $user->name = 'Deleted User';
-        $user->profile_picture = null;
-        $user->phone = null;
-        $user->google2fa_secret = null;
-        $user->google2fa_enabled = false;
-        $user->recovery_codes = null;
-        $user->deleted_at = now();
-        $user->save();
-
-        // Logout user
-        Auth::logout();
-
-        return redirect('/')->with('success', 'Your account has been deleted successfully.');
     }
+
 
     /**
      * Download account data (GDPR compliance).
      */
     public function downloadData()
     {
-        $user = Auth::user();
+        try {
+            // Retrieve the authenticated user
+            $user = Auth::user();
 
-        $data = [
-            'personal_information' => [
-                'name' => $user->name,
-                'email' => $user->email,
-                'phone' => $user->phone,
-                'date_of_birth' => $user->date_of_birth,
-                'gender' => $user->gender,
-                'fitness_level' => $user->fitness_level,
-                'goals' => $user->goals,
-                'timezone' => $user->timezone,
-                'created_at' => $user->created_at,
-                'preferences' => $user->preferences
-            ],
-            'subscription_data' => $user->activeSubscription(),
-            'community_posts' => $user->communityPosts()->get(),
-            'community_comments' => $user->postComments()->get(),
-            'fitlive_sessions_attended' => $user->attendedFitLiveSessions()->get(),
-            'fittalk_sessions' => $user->fittalkSessions()->get()
-        ];
+            // Prepare the data to be included in the download
+            $data = [
+                'personal_information' => [
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone,
+                    'date_of_birth' => $user->date_of_birth,
+                    'gender' => $user->gender,
+                    'fitness_level' => $user->fitness_level,
+                    'goals' => $user->goals,
+                    'timezone' => $user->timezone,
+                    'created_at' => $user->created_at,
+                    'preferences' => $user->preferences
+                ],
+                'subscription_data' => $user->currentSubscription(),
+                'community_posts' => $user->communityPosts()->get(),
+                'community_comments' => $user->postComments()->get(),
+                'fitlive_sessions_attended' => $user->fitliveSessions()->get(),
+                'fittalk_sessions' => $user->fittalkClientSessions()->get()
+            ];
 
-        $filename = 'fittelly_data_' . $user->id . '_' . now()->format('Y-m-d') . '.json';
+            // Generate a file name for the download
+            $filename = 'fittelly_data_' . $user->id . '_' . now()->format('Y-m-d') . '.json';
 
-        return response()
-            ->json($data, 200, [], JSON_PRETTY_PRINT)
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+            // Return the response with the data in JSON format
+            return response()
+                ->json($data, 200, [], JSON_PRETTY_PRINT)
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        } catch (\Exception $e) {
+            // Log the exception message
+            Log::error('Error downloading user data: ' . $e->getMessage());
+
+            // Return a generic error message to the user
+            return back()->withErrors(['error' => 'An error occurred while processing your request. Please try again later.']);
+        }
     }
+
 
     /**
      * Show privacy settings.

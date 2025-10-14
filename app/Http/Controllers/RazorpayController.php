@@ -9,6 +9,10 @@ use App\Models\UserSubscription;
 use Razorpay\Api\Api;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SubscriptionConfirmedMail;
+use App\Mail\PaymentFailedMail;
+use App\Mail\SubscriptionExpiredMail;
 
 class RazorpayController extends Controller
 {
@@ -75,6 +79,7 @@ class RazorpayController extends Controller
                     'status' => 'expired',
                     'ends_at' => now()
                 ]);
+                Mail::to($user->email)->send(new SubscriptionExpiredMail($user->currentSubscription));
             }
 
             // ✅ 3. Calculate new subscription dates
@@ -109,12 +114,15 @@ class RazorpayController extends Controller
                 'subscription_data' => json_encode($request->all())
             ]);
 
+            Mail::to($user->email)->send(new SubscriptionConfirmedMail($subscription));
             return response()->json([
                 'success'   => true,
                 'message'   => 'Subscription activated!',
                 'data'      => $subscription
             ]);
         } catch (Exception $e) {
+            Mail::to($user->email)->send(new PaymentFailedMail($user, $e->getMessage()));
+
             return response()->json([
                 'success' => false,
                 'message' => 'Payment verification failed: ' . $e->getMessage()

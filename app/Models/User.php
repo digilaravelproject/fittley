@@ -12,6 +12,7 @@ use Laravel\Cashier\Billable;
 use App\Models\ReferralCode;
 use App\Models\ReferralUsage;
 use Illuminate\Support\Str;
+use App\Notifications\CustomResetPasswordNotification;
 
 class User extends Authenticatable
 {
@@ -847,5 +848,10 @@ class User extends Authenticatable
         }
 
         return false;
+    }
+    // inside User class
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new CustomResetPasswordNotification($token));
     }
 }
