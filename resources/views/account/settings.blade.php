@@ -8,12 +8,7 @@
         $user = $user ?? auth()->user();
         $prefs = $user->preferences ?? [];
     @endphp
-    <style>
-        .dark-theme {
-            background: #222;
-            color: #fff;
-        }
-    </style>
+
 
     <div class="container py-4">
         <div class="row">
@@ -51,7 +46,7 @@
 
                             <hr class="my-2">
 
-                            <a href="{{ route('account.index') }}" class="btn btn-sm btn-outline-primary w-100 mb-2">
+                            <a href="{{ route('dashboard') }}" class="btn btn-sm btn-outline-primary w-100 mb-2">
                                 <i class="fas fa-arrow-left me-2"></i>Back to Profile
                             </a>
                             <a href="{{ url('/dashboard') }}" class="btn btn-sm btn-outline-secondary w-100">
@@ -117,10 +112,10 @@
                                         <label class="form-label">Gender</label>
                                         <select name="gender" class="form-select">
                                             <option value="" {{ old('gender', $user->gender) == '' ? 'selected' : ''
-                                                        }}>Prefer not to
+                                                                }}>Prefer not to
                                                 say</option>
                                             <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : ''
-                                                        }}>Male
+                                                                }}>Male
                                             </option>
                                             <option value="female" {{ old('gender', $user->gender) == 'female' ? 'selected'
         : '' }}>Female
@@ -460,6 +455,11 @@
 
     {{-- Inline styles for small tweaks --}}
     <style>
+        .dark-theme {
+            background: #222;
+            color: #fff;
+        }
+
         .settings-section {
             animation: fadeIn .18s ease-in;
         }
@@ -479,11 +479,11 @@
         /* Make sidebar responsive: collapse into top nav on small screens */
         @media (max-width: 991.98px) {
             aside.col-lg-3 {
-                order: 2;
+                order: 1;
             }
 
             main.col-lg-9 {
-                order: 1;
+                order: 2;
             }
 
             .sticky-top {
@@ -567,6 +567,6 @@
                     showSection(picked);
                 }
             @endif
-                    })();
+                            })();
     </script>
 @endsection

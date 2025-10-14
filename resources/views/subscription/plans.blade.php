@@ -3,7 +3,7 @@
 @section('title', 'Choose Your Plan')
 
 @section('content')
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!--<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
@@ -67,8 +67,18 @@
             border-radius: 6px;
         }
 
+        .dropdown-toggle::after {
+            content: none;
+        }
+
         .text-muted {
             color: var(--text-muted) !important;
+        }
+
+        @media (max-width: 780px) {
+            .main-content {
+                padding-top: 1rem;
+            }
         }
     </style>
 

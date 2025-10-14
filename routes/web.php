@@ -20,6 +20,7 @@ use App\Http\Controllers\TwoFactorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\DashboardController;
 
 // Home route
 Route::get('/time', function () {
@@ -55,8 +56,20 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
-Route::middleware('auth')->get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // PATCH endpoints for AJAX updates (CSRF and method patch supported by Laravel)
+    Route::patch('/profile/update-stat', [DashboardController::class, 'updateStat'])
+        ->name('profile.update.stat');
+
+    Route::patch('/profile/interest/add', [DashboardController::class, 'addInterest'])
+        ->name('profile.interest.add');
+
+    Route::patch('/profile/interest/remove', [DashboardController::class, 'removeInterest'])
+        ->name('profile.interest.remove');
+});
 // User dashboard route
 // Route::middleware('auth')->get('/dashboard', function () {
 //     $user = auth()->user();

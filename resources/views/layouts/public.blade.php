@@ -757,9 +757,14 @@
             }
 
             .navbar .container .show {
-                /*height: 85vh;*/
-                padding: 2rem 1rem;
+                padding: 0.5rem 0.1rem;
                 overflow: hidden;
+                margin-top: 0 !important;
+
+            }
+
+            .dropdown-toggle::after {
+                content: none;
             }
 
             .footer {
@@ -1002,7 +1007,7 @@
                 @auth
                     @php
                         $user = auth()->user();
-                        $profilePhoto = $user->profile_photo_url ?? null;
+                        $profilePhoto = $user->avatar ?? null;
                         $initials = strtoupper(
                             substr($user->name, 0, 1) . substr($user->name, strpos($user->name, ' ') + 1, 1),
                         );
@@ -1013,7 +1018,7 @@
                         <a class="d-inline-block text-decoration-none dropdown-toggle" href="#" role="button"
                             id="mobileUserDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             @if ($profilePhoto)
-                                <img src="{{ $profilePhoto }}" alt="Profile" class="rounded-circle shadow-sm"
+                                <img src="{{ getImagePath($profilePhoto) }}" alt="Profile" class="rounded-circle shadow-sm"
                                     style="width: 40px; height: 40px; object-fit: cover;">
                             @else
                                 <div class="rounded-circle shadow-sm text-uppercase d-flex align-items-center justify-content-center"
