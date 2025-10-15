@@ -2879,24 +2879,43 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
-        // Mobile sidebar toggle
-        function toggleSidebar() {
-            document.querySelector('.sidebar').classList.toggle('show');
-        }
-
-        // Active navigation highlighting
         document.addEventListener('DOMContentLoaded', function () {
+            // Mobile sidebar toggle
+            function toggleSidebar() {
+                document.querySelector('.sidebar').classList.toggle('show');
+            }
+            window.toggleSidebar = toggleSidebar; // make it accessible in HTML onclick
+
+            // Active navigation highlighting
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.nav-link');
+            const sidebar = document.querySelector('.sidebar');
+
+            let activeLink = null;
 
             navLinks.forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('href') === currentPath) {
                     link.classList.add('active');
+                    activeLink = link;
                 }
             });
+
+            // Scroll sidebar to active link if it's not fully visible
+            if (activeLink) {
+                const sidebarTop = sidebar.scrollTop;
+                const sidebarHeight = sidebar.clientHeight;
+                const linkOffsetTop = activeLink.offsetTop;
+                const linkHeight = activeLink.offsetHeight;
+
+                if (linkOffsetTop < sidebarTop || linkOffsetTop + linkHeight > sidebarTop + sidebarHeight) {
+                    // Scroll so active link is roughly in the middle
+                    sidebar.scrollTop = linkOffsetTop - sidebarHeight / 2 + linkHeight / 2;
+                }
+            }
         });
     </script>
+
     @stack('scripts')
 </body>
 

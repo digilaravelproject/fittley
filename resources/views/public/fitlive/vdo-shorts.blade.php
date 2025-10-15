@@ -9,10 +9,10 @@
                 <div class="shorts-item">
 
                     <!-- Video -->
+
                     <video class="shorts-video" preload="metadata" playsinline webkit-playsinline autoplay loop muted
-                        defaultMuted poster="{{ asset('storage/app/public/' . $short->thumbnail_path) }}">
-                        <source src="{{ asset('storage/app/public/' . $short->video_path) }}" type="video/mp4" />
-                        <!-- Fallback text -->
+                        defaultMuted poster="{{ getImagePath($short->thumbnail_path) }}">
+                        <source src="{{ getImagePath($short->video_path) }}" type="video/mp4" />
                         Your browser does not support the video tag.
                     </video>
 
@@ -221,300 +221,134 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const wrapper = document.getElementById('shortsWrapper');
-            if (!wrapper) return;
+            let userHasUnmuted = false; // tracks if user has unmuted once
+            let currentPlaying = null;   // currently playing video
 
-            // -----------------------------
-            // 🔊 Global Mute State
-            // -----------------------------
-            let globalMute = true;
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const video = entry.target;
+                    if (entry.isIntersecting) {
+                        if (currentPlaying && currentPlaying !== video) currentPlaying.pause();
 
-            // -----------------------------
-            // ⚙️ Helper Functions
-            // -----------------------------
-            const safePlay = v => {
-                if (v && v.paused && !document.hidden) v.play().catch(() => { });
-            };
-            const safePause = v => {
-                if (v) try {
-                    v.pause();
-                } catch { }
-            };
-
-            const applyGlobalMuteToAll = () => {
-                document.querySelectorAll('.shorts-video').forEach(v => {
-                    v.muted = globalMute;
-                    v.defaultMuted = globalMute;
-                    if (globalMute) v.setAttribute('muted', '');
-                    else v.removeAttribute('muted');
-                });
-            };
-
-            // Return the video whose center is closest to viewport center
-            const findBestInView = () => {
-                const vids = [...document.querySelectorAll('.shorts-video')];
-                const centerY = window.innerHeight / 2;
-                let best = null,
-                    bestDist = Infinity;
-                vids.forEach(v => {
-                    const r = v.getBoundingClientRect();
-                    const d = Math.abs((r.top + r.height / 2) - centerY);
-                    if (d < bestDist) {
-                        bestDist = d;
-                        best = v;
-                    }
-                });
-                return best;
-            };
-
-            // -----------------------------
-            // 🧩 Setup for Each Video
-            // -----------------------------
-            function setupVideo(v) {
-                if (v.dataset.setup) return;
-                v.dataset.setup = '1';
-
-                v.muted = true;
-                v.defaultMuted = true;
-                v.setAttribute('muted', '');
-                v.setAttribute('playsinline', '');
-                v.setAttribute('webkit-playsinline', '');
-                v.playsInline = true;
-                v.preload = 'auto';
-
-                // single vs double tap
-                let clickTimeout = null;
-                const DOUBLE_DELAY = 250;
-                v.addEventListener('click', e => {
-                    e.stopPropagation();
-                    if (clickTimeout === null) {
-                        clickTimeout = setTimeout(() => {
-                            clickTimeout = null;
-                            if (v.paused) safePlay(v);
-                            else safePause(v);
-                        }, DOUBLE_DELAY);
+                        currentPlaying = video;
+                        video.currentTime = 0;
+                        video.muted = !userHasUnmuted;
+                        video.play().catch(() => { });
                     } else {
-                        clearTimeout(clickTimeout);
-                        clickTimeout = null;
-                        globalMute = !globalMute;
-                        applyGlobalMuteToAll();
+                        video.pause();
                     }
                 });
+            }, { threshold: 0.75 });
 
-                // touch support
-                v.addEventListener('touchend', e => {
-                    setTimeout(() => v.click(), 0);
-                }, {
-                    passive: true
+            // --- Setup each video ---
+            document.querySelectorAll('.shorts-video').forEach(video => {
+                video.muted = true;
+                video.defaultMuted = true;
+                video.playsInline = true;
+
+                // Unmute toggle
+                video.addEventListener('click', () => {
+                    userHasUnmuted = video.muted; // toggle
+                    video.muted = !userHasUnmuted;
+                    video.defaultMuted = !userHasUnmuted;
+                    video.play().catch(() => { });
+
+                    document.querySelectorAll('.shorts-video').forEach(v => {
+                        if (v !== video) v.muted = !userHasUnmuted;
+                    });
                 });
-            }
 
-            // -----------------------------
-            // 📝 Setup Read More
-            // -----------------------------
-            function setupReadMore(root = document) {
+                // --- Buffering / playbackRate adjustment ---
+                let bufferingCount = 0;
+                video.addEventListener('waiting', () => {
+                    bufferingCount++;
+                    if (bufferingCount > 2) video.playbackRate = 0.9;
+                });
+                video.addEventListener('playing', () => {
+                    bufferingCount = 0;
+                    video.playbackRate = 1.0;
+                });
+
+                observer.observe(video);
+            });
+
+            // --- Read More & Like/Share logic (unchanged) ---
+            function setupReadMore(root) {
                 root.querySelectorAll('.read-more-btn').forEach(btn => {
-                    if (btn.dataset.bound) return;
+                    if (btn.dataset.bound === '1') return;
                     btn.dataset.bound = '1';
-                    const desc = btn.previousElementSibling;
-                    btn.addEventListener('click', e => {
-                        e.stopPropagation();
-                        desc.classList.toggle('expanded');
-                        btn.textContent = desc.classList.contains('expanded') ? 'Read less' :
-                            'Read more';
+                    const descEl = btn.previousElementSibling;
+                    btn.addEventListener('click', function () {
+                        descEl.classList.toggle('expanded');
+                        btn.textContent = descEl.classList.contains('expanded') ? 'Read less' : 'Read more';
                     });
                 });
             }
 
-            // -----------------------------
-            // ❤️ Setup Like & Share
-            // -----------------------------
-            function setupLikeShare(root = document) {
+            function setupLikeShare(root) {
                 // Like
                 root.querySelectorAll('.like-btn').forEach(btn => {
-                    if (btn.dataset.bound) return;
+                    if (btn.dataset.bound === '1') return;
                     btn.dataset.bound = '1';
-                    btn.addEventListener('click', e => {
+                    btn.addEventListener('click', function (e) {
                         e.stopPropagation();
-                        const id = btn.dataset.id;
-                        if (!id) {
-                            console.error('Like button clicked but data-id missing:', btn);
-                            return; // stop here to avoid crash
-                        }
+                        const videoId = btn.dataset.id;
                         const countEl = btn.querySelector('.count');
-                        fetch(`/fitlive/toggle-like/${id}`, {
+                        fetch(`/fitlive/toggle-like/${videoId}`, {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Accept': 'application/json'
                             }
-                        }).then(r => r.json()).then(data => {
-                            if (data.success) {
-                                btn.classList.toggle('active', data.data.is_liked);
-                                countEl.textContent = data.data.likes_count;
-                            } else alert(data.message || 'Something went wrong!');
-                        }).catch(console.error);
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    btn.classList.toggle('active', data.data.is_liked);
+                                    countEl.textContent = data.data.likes_count;
+                                } else {
+                                    alert(data.message || 'Something went wrong!');
+                                }
+                            }).catch(err => console.error(err));
                     });
                 });
 
                 // Share
                 root.querySelectorAll('.share-btn').forEach(btn => {
-                    if (btn.dataset.bound) return;
+                    if (btn.dataset.bound === '1') return;
                     btn.dataset.bound = '1';
-                    btn.addEventListener('click', e => {
+                    btn.addEventListener('click', function (e) {
                         e.stopPropagation();
-                        const id = btn.dataset.id;
+                        const videoId = btn.dataset.id;
                         const countEl = btn.querySelector('.count');
-                        fetch(`/fitlive/share-video/${id}`, {
+                        fetch(`/fitlive/share-video/${videoId}`, {
                             method: 'POST',
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Accept': 'application/json'
                             }
-                        }).then(r => r.json()).then(data => {
-                            if (data.success) {
-                                countEl.textContent = data.data.shares_count;
-                                if (data.data.share_link && navigator.clipboard) {
+                        })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    countEl.textContent = data.data.shares_count;
                                     navigator.clipboard.writeText(data.data.share_link)
                                         .then(() => alert('Share link copied!'));
+                                } else {
+                                    alert(data.message || 'Failed to share video');
                                 }
-                            } else alert(data.message || 'Failed to share video');
-                        }).catch(console.error);
+                            }).catch(err => console.error(err));
                     });
                 });
             }
 
-            // -----------------------------
-            // 🔁 Infinite Loop Setup
-            // -----------------------------
-            function setupInfiniteLoop() {
-                let items = [...wrapper.querySelectorAll('.shorts-item')];
-                if (items.length < 2) return;
-
-                if (wrapper.dataset.looped) return;
-                wrapper.dataset.looped = '1';
-
-                const firstClone = items[0].cloneNode(true);
-                const lastClone = items[items.length - 1].cloneNode(true);
-                firstClone.dataset.clone = 'first';
-                lastClone.dataset.clone = 'last';
-
-                wrapper.insertBefore(lastClone, items[0]);
-                wrapper.appendChild(firstClone);
-
-                // initialize for clones too
-                wrapper.querySelectorAll('.shorts-video').forEach(setupVideo);
-                setupReadMore(wrapper);
-                setupLikeShare(wrapper);
-                applyGlobalMuteToAll();
-
-                const pageH = wrapper.clientHeight;
-                requestAnimationFrame(() => wrapper.scrollTo({
-                    top: pageH
-                }));
-
-                let scrollDebounce;
-                wrapper.addEventListener('scroll', () => {
-                    clearTimeout(scrollDebounce);
-                    scrollDebounce = setTimeout(() => {
-                        const page = wrapper.clientHeight;
-                        const maxIndex = wrapper.querySelectorAll('.shorts-item').length - 2;
-                        const top = wrapper.scrollTop;
-                        const index = Math.round(top / page);
-                        if (index === 0) {
-                            wrapper.scrollTo({
-                                top: page * (maxIndex),
-                                behavior: 'auto'
-                            });
-                        } else if (index === maxIndex + 1) {
-                            wrapper.scrollTo({
-                                top: page,
-                                behavior: 'auto'
-                            });
-                        }
-                    }, 120);
-                });
-            }
-
-            // -----------------------------
-            // 🎬 Scroll-Based Playback
-            // -----------------------------
-            let lastScrollY = wrapper.scrollTop;
-            let lastTime = performance.now();
-            let scrolling = false;
-            let settleTimer = null;
-            const VELOCITY_THRESHOLD = 0.3;
-            const SETTLE_DELAY = 100;
-
-            function onFrame(now) {
-                const y = wrapper.scrollTop;
-                const dt = Math.max(1, now - lastTime);
-                const dy = y - lastScrollY;
-                const vel = Math.abs(dy / dt);
-                lastScrollY = y;
-                lastTime = now;
-
-                if (vel > VELOCITY_THRESHOLD) {
-                    scrolling = true;
-                    if (settleTimer) {
-                        clearTimeout(settleTimer);
-                        settleTimer = null;
-                    }
-                } else if (scrolling && !settleTimer) {
-                    settleTimer = setTimeout(() => {
-                        scrolling = false;
-                        settleTimer = null;
-                        const best = findBestInView();
-                        if (best) {
-                            document.querySelectorAll('.shorts-video').forEach(v => v !== best && safePause(
-                                v));
-                            best.muted = globalMute;
-                            best.defaultMuted = globalMute;
-                            if (globalMute) best.setAttribute('muted', '');
-                            else best.removeAttribute('muted');
-                            safePlay(best);
-                        }
-                    }, SETTLE_DELAY);
-                }
-                requestAnimationFrame(onFrame);
-            }
-
-            // -----------------------------
-            // 🧠 Tab Visibility
-            // -----------------------------
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    document.querySelectorAll('.shorts-video').forEach(safePause);
-                } else {
-                    const best = findBestInView();
-                    if (best) {
-                        applyGlobalMuteToAll();
-                        safePlay(best);
-                        document.querySelectorAll('.shorts-video').forEach(v => v !== best && safePause(v));
-                    }
-                }
-            });
-
-            // -----------------------------
-            // 🚀 Init
-            // -----------------------------
-            wrapper.querySelectorAll('.shorts-video').forEach(setupVideo);
             setupReadMore(wrapper);
             setupLikeShare(wrapper);
-            setupInfiniteLoop();
-            applyGlobalMuteToAll();
-
-            // Play one on load
-            setTimeout(() => {
-                const best = findBestInView();
-                if (best) {
-                    best.muted = globalMute;
-                    best.defaultMuted = globalMute;
-                    safePlay(best);
-                    document.querySelectorAll('.shorts-video').forEach(v => v !== best && safePause(v));
-                }
-            }, 400);
-
-            requestAnimationFrame(onFrame);
         });
+
+
     </script>
+
+
+
 @endpush

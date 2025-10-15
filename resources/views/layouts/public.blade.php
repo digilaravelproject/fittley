@@ -1122,7 +1122,7 @@
                                 data-bs-toggle="dropdown">
                                 <i class="fas fa-user-circle me-1"></i>{{ auth()->user()->name }}
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-dark">
+                            <ul class="dropdown-menu dropdown-menu-dark" style="padding: 0 0.9rem;">
                                 <li><a class="dropdown-item" href="{{ route('dashboard') }}">
                                         <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                                     </a></li>
