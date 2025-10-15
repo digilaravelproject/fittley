@@ -80,7 +80,7 @@
         <!-- OTP Message -->
         <h2>Email Verification Code</h2>
         <p class="content">
-            Hello {{ $user->name ?? $user->email }},<br>
+            Hello,<br>
             Please use the following One-Time Password (OTP) to verify your email address:
         </p>
 
@@ -88,7 +88,7 @@
         <div class="otp-code">{{ $otp }}</div>
 
         <p class="content">
-            This OTP is valid for <strong>5 minutes</strong>. Do not share it with anyone.
+            This OTP is valid for <strong>5 minutes</strong>. Please do not share it with anyone.
         </p>
 
         <div class="footer">

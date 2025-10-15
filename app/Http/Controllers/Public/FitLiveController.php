@@ -387,7 +387,7 @@ class FitLiveController extends Controller
         $user = auth()->user();
 
         $shorts = FitFlixShorts::with(['category', 'uploader'])
-            ->latest()
+            ->orderBy('published_at', 'desc')
             ->get()
             ->map(function ($short) use ($user) {
                 // Check if current user liked this short
@@ -477,6 +477,13 @@ class FitLiveController extends Controller
     {
         $user = Auth::user();
 
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You must be logged in to like a video'
+            ], 401);
+        }
+
         // Toggle like
         $existingLike = PostLike::where('post_type', 'fit_flix_video')
             ->where('post_id', $video->id)
@@ -507,6 +514,7 @@ class FitLiveController extends Controller
             ]
         ]);
     }
+
 
     public function shareVideo($shortId)
     {
