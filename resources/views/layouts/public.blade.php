@@ -1274,12 +1274,13 @@
                                 Download our app to unlock exclusive tools and enjoy the full experience!
                             </p>
 
-                            <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
-                                <a href="#" class="btn btn-primary" style="min-width: 150px;" disabled>
+                            <div class="d-flex justify-content-center flex-wrap gap-2 mb-4 ">
+                                <a href="#" class="btn btn-primary d-none" style="min-width: 150px;" disabled>
                                     Download on App Store
                                 </a>
-                                <a href="#" class="btn btn-primary" style="min-width: 150px;" disabled>
-                                    Download on Google Play
+                                <a href="#" class="btn btn-primary app-download-btn"
+                                    style="min-width: 150px; width:100%; font-size:.9rem;">
+                                    Download the App: <span id="store-text">Google Play or App Store</span>
                                 </a>
                             </div>
 
@@ -1345,6 +1346,44 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function detectPlatform() {
+                var $link = $('.app-download-btn');   // Target the specific button
+                var $storeText = $('#store-text');
+
+                var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+                if (/android/i.test(userAgent)) {
+                    $storeText.text('Google Play');
+                    $link.attr('href', 'https://play.google.com/store');
+                    $link.css({ 'pointer-events': 'auto', 'cursor': 'pointer' });
+                }
+                else if (/iphone|ipod/i.test(userAgent)) {
+                    $storeText.text('App Store');
+                    $link.attr('href', 'https://www.apple.com/app-store');
+                    $link.css({ 'pointer-events': 'auto', 'cursor': 'pointer' });
+                }
+                else if (/macintosh|mac os x/i.test(userAgent)) {
+                    $storeText.text('App Store');
+                    $link.attr('href', 'https://www.apple.com/app-store');
+                    $link.css({ 'pointer-events': 'auto', 'cursor': 'pointer' });
+                }
+                else if (/win/i.test(userAgent)) {
+                    $storeText.text('Google Play');
+                    $link.attr('href', 'https://play.google.com/store');
+                    $link.css({ 'pointer-events': 'auto', 'cursor': 'pointer' });
+                }
+                else {
+                    $storeText.text('Google Play or App Store');
+                    $link.attr('href', '#');
+                    $link.css({ 'pointer-events': 'none', 'cursor': 'not-allowed' });
+                }
+            }
+
+            detectPlatform();
+        });
+    </script>
     <script>
         // Debounce function to limit API calls while typing
         let debounceTimeout;

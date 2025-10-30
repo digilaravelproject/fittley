@@ -31,9 +31,9 @@
                             <a href="#profile" class="nav-link py-2 active" data-section="profile">
                                 <i class="fas fa-user me-2"></i>Profile
                             </a>
-                            <a href="#preferences" class="nav-link py-2" data-section="preferences">
-                                <i class="fas fa-sliders-h me-2"></i>Preferences
-                            </a>
+                            <!--<a href="#preferences" class="nav-link py-2" data-section="preferences">-->
+                            <!--    <i class="fas fa-sliders-h me-2"></i>Preferences-->
+                            <!--</a>-->
                             <a href="#privacy" class="nav-link py-2" data-section="privacy">
                                 <i class="fas fa-user-shield me-2"></i>Privacy
                             </a>
@@ -112,10 +112,10 @@
                                         <label class="form-label">Gender</label>
                                         <select name="gender" class="form-select">
                                             <option value="" {{ old('gender', $user->gender) == '' ? 'selected' : ''
-                                                                }}>Prefer not to
+                                                                                                                                                                                                                }}>Prefer not to
                                                 say</option>
                                             <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : ''
-                                                                }}>Male
+                                                                                                                                                                                                                }}>Male
                                             </option>
                                             <option value="female" {{ old('gender', $user->gender) == 'female' ? 'selected'
         : '' }}>Female
@@ -395,19 +395,20 @@
                             </div>
 
                             {{-- 2FA Placeholder --}}
+                            {{--
                             <div class="card border-0 bg-light p-3">
                                 <h6>Two Factor Authentication (2FA)</h6>
                                 <p class="small text-muted mb-2">Manage two-factor authentication for your account.</p>
                                 @if ($user->google2fa_enabled ?? false)
-                                    <div class="mb-2"><span class="badge bg-success">Enabled</span></div>
-                                    <a href="{{ route('account.security') }}" class="btn btn-outline-danger btn-sm">Disable
-                                        2FA</a>
+                                <div class="mb-2"><span class="badge bg-success">Enabled</span></div>
+                                <a href="{{ route('account.security') }}" class="btn btn-outline-danger btn-sm">Disable
+                                    2FA</a>
                                 @else
-                                    <div class="mb-2"><span class="badge bg-secondary">Disabled</span></div>
-                                    <a href="{{ route('account.security') }}" class="btn btn-outline-primary btn-sm">Set
-                                        up 2FA</a>
+                                <div class="mb-2"><span class="badge bg-secondary">Disabled</span></div>
+                                <a href="{{ route('account.security') }}" class="btn btn-outline-primary btn-sm">Set
+                                    up 2FA</a>
                                 @endif
-                            </div>
+                            </div> --}}
                         </section>
 
 
@@ -567,6 +568,6 @@
                     showSection(picked);
                 }
             @endif
-                            })();
+                    })();
     </script>
 @endsection
