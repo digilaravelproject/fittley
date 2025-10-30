@@ -944,6 +944,21 @@
 
         }
 
+        @media (max-width: 780px) {
+            .bottom-nav-items {
+                justify-content: space-evenly;
+                background: rgb(20 20 20);
+                border: none;
+                padding: 0 0 0.9rem 0;
+                bottom: -0.3rem;
+                backdrop-filter: blur(35px);
+                position: fixed;
+                width: 100%;
+                left: 0;
+                z-index: 9999999;
+            }
+        }
+
         /* Remove dark overlay */
         /* .modal-backdrop.show {
             opacity: 0 !important;
@@ -1209,7 +1224,8 @@
                 <div class="bottom-nav-icon">
                     <img src="{{ Request::is('/')
     ? asset('storage/app/public/navigation-icon/home filled.png')
-    : asset('storage/app/public/navigation-icon/home_stroke_grey.png') }}" alt="Home Icon" class="nav-icon-img">
+    : asset('storage/app/public/navigation-icon/home_stroke_grey.png') }}" alt="Home Icon"
+                        class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">Home</span>
             </a>
@@ -1219,7 +1235,8 @@
                 <div class="bottom-nav-icon">
                     <img src="{{ Request::is('fitlive.index')
     ? asset('storage/app/public/navigation-icon/community filled.png')
-    : asset('storage/app/public/navigation-icon/community_grey.png') }}" alt="Home Icon" class="nav-icon-img">
+    : asset('storage/app/public/navigation-icon/community_grey.png') }}" alt="Home Icon"
+                        class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">Community</span>
             </a>
@@ -1230,7 +1247,8 @@
                 <div class="bottom-nav-icon">
                     <img src="{{ Request::is('fitlive/vdo')
     ? asset('storage/app/public/navigation-icon/fitflix filled.png')
-    : asset('storage/app/public/navigation-icon/fitflix_stroke_grey.png') }}" alt="Home Icon" class="nav-icon-img">
+    : asset('storage/app/public/navigation-icon/fitflix_stroke_grey.png') }}" alt="Home Icon"
+                        class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">FitFlix</span>
             </a>
@@ -1238,7 +1256,8 @@
                 <div class="bottom-nav-icon">
                     <img src="{{ Request::is('fitarena.index')
     ? asset('storage/app/public/navigation-icon/fittalk new filled.png')
-    : asset('storage/app/public/navigation-icon/FitTalk new.png') }}" alt="Home Icon" class="nav-icon-img">
+    : asset('storage/app/public/navigation-icon/FitTalk new.png') }}" alt="Home Icon"
+                        class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">FitTalk</span>
             </a>
@@ -1246,7 +1265,8 @@
                 <div class="bottom-nav-icon">
                     <img src="{{ Request::is('tools')
     ? asset('storage/app/public/navigation-icon/Tool filled.png')
-    : asset('storage/app/public/navigation-icon/Tool_grey.png') }}" alt="Home Icon" class="nav-icon-img">
+    : asset('storage/app/public/navigation-icon/Tool_grey.png') }}" alt="Home Icon"
+                        class="nav-icon-img">
                 </div>
                 <span class="bottom-nav-label">Tools</span>
             </a>
@@ -1350,7 +1370,7 @@
     <script>
         $(document).ready(function () {
             function detectPlatform() {
-                var $link = $('.app-download-btn');   // Target the specific button
+                var $link = $('.app-download-btn'); // Target the specific button
                 var $storeText = $('#store-text');
 
                 var userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -1358,27 +1378,38 @@
                 if (/android/i.test(userAgent)) {
                     $storeText.text('Google Play');
                     $link.attr('href', 'https://play.google.com/store');
-                    $link.css({ 'pointer-events': 'auto', 'cursor': 'pointer' });
-                }
-                else if (/iphone|ipod/i.test(userAgent)) {
+                    $link.css({
+                        'pointer-events': 'auto',
+                        'cursor': 'pointer'
+                    });
+                } else if (/iphone|ipod/i.test(userAgent)) {
                     $storeText.text('App Store');
                     $link.attr('href', 'https://www.apple.com/app-store');
-                    $link.css({ 'pointer-events': 'auto', 'cursor': 'pointer' });
-                }
-                else if (/macintosh|mac os x/i.test(userAgent)) {
+                    $link.css({
+                        'pointer-events': 'auto',
+                        'cursor': 'pointer'
+                    });
+                } else if (/macintosh|mac os x/i.test(userAgent)) {
                     $storeText.text('App Store');
                     $link.attr('href', 'https://www.apple.com/app-store');
-                    $link.css({ 'pointer-events': 'auto', 'cursor': 'pointer' });
-                }
-                else if (/win/i.test(userAgent)) {
+                    $link.css({
+                        'pointer-events': 'auto',
+                        'cursor': 'pointer'
+                    });
+                } else if (/win/i.test(userAgent)) {
                     $storeText.text('Google Play');
                     $link.attr('href', 'https://play.google.com/store');
-                    $link.css({ 'pointer-events': 'auto', 'cursor': 'pointer' });
-                }
-                else {
+                    $link.css({
+                        'pointer-events': 'auto',
+                        'cursor': 'pointer'
+                    });
+                } else {
                     $storeText.text('Google Play or App Store');
                     $link.attr('href', '#');
-                    $link.css({ 'pointer-events': 'none', 'cursor': 'not-allowed' });
+                    $link.css({
+                        'pointer-events': 'none',
+                        'cursor': 'not-allowed'
+                    });
                 }
             }
 

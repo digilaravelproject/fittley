@@ -126,7 +126,7 @@
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .video-container-wrapper {
-                height: calc(100vh - 145px);
+                height: calc(100vh - 12rem);
             }
 
             #chat-panel {
@@ -158,19 +158,19 @@
     <div class="video-container-wrapper position-relative" style="overflow: hidden;">
         <!-- Fullscreen Video Container -->
         <div id="video-container" class="position-absolute top-0 start-0 w-100 h-100 bg-dark">
-            @if($session->isLive() && $streamingConfig)
+            @if ($session->isLive() && $streamingConfig)
                 <div id="remote-video" class="w-100 h-100"></div>
             @else
                 <div class="w-100 h-100 d-flex align-items-center justify-content-center text-white">
                     <div class="text-center">
-                        @if($session->banner_image)
+                        @if ($session->banner_image)
                             <img src="{{ asset('storage/app/public/' . $session->banner_image) }}" alt="Session banner"
                                 class="img-fluid rounded mb-3" style="max-height: 400px;">
                         @else
                             <i class="fas fa-video fa-5x mb-3"></i>
                         @endif
                         <h4>
-                            @if($session->isScheduled())
+                            @if ($session->isScheduled())
                                 Session Scheduled
                             @elseif($session->hasEnded())
                                 Session Ended
@@ -178,7 +178,7 @@
                                 Session Not Live
                             @endif
                         </h4>
-                        @if($session->scheduled_at)
+                        @if ($session->scheduled_at)
                             <p>Scheduled for: {{ $session->scheduled_at->format('M d, Y H:i') }}</p>
                         @endif
                     </div>
@@ -187,7 +187,7 @@
 
             <!-- Top Left Overlay - Live indicator & Session Info -->
             <div class="position-absolute top-0 start-0 p-3" style="z-index: 5;">
-                @if($session->isLive())
+                @if ($session->isLive())
                     <div class="mb-2">
                         <span class="badge bg-danger fs-6">
                             <i class="fas fa-circle blink"></i> LIVE
@@ -202,11 +202,11 @@
                     </small>
                     <div class="d-flex gap-1 mb-2">
                         <span class="badge bg-info">{{ @$session->category->name }}</span>
-                        @if($session->subCategory)
+                        @if ($session->subCategory)
                             <span class="badge bg-secondary">{{ @$session->subCategory->name }}</span>
                         @endif
                     </div>
-                    @if($session->started_at)
+                    @if ($session->started_at)
                         <small class="text-muted">
                             <i class="fas fa-clock"></i> Started {{ $session->started_at->diffForHumans() }}
                         </small>
@@ -231,7 +231,7 @@
             <div class="position-absolute bottom-0 start-0 p-3" style="z-index: 5;">
                 <div class="d-flex gap-2 align-items-center">
                     <span id="connection-status" class="badge bg-info">
-                        @if($session->isLive() && $streamingConfig)
+                        @if ($session->isLive() && $streamingConfig)
                             Connecting...
                         @else
                             Not Live
@@ -256,7 +256,7 @@
         </div>
 
         <!-- Right Side Chat Panel -->
-        @if($session->chat_mode !== 'off')
+        @if ($session->chat_mode !== 'off')
             <div id="chat-panel" class="position-absolute top-0 end-0 h-100 bg-dark bg-opacity-90 text-white"
                 style="width: 350px; z-index: 15; transform: translateX(0px); transition: transform 0.3s ease;">
                 <div class="d-flex flex-column h-100">
@@ -266,7 +266,7 @@
                             <h6 class="mb-0"><i class="fas fa-comments"></i> Live Chat</h6>
                             <div class="d-flex gap-2 align-items-center">
                                 <span class="badge bg-secondary" id="chat-status">
-                                    @if($session->chat_mode === 'off')
+                                    @if ($session->chat_mode === 'off')
                                         Chat Disabled
                                     @elseif($session->chat_mode === 'during' && !$session->isLive())
                                         Chat During Live Only
@@ -316,7 +316,7 @@
         @endif
 
         <!-- Chat Toggle Button -->
-        @if($session->chat_mode !== 'off')
+        @if ($session->chat_mode !== 'off')
             <button id="toggle-chat" class="position-absolute btn btn-primary"
                 style="top: 50%; right: 10px; z-index: 99; transform: translateY(-50%);">
                 <i class="fas fa-times"></i>
@@ -324,686 +324,735 @@
         @endif
     </div>
 
-    @if($session->isLive() && $streamingConfig)
+    @if ($session->isLive() && $streamingConfig)
         <!-- Agora SDK -->
         <script src="https://download.agora.io/sdk/release/AgoraRTC_N.js"></script>
 
         <script>
-            // Agora Configuration
-            const agoraConfig = {
-                appId: '{{ $streamingConfig['app_id'] }}',
-                channel: '{{ $streamingConfig['channel'] }}',
-                token: '{{ $streamingConfig['token'] }}',
-                uid: {{ $streamingConfig['uid'] }}
-        };
+            /**
+                     * =======================================
+                     *  FitLive Agora Streaming + Chat Script
+                     * =======================================
+                     * Enhanced for reliability, readability, and better end-user experience
+                     * without altering core behavior.
+                     */
 
-            let client = null;
-            let isJoined = false;
-            let mediaEnabled = false;
+            (() => {
+                // ------------------------------
+                // Agora Configuration
+                // ------------------------------
+                const agoraConfig = {
+                    appId: '{{ $streamingConfig['app_id'] }}',
+                    channel: '{{ $streamingConfig['channel'] }}',
+                    token: '{{ $streamingConfig['token'] }}',
+                    uid: {{ $streamingConfig['uid'] }}
+                        };
 
-            // Initialize Agora
-            async function initializeAgora() {
-                try {
-                    client = AgoraRTC.createClient({ mode: "live", codec: "vp8" });
-                    client.setClientRole("audience");
+                let client = null;
+                let isJoined = false;
+                let mediaEnabled = false;
 
-                    // Handle autoplay policy - overlay removed as requested
-                    AgoraRTC.onAutoplayFailed = () => {
-                        console.log("Autoplay failed - auto-enabling media");
-                        // Auto-enable media without showing overlay
-                        mediaEnabled = true;
-                        joinStream();
-                    };
+                // ------------------------------
+                // Initialize Agora
+                // ------------------------------
+                async function initializeAgora() {
+                    try {
+                        client = AgoraRTC.createClient({
+                            mode: "live",
+                            codec: "vp8"
+                        });
+                        client.setClientRole("audience");
+                        // --- Real-time live viewers tracking ---
+                        let liveViewers = new Set();
 
-                    // Handle remote user events
-                    client.on("user-published", async (user, mediaType) => {
-                        console.log("User published:", user.uid, mediaType);
+                        // Update viewer counter in UI
+                        function updateViewerCountDisplay() {
+                            const el = document.getElementById("viewer-count");
+                            if (el) el.textContent = liveViewers.size;
+                        }
 
-                        try {
-                            await client.subscribe(user, mediaType);
+                        // Add yourself (local audience)
+                        liveViewers.add(agoraConfig.uid);
+                        updateViewerCountDisplay();
 
-                            if (mediaType === "video") {
-                                const remoteVideoTrack = user.videoTrack;
-                                // Ensure video container exists and is visible
-                                const videoContainer = document.getElementById("remote-video");
-                                if (videoContainer) {
-                                    videoContainer.style.display = "block";
-                                    videoContainer.style.width = "100%";
-                                    videoContainer.style.height = "100%";
-                                    remoteVideoTrack.play("remote-video");
-                                    updateConnectionStatus("Video Connected", "success");
-                                    console.log("Video track playing in remote-video container");
-                                } else {
-                                    console.error("remote-video container not found");
+                        // When a new remote user joins
+                        client.on("user-joined", (user) => {
+                            console.log("User joined:", user.uid);
+                            liveViewers.add(user.uid);
+                            updateViewerCountDisplay();
+                        });
+
+                        // When a remote user leaves
+                        client.on("user-left", (user) => {
+                            console.log("User left:", user.uid);
+                            liveViewers.delete(user.uid);
+                            updateViewerCountDisplay();
+                        });
+
+                        // Handle autoplay policy
+                        AgoraRTC.onAutoplayFailed = () => {
+                            console.warn("Autoplay blocked by browser; enabling media automatically.");
+                            mediaEnabled = true;
+                            joinStream();
+                        };
+
+                        // Subscribe to remote user’s media
+                        client.on("user-published", async (user, mediaType) => {
+                            console.log("User published:", user.uid, mediaType);
+                            try {
+                                await client.subscribe(user, mediaType);
+
+                                if (mediaType === "video") {
+                                    const container = document.getElementById("remote-video");
+                                    if (container) {
+                                        container.style.display = "block";
+                                        container.style.width = "100%";
+                                        container.style.height = "100%";
+                                        user.videoTrack.play("remote-video");
+                                        updateConnectionStatus("Video Connected", "success");
+                                    } else {
+                                        console.error("Video container #remote-video not found");
+                                    }
                                 }
+
+                                if (mediaType === "audio" && user.audioTrack) {
+                                    user.audioTrack.play();
+                                    console.log("Audio track playing");
+                                }
+                            } catch (error) {
+                                console.error("Subscription failed:", error);
+                                updateConnectionStatus("Subscription Failed", "danger");
+                                showNotification("Unable to subscribe to stream. Please refresh.", "error");
                             }
+                        });
 
-                            if (mediaType === "audio") {
-                                const remoteAudioTrack = user.audioTrack;
-                                // Always play audio when available
-                                remoteAudioTrack.play();
-                                console.log("Audio track playing");
+                        // Handle user-unpublished
+                        client.on("user-unpublished", (user, mediaType) => {
+                            console.log("User unpublished:", user.uid, mediaType);
+                            if (mediaType === "video") {
+                                updateConnectionStatus("Stream Ended", "secondary");
                             }
-                        } catch (error) {
-                            console.error("Failed to subscribe to user:", error);
-                            updateConnectionStatus("Subscribe Failed", "danger");
-                        }
-                    });
+                        });
 
-                    client.on("user-unpublished", (user, mediaType) => {
-                        console.log("User unpublished:", user.uid, mediaType);
-                        if (mediaType === "video") {
-                            updateConnectionStatus("Stream Ended", "secondary");
-                        }
-                    });
+                        // Connection state updates
+                        client.on("connection-state-changed", (curState) => {
+                            console.log("Connection state:", curState);
+                            updateConnectionStatus(curState, curState === "CONNECTED" ? "success" : "warning");
+                        });
 
-                    client.on("connection-state-changed", (curState, revState) => {
-                        console.log("Connection state changed:", curState);
-                        updateConnectionStatus(curState, curState === "CONNECTED" ? "success" : "warning");
-                    });
+                        updateConnectionStatus("Initialized", "info");
+                        console.log("Agora client initialized successfully.");
 
-                    console.log("Agora client initialized");
-                    updateConnectionStatus("Initialized", "info");
-
-                } catch (error) {
-                    console.error("Failed to initialize Agora:", error);
-                    updateConnectionStatus("Init Failed", "danger");
-                    showNotification("Failed to initialize stream viewer", "error");
+                    } catch (error) {
+                        console.error("Agora initialization failed:", error);
+                        updateConnectionStatus("Initialization Failed", "danger");
+                        showNotification("⚠️ Failed to initialize stream viewer. Please reload.", "error");
+                    }
                 }
-            }
 
-            // Auto-join stream immediately without waiting for user interaction
-            setTimeout(() => {
-                mediaEnabled = true;
-                joinStream();
-            }, 1000);
+                // ------------------------------
+                // Join / Leave Stream
+                // ------------------------------
+                async function joinStream() {
+                    try {
+                        if (!client) {
+                            await initializeAgora();
+                        }
 
-            // Update connection status
-            function updateConnectionStatus(status, type) {
-                const statusElement = document.getElementById("connection-status");
-                if (statusElement) {
-                    statusElement.textContent = status;
-                    statusElement.className = `badge bg-${type}`;
+                        if (isJoined) {
+                            console.log("Already connected to the stream.");
+                            return;
+                        }
+
+                        updateConnectionStatus("Connecting...", "warning");
+                        await client.join(agoraConfig.appId, agoraConfig.channel, agoraConfig.token, agoraConfig.uid);
+                        isJoined = true;
+                        updateConnectionStatus("Joined", "success");
+                        console.log("Joined stream successfully.");
+                    } catch (error) {
+                        console.error("Failed to join stream:", error);
+                        updateConnectionStatus("Join Failed", "danger");
+                        showNotification("Failed to join stream: " + error.message, "error");
+                    }
                 }
-            }
 
-            // Join stream
-            async function joinStream() {
-                try {
-                    updateConnectionStatus("Connecting...", "warning");
+                async function leaveStream() {
+                    try {
+                        if (isJoined && client) {
+                            await client.leave();
+                            isJoined = false;
+                            updateConnectionStatus("Disconnected", "secondary");
+                            console.log("Left stream successfully.");
+                        }
+                    } catch (error) {
+                        console.error("Error leaving stream:", error);
+                    }
+                }
 
-                    // Check if already joined
-                    if (isJoined) {
-                        console.log("Already joined stream");
+                // ------------------------------
+                // UI Utilities
+                // ------------------------------
+                function updateConnectionStatus(status, type = "info") {
+                    const el = document.getElementById("connection-status");
+                    if (!el) return;
+                    el.textContent = status;
+                    el.className = `badge bg-${type}`;
+                }
+
+                function showNotification(message, type = "info") {
+                    const div = document.createElement("div");
+                    div.className =
+                        `alert alert-${type === "error" ? "danger" : type} alert-dismissible fade show position-fixed shadow`;
+                    div.style.cssText = "top:20px;right:20px;z-index:9999;min-width:300px;";
+                    div.innerHTML = `
+                    <div><strong>${capitalize(type)}:</strong> ${message}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                    document.body.appendChild(div);
+                    setTimeout(() => div.remove(), 5000);
+                }
+
+                function capitalize(str) {
+                    return str.charAt(0).toUpperCase() + str.slice(1);
+                }
+
+                // ------------------------------
+                // Chat Handling
+                // ------------------------------
+                const chatState = {
+                    messages: [],
+                    isConnected: false
+                };
+
+                async function sendChatMessage() {
+                    const chatInput = document.getElementById("chat-input");
+                    const sendBtn = document.getElementById("send-chat-btn");
+                    if (!chatInput || !sendBtn) return;
+
+                    const message = chatInput.value.trim();
+                    if (!message) {
+                        showNotification("Please type a message before sending.", "warning");
                         return;
                     }
 
-                    await client.join(agoraConfig.appId, agoraConfig.channel, agoraConfig.token, agoraConfig.uid);
-                    isJoined = true;
+                    sendBtn.disabled = true;
+                    try {
+                        const response = await fetch(`/api/fitlive/{{ $session->id }}/chat`, {
+                            method: "POST",
+                            credentials: "include",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Accept": "application/json",
+                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                            },
+                            body: JSON.stringify({
+                                body: message
+                            })
+                        });
 
-                    updateConnectionStatus("Joined", "success");
-                    console.log("Joined stream successfully");
+                        const data = await response.json();
+                        if (!response.ok || !data.success) throw new Error(data.message || "Message send failed.");
 
-                } catch (error) {
-                    console.error("Failed to join stream:", error);
-                    updateConnectionStatus("Join Failed", "danger");
-                    showNotification("Failed to join stream: " + error.message, "error");
+                        chatInput.value = "";
+                        addChatMessage(data.message);
+                    } catch (error) {
+                        console.error("Chat send error:", error);
+                        showNotification("Failed to send message: " + error.message, "error");
+                    } finally {
+                        sendBtn.disabled = false;
+                        chatInput.focus();
+                    }
                 }
-            }
 
-            // Leave stream
-            async function leaveStream() {
-                try {
-                    if (isJoined) {
-                        await client.leave();
-                        isJoined = false;
+                async function loadChatMessages() {
+                    try {
+                        const response = await fetch(`/api/fitlive/{{ $session->id }}/chat/messages`, {
+                            credentials: "include",
+                            headers: {
+                                "Accept": "application/json",
+                                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                            }
+                        });
+
+                        const data = await response.json();
+                        if (!response.ok || !data.success) return;
+
+                        const newMessages = data.messages || [];
+                        if (newMessages.length !== chatState.messages.length) {
+                            chatState.messages = newMessages;
+                            renderChatMessages();
+                        }
+                    } catch (error) {
+                        console.warn("Failed to load chat messages:", error);
+                    }
+                }
+
+                function addChatMessage(messageData) {
+                    if (!messageData || chatState.messages.find(m => m.id === messageData.id)) return;
+                    chatState.messages.push(messageData);
+                    renderChatMessages();
+                }
+
+                function renderChatMessages() {
+                    const container = document.getElementById("chat-messages");
+                    if (!container) return;
+
+                    container.innerHTML = "";
+                    if (chatState.messages.length === 0) {
+                        container.innerHTML =
+                            `<div class="text-center text-muted"><p>No messages yet. Start chatting!</p></div>`;
+                        return;
                     }
 
-                    updateConnectionStatus("Disconnected", "secondary");
-                    console.log("Left stream");
+                    chatState.messages.forEach(msg => {
+                        const div = document.createElement("div");
+                        div.className = `chat-message mb-2 ${msg.is_instructor ? "instructor-message" : ""}`;
+                        const userName = msg.user?.name || "Anonymous";
+                        const prefix = msg.is_instructor ? "👨‍🏫 " : "";
+                        const time = msg.sent_at ? new Date(msg.sent_at).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit"
+                        }) : "";
+                        div.innerHTML = `
+                        <div class="d-flex justify-content-between">
+                            <strong class="text-primary">${prefix}${userName}</strong>
+                            <small class="text-muted">${time}</small>
+                        </div>
+                        <div class="message-body mt-1">${escapeHtml(msg.body)}</div>
+                    `;
+                        container.appendChild(div);
+                    });
+
+                    container.scrollTop = container.scrollHeight;
+                }
+
+                function escapeHtml(str) {
+                    return str.replace(/[&<>"']/g, m => ({
+                        "&": "&amp;",
+                        "<": "&lt;",
+                        ">": "&gt;",
+                        '"': "&quot;",
+                        "'": "&#039;"
+                    })[m]);
+                }
+
+                function initializeChat() {
+                    const loader = document.getElementById("chat-loading");
+                    const messages = document.getElementById("chat-messages");
+                    if (loader) loader.style.display = "none";
+                    if (messages) {
+                        messages.innerHTML = `
+                        <div class="text-center text-muted mb-3">
+                            <i class="fas fa-comments fa-2x mb-2"></i>
+                            <p>Welcome to the live chat!</p>
+                            <small>Chat with other viewers during the session.</small>
+                        </div>
+                    `;
+                    }
+
+                    const chatInput = document.getElementById("chat-input");
+                    const sendBtn = document.getElementById("send-chat-btn");
+                    if (chatInput && sendBtn) {
+                        sendBtn.addEventListener("click", sendChatMessage);
+                        chatInput.addEventListener("keypress", e => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                                e.preventDefault();
+                                sendChatMessage();
+                            }
+                        });
+
+                        loadChatMessages();
+                        setInterval(loadChatMessages, 3000);
+                    }
+                }
+
+                // ------------------------------
+                // UI Controls
+                // ------------------------------
+                function toggleChat() {
+                    const chatPanel = document.getElementById("chat-panel");
+                    const toggleBtn = document.getElementById("toggle-chat");
+                    if (!chatPanel || !toggleBtn) return;
+
+                    const isVisible = chatPanel.style.transform === "translateX(0px)" || !chatPanel.style.transform;
+                    chatPanel.style.transform = isVisible ? "translateX(100%)" : "translateX(0px)";
+                    toggleBtn.innerHTML = isVisible ? '<i class="fas fa-comments"></i>' : '<i class="fas fa-times"></i>';
+                }
+
+                function closeChat() {
+                    const chatPanel = document.getElementById("chat-panel");
+                    const toggleBtn = document.getElementById("toggle-chat");
+                    if (chatPanel) {
+                        chatPanel.style.transform = "translateX(100%)";
+                        if (toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-comments"></i>';
+                    }
+                }
+
+                function toggleFullscreen() {
+                    const btn = document.getElementById("toggle-fullscreen");
+                    const icon = btn?.querySelector("i");
+                    if (!document.fullscreenElement) {
+                        document.documentElement.requestFullscreen()
+                            .then(() => icon && (icon.className = "fas fa-compress"))
+                            .catch(() => showNotification("Failed to enter fullscreen mode.", "error"));
+                    } else {
+                        document.exitFullscreen()
+                            .then(() => icon && (icon.className = "fas fa-expand"))
+                            .catch(() => showNotification("Failed to exit fullscreen mode.", "error"));
+                    }
+                }
+
+                function shareStream() {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: '{{ $session->title }}',
+                            text: 'Watch this live FitLive session!',
+                            url: window.location.href
+                        }).catch(() => showNotification("Unable to share the session link.", "warning"));
+                    } else {
+                        navigator.clipboard.writeText(window.location.href)
+                            .then(() => showNotification("📋 Stream link copied to clipboard!", "success"))
+                            .catch(() => showNotification("Failed to copy link.", "error"));
+                    }
+                }
+
+                // ------------------------------
+                // Init on DOM Ready
+                // ------------------------------
+                document.addEventListener("DOMContentLoaded", () => {
+                    initializeAgora();
+                    initializeChat();
+
+                    document.getElementById("toggle-chat")?.addEventListener("click", toggleChat);
+                    document.getElementById("close-chat")?.addEventListener("click", closeChat);
+                    document.getElementById("toggle-fullscreen")?.addEventListener("click", toggleFullscreen);
+
+                    // Auto-join after short delay
+                    setTimeout(() => {
+                        mediaEnabled = true;
+                        joinStream();
+                    }, 1000);
+                });
+
+                // Leave stream before unloading
+                window.addEventListener("beforeunload", () => {
+                    if (isJoined) leaveStream();
+                });
+            })();
+        </script>
+    @endif
+
+    @if (!$session->isLive() || !$streamingConfig)
+        <!-- Enhanced Non-live Session JavaScript -->
+        <script>
+            /**
+                     * ============================
+                     *   FitLive Non-Live Chat JS
+                     * ============================
+                     * Handles message sending, polling, rendering, and UI interactions
+                     * for non-live chat sessions with improved readability and UX.
+                     */
+
+            // Global chat state
+            const chatState = {
+                messages: [],
+                isConnected: false
+            };
+
+            /**
+             * Send a chat message to the server
+             */
+            async function sendChatMessage() {
+                const chatInput = document.getElementById('chat-input');
+                const sendBtn = document.getElementById('send-chat-btn');
+
+                if (!chatInput || !sendBtn) return;
+
+                const message = chatInput.value.trim();
+                if (!message) {
+                    showNotification('Please enter a message before sending.', 'warning');
+                    return;
+                }
+
+                sendBtn.disabled = true;
+
+                try {
+                    const response = await fetch(`/api/fitlive/{{ $session->id }}/chat`, {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content')
+                        },
+                        body: JSON.stringify({
+                            body: message
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Unable to send message. Please try again.');
+                    }
+
+                    if (data.success) {
+                        chatInput.value = '';
+                        addChatMessage(data.message);
+                    } else {
+                        showNotification(data.message || 'Failed to send message. Please try again later.', 'error');
+                    }
 
                 } catch (error) {
-                    console.error("Failed to leave stream:", error);
+                    console.error('Error sending chat message:', error);
+                    showNotification('⚠️ Unable to send message. Please check your connection and try again.', 'error');
+                } finally {
+                    sendBtn.disabled = false;
+                    chatInput.focus();
                 }
             }
 
-            // Show notification
+            /**
+             * Load chat messages periodically
+             */
+            async function loadChatMessages() {
+                try {
+                    const response = await fetch(`/api/fitlive/{{ $session->id }}/chat/messages`, {
+                        credentials: 'include',
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content')
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error('Failed to load chat messages from the server.');
+                    }
+
+                    if (data.success) {
+                        const newMessages = data.messages || [];
+
+                        // Only re-render if messages have changed
+                        if (newMessages.length !== chatState.messages.length) {
+                            chatState.messages = newMessages;
+                            renderChatMessages();
+                        }
+                    }
+
+                } catch (error) {
+                    console.warn('Failed to load chat messages:', error);
+                }
+            }
+
+            /**
+             * Add a single new chat message to the state and UI
+             */
+            function addChatMessage(messageData) {
+                if (!messageData || chatState.messages.find(m => m.id === messageData.id)) return;
+
+                chatState.messages.push(messageData);
+                renderChatMessages();
+            }
+
+            /**
+             * Render all chat messages in the chat container
+             */
+            function renderChatMessages() {
+                const container = document.getElementById('chat-messages');
+                if (!container) return;
+
+                container.innerHTML = '';
+
+                if (chatState.messages.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center text-muted">
+                            <p>No messages yet. Start the conversation!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                chatState.messages.forEach(message => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `chat-message mb-2 ${message.is_instructor ? 'instructor-message' : ''}`;
+
+                    const userName = message.user ? message.user.name : 'Anonymous';
+                    const userType = message.is_instructor ? '👨‍🏫 ' : '';
+                    const time = message.sent_at ? new Date(message.sent_at).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }) : '';
+
+                    messageDiv.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong class="text-primary">${userType}${userName}</strong>
+                            <small class="text-muted">${time}</small>
+                        </div>
+                        <div class="message-body mt-1">${escapeHtml(message.body)}</div>
+                    `;
+
+                    container.appendChild(messageDiv);
+                });
+
+                container.scrollTop = container.scrollHeight;
+            }
+
+            /**
+             * Escape HTML to prevent XSS
+             */
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            /**
+             * Initialize chat UI and event listeners
+             */
+            function initializeChat() {
+                const chatLoading = document.getElementById("chat-loading");
+                const chatMessages = document.getElementById("chat-messages");
+                const chatInput = document.getElementById('chat-input');
+                const sendBtn = document.getElementById('send-chat-btn');
+
+                if (chatLoading) chatLoading.style.display = "none";
+
+                if (chatMessages) {
+                    chatMessages.innerHTML = `
+                        <div class="text-center text-muted mb-3">
+                            <i class="fas fa-comments fa-2x mb-2"></i>
+                            <p>Welcome to the chat!</p>
+                            <small>Chat with other viewers and share your thoughts.</small>
+                        </div>
+                    `;
+                }
+
+                if (chatInput && sendBtn) {
+                    sendBtn.addEventListener('click', sendChatMessage);
+                    chatInput.addEventListener('keypress', e => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            sendChatMessage();
+                        }
+                    });
+
+                    // Initial load + polling
+                    loadChatMessages();
+                    setInterval(loadChatMessages, 3000);
+                }
+            }
+
+            /**
+             * Show user-friendly notifications
+             */
             function showNotification(message, type = 'info') {
                 const notification = document.createElement('div');
-                notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
-                notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+                notification.className =
+                    `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed shadow`;
+                notification.style.cssText = `
+                    top: 20px;
+                    right: 20px;
+                    z-index: 9999;
+                    min-width: 320px;
+                `;
                 notification.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
+                    <div><strong>${capitalize(type)}:</strong> ${message}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
 
                 document.body.appendChild(notification);
 
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 5000);
+                setTimeout(() => notification.remove(), 5000);
             }
 
-            // Share stream function
-            function shareStream() {
-                if (navigator.share) {
-                    navigator.share({
-                        title: '{{ $session->title }}',
-                        text: 'Watch this live FitLive session!',
-                        url: window.location.href
-                    });
-                } else {
-                    // Fallback: copy to clipboard
-                    navigator.clipboard.writeText(window.location.href).then(() => {
-                        showNotification("Stream link copied to clipboard!", "success");
-                    });
-                }
+            /**
+             * Capitalize first letter of string
+             */
+            function capitalize(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
             }
 
-            // Chat toggle function
+            /**
+             * Toggle chat panel visibility
+             */
             function toggleChat() {
                 const chatPanel = document.getElementById("chat-panel");
                 const toggleBtn = document.getElementById("toggle-chat");
 
-                if (chatPanel) {
-                    if (chatPanel.style.transform === "translateX(0px)" || chatPanel.style.transform === "") {
-                        // Hide chat
-                        chatPanel.style.transform = "translateX(100%)";
-                        toggleBtn.innerHTML = '<i class="fas fa-comments"></i>';
-                    } else {
-                        // Show chat
-                        chatPanel.style.transform = "translateX(0px)";
-                        toggleBtn.innerHTML = '<i class="fas fa-times"></i>';
-                    }
-                }
+                if (!chatPanel || !toggleBtn) return;
+
+                const isVisible = chatPanel.style.transform === "translateX(0px)" || chatPanel.style.transform === "";
+                chatPanel.style.transform = isVisible ? "translateX(100%)" : "translateX(0px)";
+                toggleBtn.innerHTML = isVisible ? '<i class="fas fa-comments"></i>' : '<i class="fas fa-times"></i>';
             }
 
-            // Close chat function
+            /**
+             * Close chat panel
+             */
             function closeChat() {
                 const chatPanel = document.getElementById("chat-panel");
                 const toggleBtn = document.getElementById("toggle-chat");
 
                 if (chatPanel) {
                     chatPanel.style.transform = "translateX(100%)";
-                    toggleBtn.innerHTML = '<i class="fas fa-comments"></i>';
+                    if (toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-comments"></i>';
                 }
             }
 
-            // Toggle fullscreen function
-            function toggleFullscreen() {
-                const toggleBtn = document.getElementById("toggle-fullscreen");
-                const icon = toggleBtn.querySelector("i");
-
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().then(() => {
-                        icon.className = "fas fa-compress";
-                    });
-                } else {
-                    document.exitFullscreen().then(() => {
-                        icon.className = "fas fa-expand";
-                    });
-                }
-            }
-
-            // Chat state
-            const chatState = {
-                messages: [],
-                isConnected: false
-            };
-
-            // Initialize chat
-            function initializeChat() {
-                // Hide loading indicator and show a welcome message
-                const chatLoading = document.getElementById("chat-loading");
-                const chatMessages = document.getElementById("chat-messages");
-
-                if (chatLoading) {
-                    chatLoading.style.display = "none";
-                }
-
-                if (chatMessages) {
-                    chatMessages.innerHTML = `
-                    <div class="text-center text-muted mb-3">
-                        <i class="fas fa-comments fa-2x mb-2"></i>
-                        <p>Welcome to the live chat!</p>
-                        <small>Chat with other viewers during the session.</small>
-                    </div>
-                `;
-                }
-
-                // Initialize chat input listeners
-                const chatInput = document.getElementById('chat-input');
-                const sendBtn = document.getElementById('send-chat-btn');
-
-                if (chatInput && sendBtn) {
-                    sendBtn.addEventListener('click', sendChatMessage);
-                    chatInput.addEventListener('keypress', function (e) {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            sendChatMessage();
-                        }
-                    });
-
-                    // Load existing messages
-                    loadChatMessages();
-
-                    // Start polling for new messages
-                    setInterval(loadChatMessages, 3000);
-                }
-            }
-
-            // Send chat message
-            async function sendChatMessage() {
-                const chatInput = document.getElementById('chat-input');
-                const sendBtn = document.getElementById('send-chat-btn');
-
-                if (!chatInput || !sendBtn) return;
-
-                const message = chatInput.value.trim();
-                if (!message) return;
-
-                try {
-                    const response = await fetch(`/api/fitlive/{{ $session->id }}/chat`, {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            body: message
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        chatInput.value = '';
-                        addChatMessage(data.message);
-                    } else {
-                        throw new Error(data.message || 'Failed to send message');
-                    }
-
-                } catch (error) {
-                    showNotification('Failed to send message: ' + error.message, 'error');
-                } finally {
-                    chatInput.focus();
-                }
-            }
-
-            // Load chat messages
-            async function loadChatMessages() {
-                try {
-                    const response = await fetch(`/api/fitlive/{{ $session->id }}/chat/messages`, {
-                        credentials: 'include',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        }
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        const newMessages = data.messages || [];
-
-                        if (newMessages.length !== chatState.messages.length) {
-                            chatState.messages = newMessages;
-                            renderChatMessages();
-                        }
-                    }
-
-                } catch (error) {
-                    console.error('Failed to load chat messages:', error);
-                }
-            }
-
-            // Add new chat message
-            function addChatMessage(messageData) {
-                const exists = chatState.messages.find(m => m.id === messageData.id);
-                if (exists) return;
-
-                chatState.messages.push(messageData);
-                renderChatMessages();
-            }
-
-            // Render chat messages
-            function renderChatMessages() {
-                const container = document.getElementById('chat-messages');
-                if (!container) return;
-
-                container.innerHTML = '';
-
-                chatState.messages.forEach(message => {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = `chat-message mb-2 ${message.is_instructor ? 'instructor-message' : ''}`;
-
-                    const userName = message.user ? message.user.name : 'Anonymous';
-                    const userType = message.is_instructor ? '👨‍🏫 ' : '';
-
-                    messageDiv.innerHTML = `
-                    <div class="d-flex justify-content-between">
-                        <strong class="text-primary">${userType}${userName}</strong>
-                        <small class="text-muted">${new Date(message.sent_at).toLocaleTimeString()}</small>
-                    </div>
-                    <div class="message-body">${message.body}</div>
-                `;
-
-                    container.appendChild(messageDiv);
-                });
-
-                // Scroll to bottom
-                container.scrollTop = container.scrollHeight;
-            }
-
-            // Event listeners
-            document.addEventListener('DOMContentLoaded', function () {
-                // Initialize Agora
-                initializeAgora();
-
-                // Initialize chat (since it's expanded by default)
-                initializeChat();
-
-                // Removed: Enable media button (overlay removed as requested)
-                // document.getElementById("enable-media-btn")?.addEventListener('click', enableMedia);
-
-                // Chat toggle
-                document.getElementById("toggle-chat")?.addEventListener('click', toggleChat);
-
-                // Close chat
-                document.getElementById("close-chat")?.addEventListener('click', closeChat);
-
-                // Fullscreen toggle
-                document.getElementById("toggle-fullscreen")?.addEventListener('click', toggleFullscreen);
-
-                // Auto-join stream immediately (overlay removed)
-                setTimeout(() => {
-                    mediaEnabled = true;
-                    joinStream();
-                }, 1000);
-            });
-
-            // Handle page unload
-            window.addEventListener('beforeunload', function () {
-                if (isJoined) {
-                    leaveStream();
-                }
-            });
-        </script>
-    @endif
-
-    @if(!$session->isLive() || !$streamingConfig)
-        <!-- Non-live session JavaScript -->
-        <script>
-            // Chat state
-            const chatState = {
-                messages: [],
-                isConnected: false
-            };
-
-            // Send chat message
-            async function sendChatMessage() {
-                const chatInput = document.getElementById('chat-input');
-                const sendBtn = document.getElementById('send-chat-btn');
-
-                if (!chatInput || !sendBtn) return;
-
-                const message = chatInput.value.trim();
-                if (!message) return;
-
-                try {
-                    const response = await fetch(`/api/fitlive/{{ $session->id }}/chat`, {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        body: JSON.stringify({
-                            body: message
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        chatInput.value = '';
-                        addChatMessage(data.message);
-                    } else {
-                        throw new Error(data.message || 'Failed to send message');
-                    }
-
-                } catch (error) {
-                    showNotification('Failed to send message: ' + error.message, 'error');
-                } finally {
-                    chatInput.focus();
-                }
-            }
-
-            // Load chat messages
-            async function loadChatMessages() {
-                try {
-                    const response = await fetch(`/api/fitlive/{{ $session->id }}/chat/messages`, {
-                        credentials: 'include',
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        }
-                    });
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        const newMessages = data.messages || [];
-
-                        if (newMessages.length !== chatState.messages.length) {
-                            chatState.messages = newMessages;
-                            renderChatMessages();
-                        }
-                    }
-
-                } catch (error) {
-                    console.error('Failed to load chat messages:', error);
-                }
-            }
-
-            // Add new chat message
-            function addChatMessage(messageData) {
-                const exists = chatState.messages.find(m => m.id === messageData.id);
-                if (exists) return;
-
-                chatState.messages.push(messageData);
-                renderChatMessages();
-            }
-
-            // Render chat messages
-            function renderChatMessages() {
-                const container = document.getElementById('chat-messages');
-                if (!container) return;
-
-                container.innerHTML = '';
-
-                chatState.messages.forEach(message => {
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = `chat-message mb-2 ${message.is_instructor ? 'instructor-message' : ''}`;
-
-                    const userName = message.user ? message.user.name : 'Anonymous';
-                    const userType = message.is_instructor ? '👨‍🏫 ' : '';
-
-                    messageDiv.innerHTML = `
-                    <div class="d-flex justify-content-between">
-                        <strong class="text-primary">${userType}${userName}</strong>
-                        <small class="text-muted">${new Date(message.sent_at).toLocaleTimeString()}</small>
-                    </div>
-                    <div class="message-body">${message.body}</div>
-                `;
-
-                    container.appendChild(messageDiv);
-                });
-
-                // Scroll to bottom
-                container.scrollTop = container.scrollHeight;
-            }
-
-            // Enhanced initializeChat for non-live sessions
-            function initializeChat() {
-                const chatLoading = document.getElementById("chat-loading");
-                const chatMessages = document.getElementById("chat-messages");
-
-                if (chatLoading) {
-                    chatLoading.style.display = "none";
-                }
-
-                if (chatMessages) {
-                    chatMessages.innerHTML = `
-                    <div class="text-center text-muted mb-3">
-                        <i class="fas fa-comments fa-2x mb-2"></i>
-                        <p>Welcome to the chat!</p>
-                        <small>Chat with other viewers.</small>
-                    </div>
-                `;
-                }
-
-                // Initialize chat input listeners
-                const chatInput = document.getElementById('chat-input');
-                const sendBtn = document.getElementById('send-chat-btn');
-
-                if (chatInput && sendBtn) {
-                    sendBtn.addEventListener('click', sendChatMessage);
-                    chatInput.addEventListener('keypress', function (e) {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            sendChatMessage();
-                        }
-                    });
-
-                    // Load existing messages
-                    loadChatMessages();
-
-                    // Start polling for new messages
-                    setInterval(loadChatMessages, 3000);
-                }
-            }
-
-            // Event listeners for non-live sessions
-            document.addEventListener('DOMContentLoaded', function () {
-                // Initialize chat (since it's expanded by default)
-                initializeChat();
-
-                // Chat toggle
-                document.getElementById("toggle-chat")?.addEventListener('click', toggleChat);
-
-                // Close chat
-                document.getElementById("close-chat")?.addEventListener('click', closeChat);
-
-                // Fullscreen toggle
-                document.getElementById("toggle-fullscreen")?.addEventListener('click', toggleFullscreen);
-            });
-
-            // Share stream function
+            /**
+             * Share current session link
+             */
             function shareStream() {
                 if (navigator.share) {
                     navigator.share({
                         title: '{{ $session->title }}',
                         text: 'Check out this FitLive session!',
                         url: window.location.href
+                    }).catch(() => {
+                        showNotification('Unable to share at the moment. Please try again.', 'warning');
                     });
                 } else {
-                    // Fallback: copy to clipboard
-                    navigator.clipboard.writeText(window.location.href).then(() => {
-                        showNotification("Session link copied to clipboard!", "success");
-                    });
+                    navigator.clipboard.writeText(window.location.href)
+                        .then(() => showNotification('📋 Session link copied to clipboard!', 'success'))
+                        .catch(() => showNotification('Failed to copy link to clipboard.', 'error'));
                 }
             }
 
-            // Show notification
-            function showNotification(message, type = 'info') {
-                const notification = document.createElement('div');
-                notification.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
-                notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-                notification.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
-
-                document.body.appendChild(notification);
-
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 5000);
-            }
-
-            // Chat toggle function
-            function toggleChat() {
-                const chatPanel = document.getElementById("chat-panel");
-                const toggleBtn = document.getElementById("toggle-chat");
-
-                if (chatPanel) {
-                    if (chatPanel.style.transform === "translateX(0px)" || chatPanel.style.transform === "") {
-                        // Hide chat
-                        chatPanel.style.transform = "translateX(100%)";
-                        toggleBtn.innerHTML = '<i class="fas fa-comments"></i>';
-                    } else {
-                        // Show chat
-                        chatPanel.style.transform = "translateX(0px)";
-                        toggleBtn.innerHTML = '<i class="fas fa-times"></i>';
-                    }
-                }
-            }
-
-            // Close chat function
-            function closeChat() {
-                const chatPanel = document.getElementById("chat-panel");
-                const toggleBtn = document.getElementById("toggle-chat");
-
-                if (chatPanel) {
-                    chatPanel.style.transform = "translateX(100%)";
-                    toggleBtn.innerHTML = '<i class="fas fa-comments"></i>';
-                }
-            }
-
-            // Initialize chat
-            function initializeChat() {
-                // Hide loading indicator and show a welcome message
-                const chatLoading = document.getElementById("chat-loading");
-                const chatMessages = document.getElementById("chat-messages");
-
-                if (chatLoading) {
-                    chatLoading.style.display = "none";
-                }
-
-                if (chatMessages) {
-                    chatMessages.innerHTML = `
-                    <div class="text-center text-muted mb-3">
-                        <i class="fas fa-comments fa-2x mb-2"></i>
-                        <p>Welcome to the chat!</p>
-                        <small>Chat will be available when the session is live.</small>
-                    </div>
-                `;
-                }
-            }
-
-            // Toggle fullscreen function
+            /**
+             * Toggle fullscreen mode
+             */
             function toggleFullscreen() {
                 const toggleBtn = document.getElementById("toggle-fullscreen");
-                const icon = toggleBtn.querySelector("i");
+                const icon = toggleBtn?.querySelector("i");
 
                 if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen().then(() => {
-                        icon.className = "fas fa-compress";
-                    });
+                    document.documentElement.requestFullscreen()
+                        .then(() => icon && (icon.className = "fas fa-compress"))
+                        .catch(() => showNotification('Unable to enter fullscreen mode.', 'error'));
                 } else {
-                    document.exitFullscreen().then(() => {
-                        icon.className = "fas fa-expand";
-                    });
+                    document.exitFullscreen()
+                        .then(() => icon && (icon.className = "fas fa-expand"))
+                        .catch(() => showNotification('Unable to exit fullscreen mode.', 'error'));
                 }
             }
+
+            /**
+             * Initialize when DOM is ready
+             */
+            document.addEventListener('DOMContentLoaded', () => {
+                initializeChat();
+
+                document.getElementById("toggle-chat")?.addEventListener('click', toggleChat);
+                document.getElementById("close-chat")?.addEventListener('click', closeChat);
+                document.getElementById("toggle-fullscreen")?.addEventListener('click', toggleFullscreen);
+            });
         </script>
     @endif
 

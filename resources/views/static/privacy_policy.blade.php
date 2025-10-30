@@ -1,135 +1,186 @@
-@extends('layouts.static_header')
+@extends('layouts.public')
 
 @section('title', 'Privacy Policy')
 
 @section('content')
-<div class="page-header text-center py-5 mt-4" style="background-color: #1a1a1a; color: white;">
-    <h2 class="mb-3">Privacy Policy</h2>
-    <div>
-        <a href="{{ url('/') }}" style="color: white; text-decoration: none;">
-            <i class="fa fa-home"></i> Home
-        </a>
-        <span style="color: orange;"> > Privacy Policy</span>
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #141E30, #243B55);
+            color: white;
+            text-align: center;
+            padding: 100px 20px 80px;
+        }
+
+        .page-header h2 {
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+
+        .breadcrumb-custom a {
+            color: #f0f0f0;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .breadcrumb-custom a:hover {
+            color: orange;
+        }
+
+        .section-card {
+            background-color: var(--dark-color);
+            color: #ddd;
+            padding: 50px 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+            transition: transform 0.3s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .section-card h5 {
+            color: orange;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .section-card p,
+        .section-card li {
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .section-card ul {
+            padding-left: 20px;
+        }
+
+        body {
+            background-color: #0b0b14;
+        }
+    </style>
+
+    <div class="page-header">
+        <h2>Privacy Policy</h2>
+        <div class="breadcrumb-custom mt-3">
+            <a href="{{ url('/') }}"><i class="fa fa-home"></i> Home</a>
+            <span style="color: orange;"> > Privacy Policy</span>
+        </div>
     </div>
-</div>
 
-<div class="container py-5" style="background-color: #000; color: white;">
+    <div class="container py-5">
+        {{-- Copyright & Legal Notices --}}
+        <div class="section-card">
+            <h5>1. Copyright Notice</h5>
+            <p>© 2024. Fittelly Private Limited. All rights reserved.</p>
+            <p>The content, features, and functionality on the Fittelly platform, including user-generated content, are the
+                exclusive property of Fittelly Private Limited or its licensors and protected by IP laws. Unauthorized use
+                is prohibited.</p>
+            <p>Contact: <a href="mailto:fittelly24@gmail.com" style="color: orange;">fittelly24@gmail.com</a></p>
+        </div>
 
-    {{-- Privacy Policy --}}
-    <h3 class="mb-4">Privacy Policy</h3>
-    <h5>1. Copyright Notice</h5>
-    <p>© 2024. Fittelly Private Limited. All rights reserved.</p>
-    <p>The content, features, and functionality on the Fittelly platform, including but not limited to text, graphics, logos, images, audio clips, video clips, user-generated content, and community interactions, are the exclusive property of Fittelly Private Limited or its licensors and are protected by copyright, trademark, and other intellectual property laws. Unauthorized use of any content or materials from this platform, including community-generated content, is prohibited.</p>
-    <p>For permission requests or inquiries, please contact us at <a href="mailto:fittelly24@gmail.com" style="color: orange;">fittelly24@gmail.com</a>.</p>
+        <div class="section-card">
+            <h5>2. Trademark Notice</h5>
+            <p>Trademarks and logos on Fittelly are owned by Fittelly Private Limited or third parties. No rights to use
+                them are granted without permission.</p>
+        </div>
 
-    <h5 class="mt-5">2. Trademark Notice</h5>
-    <p>The trademarks, service marks, and logos used and displayed on the Fittelly platform are registered and unregistered trademarks of Fittelly Private Limited. Other company, product, and service names may be trademarks or service marks of their respective owners.</p>
+        <div class="section-card">
+            <h5>3. Disclaimer & Limitation of Liability</h5>
+            <p>All information is for general purposes only. Fittelly Private Limited shall not be liable for any damages
+                arising from platform use.</p>
+        </div>
 
-    <h5 class="mt-5">3. Disclaimer Notice</h5>
-    <p>The information, content, and user-generated content provided on the Fittelly platform are for general informational purposes only. We make no warranties or representations of any kind, express or implied, regarding the accuracy, reliability, or completeness of the information.</p>
+        <div class="section-card">
+            <h5>4. Indemnification</h5>
+            <p>You agree to indemnify Fittelly Private Limited and affiliates for any claims arising from your platform use.
+            </p>
+        </div>
 
-    <h5 class="mt-5">4. Limitation of Liability Notice</h5>
-    <p>To the fullest extent permitted by applicable law, Fittelly Private Limited and its affiliates shall not be liable for any damages arising out of or in connection with your use of the Fittelly platform.</p>
+        <div class="section-card">
+            <h5>5. Governing Law & Jurisdiction</h5>
+            <p>All disputes shall be governed by Indian law, with courts in Mumbai having exclusive jurisdiction.</p>
+        </div>
 
-    <h5 class="mt-5">5. Indemnification Notice</h5>
-    <p>You agree to indemnify and hold harmless Fittelly Private Limited and its affiliates from any claims arising out of your use of the Fittelly platform.</p>
+        {{-- Cookie Preferences --}}
+        <div class="section-card">
+            <h5>Cookie Preferences</h5>
+            <p>We use cookies and similar technologies to enhance your experience, analyze usage, and support community
+                interactions.</p>
+        </div>
 
-    <h5 class="mt-5">6. Governing Law and Jurisdiction Notice</h5>
-    <p>This notice and any related disputes shall be governed by the laws of India. Any legal action must be brought in the courts located in Mumbai, Maharashtra.</p>
+        <div class="section-card">
+            <h5>Types of Cookies</h5>
+            <ul>
+                <li><strong>Essential:</strong> Required for operation.</li>
+                <li><strong>Performance:</strong> Track usage and fix issues.</li>
+                <li><strong>Functional:</strong> Remember preferences and login info.</li>
+                <li><strong>Targeting:</strong> Deliver ads and measure campaigns.</li>
+            </ul>
+        </div>
 
-    {{-- COOKIE PREFERENCES --}}
-    <h3 class="mt-5 mb-4">Cookie Preferences</h3>
+        <div class="section-card">
+            <h5>Managing Cookies</h5>
+            <p>Manage preferences via your browser. Disabling may impact experience.</p>
+            <p>Third-party cookies may be used for analytics and advertising.</p>
+        </div>
 
-    <h5>1. Introduction</h5>
-    <p>We use cookies and similar tracking technologies to enhance your experience, analyze usage, and support interactions within our community features.</p>
+        {{-- Privacy Policy Details --}}
+        <div class="section-card">
+            <h5>Privacy Policy – Last Updated: July 2025</h5>
+            <p>Fittelly Private Limited values your privacy and is committed to protecting your personal data.</p>
+        </div>
 
-    <h5 class="mt-4">2. What Are Cookies?</h5>
-    <p>Cookies are small text files placed on your device. They help remember preferences and improve performance.</p>
+        <div class="section-card">
+            <h5>Information We Collect</h5>
+            <ul>
+                <li>Personal Info: Name, email, phone, payments.</li>
+                <li>Usage Data: IP, device info, pages visited, interactions.</li>
+                <li>Community Content: Photos, comments, public posts.</li>
+                <li>Cookies: For tracking and personalization.</li>
+            </ul>
+        </div>
 
-    <h5 class="mt-4">3. Types of Cookies We Use</h5>
-    <ul>
-        <li><strong>Essential:</strong> Required for platform operation.</li>
-        <li><strong>Performance:</strong> Track usage and fix issues.</li>
-        <li><strong>Functional:</strong> Remember preferences and login info.</li>
-        <li><strong>Targeting:</strong> Show relevant ads and measure campaigns.</li>
-    </ul>
+        <div class="section-card">
+            <h5>How We Use Your Information</h5>
+            <ul>
+                <li>Manage account and provide services</li>
+                <li>Enhance community features</li>
+                <li>Personalized content recommendations</li>
+                <li>Marketing & promotions</li>
+                <li>Analytics and optimization</li>
+                <li>Legal compliance</li>
+            </ul>
+        </div>
 
-    <h5 class="mt-4">4. How We Use Cookies</h5>
-    <ul>
-        <li>Improve platform functionality</li>
-        <li>Personalize user experience</li>
-        <li>Analyze trends and interactions</li>
-        <li>Deliver relevant ads</li>
-    </ul>
+        <div class="section-card">
+            <h5>Sharing & Security</h5>
+            <ul>
+                <li>With service providers</li>
+                <li>Public community content</li>
+                <li>Legal obligations</li>
+                <li>Business acquisitions or transfers</li>
+            </ul>
+            <p>We implement safeguards, but no system is 100% secure. Protect your credentials.</p>
+        </div>
 
-    <h5 class="mt-4">5. Managing Preferences</h5>
-    <p>Use your browser settings to control cookies. Disabling may impact platform experience.</p>
+        <div class="section-card">
+            <h5>Your Rights & Community Privacy</h5>
+            <ul>
+                <li>Access, correct, or delete data</li>
+                <li>Object to marketing processing</li>
+                <li>Request data portability</li>
+            </ul>
+            <p>Community content may be visible publicly. Moderation may take time; we cannot guarantee instant removals.
+            </p>
+        </div>
 
-    <h5 class="mt-4">6. Third-Party Cookies</h5>
-    <p>We use third-party cookies for analytics and advertising. Review third-party policies for details.</p>
-
-    <h5 class="mt-4">7. Changes to This Notice</h5>
-    <p>We may update this Cookie Notice. Continued use implies acceptance.</p>
-
-    <h5 class="mt-4">8. Contact Us</h5>
-    <p>Email: <a href="mailto:support@fittelly.com" style="color: orange;">support@fittelly.com</a></p>
-    <p>Phone: +919920888443</p>
-
-    {{-- PRIVACY POLICY --}}
-    <h3 class="mt-5 mb-4">Privacy Policy</h3>
-    <p><strong>Last Updated:</strong> July 2025</p>
-
-    <h5>1. Introduction</h5>
-    <p>Fittelly Private Limited ("we," "our," or "us") values your privacy and is committed to protecting your personal data...</p>
-
-    <h5 class="mt-4">2. Information We Collect</h5>
-    <ul>
-        <li><strong>Personal Info:</strong> Name, email, phone, payments, etc.</li>
-        <li><strong>Usage Data:</strong> IP, device info, pages visited, community interactions.</li>
-        <li><strong>Community Content:</strong> Photos, comments, posts shared in public areas.</li>
-        <li><strong>Cookies:</strong> Used for tracking, performance, and personalization.</li>
-    </ul>
-
-    <h5 class="mt-4">3. How We Use Your Information</h5>
-    <ul>
-        <li>To manage your account and provide services</li>
-        <li>Enable and enhance community features</li>
-        <li>Recommend personalized content</li>
-        <li>Marketing and promotions</li>
-        <li>Analytics and performance optimization</li>
-        <li>Compliance with legal obligations</li>
-    </ul>
-
-    <h5 class="mt-4">4. Sharing Your Information</h5>
-    <ul>
-        <li>With service providers</li>
-        <li>Community visibility (public content)</li>
-        <li>Legal obligations</li>
-        <li>Business acquisitions or transfers</li>
-    </ul>
-
-    <h5 class="mt-4">5. Data Security</h5>
-    <p>We implement reasonable safeguards to protect your data. However, no system is 100% secure. Users are advised to protect their credentials.</p>
-
-    <h5 class="mt-4">6. International Transfers</h5>
-    <p>Your data may be transferred to servers outside your country (including India). We ensure secure handling of such data transfers.</p>
-
-    <h5 class="mt-4">7. Your Rights</h5>
-    <ul>
-        <li>Access your data</li>
-        <li>Request corrections or deletion</li>
-        <li>Object to processing (e.g., for marketing)</li>
-        <li>Request data portability</li>
-    </ul>
-
-    <h5 class="mt-4">8. Community Content and Privacy</h5>
-    <p>Be cautious when posting in public areas. Community content may be visible to others. We reserve the right to moderate but cannot guarantee instant removals.</p>
-
-    <h5 class="mt-4">9. Policy Updates</h5>
-    <p>This Privacy Policy may be updated. You will be notified of significant changes. Continued use confirms your acceptance.</p>
-
-    <h5 class="mt-4">10. Contact Us</h5>
-    <p>Email: <a href="mailto:support@fittelly.com" style="color: orange;">support@fittelly.com</a></p>
-    <p>Phone: +919920888443</p>
-</div>
+        <div class="section-card">
+            <h5>Policy Updates & Contact</h5>
+            <p>This Privacy Policy may be updated. Continued use confirms acceptance.</p>
+            <p>Email: <a href="mailto:support@fittelly.com" style="color: orange;">support@fittelly.com</a></p>
+            <p>Phone: +919920888443</p>
+        </div>
+    </div>
 @endsection

@@ -1,56 +1,130 @@
-@extends('layouts.static_header')
+@extends('layouts.public')
 
 @section('title', 'Legal Notice')
 
 @section('content')
-    <div class="page-header text-center py-5 mt-4" style="background-color: #1a1a1a; color: white;">
-        <h2 class="mb-3">Legal Notice</h2>
-        <div>
-            <a href="{{ url('/') }}" style="color: white; text-decoration: none;">
+    <style>
+        .legal-header {
+            background: linear-gradient(135deg, #141E30, #243B55);
+            color: white;
+            text-align: center;
+            padding: 100px 20px 80px;
+        }
+
+        .legal-header h2 {
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+
+        .breadcrumb-custom a {
+            color: #f0f0f0;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .breadcrumb-custom a:hover {
+            color: orange;
+        }
+
+        .legal-section {
+            background-color: var(--dark-color);
+            color: #ddd;
+            padding: 60px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+            transition: transform 0.3s ease;
+        }
+
+        .legal-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .legal-section h5 {
+            color: orange;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .legal-section p {
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        body {
+            background-color: #0b0b14;
+        }
+    </style>
+
+    <div class="legal-header">
+        <h2>Legal Notice</h2>
+        <div class="breadcrumb-custom mt-3">
+            <a href="{{ url('/') }}">
                 <i class="fa fa-home"></i> Home
             </a>
             <span style="color: orange;"> > Legal Notice</span>
         </div>
     </div>
 
-    <div class="container py-5" style="background-color: #000; color: white;">
-        <h3 class="mb-4">Legal Notice</h3>
+    <div class="container py-5">
+        <div class="legal-section">
+            <h5>1. Copyright Notice</h5>
+            <p>© 2024. Fittelly Private Limited. All rights reserved.</p>
+            <p>
+                The content, features, and functionality on the Fittelly platform, including but not limited to text,
+                graphics, logos, images, audio clips, video clips, user-generated content, and community interactions, are
+                the exclusive property of Fittelly Private Limited or its licensors and are protected by copyright,
+                trademark, and other intellectual property laws. Unauthorized use of any content or materials from this
+                platform, including community-generated content, is prohibited.
+            </p>
+            <p>
+                For permission requests or inquiries, please contact us at
+                <a href="mailto:fittelly24@gmail.com" style="color: orange;">fittelly24@gmail.com</a>.
+            </p>
+        </div>
 
-        <h5>1. Copyright Notice</h5>
-        <p>© 2024. Fittelly Private Limited. All rights reserved.</p>
-        <p>
-            The content, features, and functionality on the Fittelly platform, including but not limited to text, graphics, logos, images, audio clips, video clips, user-generated content, and community interactions, are the exclusive property of Fittelly Private Limited or its licensors and are protected by copyright, trademark, and other intellectual property laws. Unauthorized use of any content or materials from this platform, including community-generated content, is prohibited.
-        </p>
-        <p>
-            For permission requests or inquiries, please contact us at <a href="mailto:fittelly24@gmail.com" style="color: orange;">fittelly24@gmail.com</a>.
-        </p>
+        <div class="legal-section">
+            <h5>2. Trademark Notice</h5>
+            <p>
+                The trademarks, service marks, and logos used and displayed on the Fittelly platform are registered and
+                unregistered trademarks of Fittelly Private Limited. Other company, product, and service names may be
+                trademarks or service marks of their respective owners. Nothing on this platform should be construed as
+                granting any license or right to use any trademark without prior written permission.
+            </p>
+        </div>
 
-        <h5 class="mt-5">2. Trademark Notice</h5>
-        <p>
-            The trademarks, service marks, and logos used and displayed on the Fittelly platform are registered and unregistered trademarks of Fittelly Private Limited. Other company, product, and service names may be trademarks or service marks of their respective owners. Nothing on this platform, including in user-generated content or community sections, should be construed as granting, by implication or otherwise, any license or right to use any trademark displayed on the platform without the prior written permission of Fittelly Private Limited or the third-party owner.
-        </p>
+        <div class="legal-section">
+            <h5>3. Disclaimer Notice</h5>
+            <p>
+                The information provided on the Fittelly platform is for general informational purposes only. While we
+                strive for accuracy, we make no warranties or representations of any kind regarding reliability or
+                completeness. Your use of the platform and its community features is at your own risk.
+            </p>
+        </div>
 
-        <h5 class="mt-5">3. Disclaimer Notice</h5>
-        <p>
-            The information, content, and user-generated content provided on the Fittelly platform are for general informational purposes only. While we strive to provide accurate and up-to-date content, including in our community features, we make no warranties or representations of any kind, express or implied, regarding the accuracy, reliability, or completeness of the information. Your use of the platform and its content, including interactions in the community, is at your own risk.
-        </p>
-        <p>
-            We are not responsible for any errors or omissions in the content, including user-generated content, or for any actions you take based on the information provided.
-        </p>
+        <div class="legal-section">
+            <h5>4. Limitation of Liability Notice</h5>
+            <p>
+                To the fullest extent permitted by law, Fittelly Private Limited and its affiliates shall not be liable for
+                any direct, indirect, incidental, or consequential damages arising from your use of the platform or its
+                content.
+            </p>
+        </div>
 
-        <h5 class="mt-5">4. Limitation of Liability Notice</h5>
-        <p>
-            To the fullest extent permitted by applicable law, Fittelly Private Limited and its affiliates, officers, directors, employees, and agents shall not be liable for any direct, indirect, incidental, special, consequential, or punitive damages, or any damages whatsoever, whether in an action of contract, negligence, or other tort, arising out of or in connection with your use of the Fittelly platform or any content therein, including community-generated content and interactions. This includes, without limitation, damages for loss of profits, data, or other intangible losses.
-        </p>
+        <div class="legal-section">
+            <h5>5. Indemnification Notice</h5>
+            <p>
+                You agree to indemnify and hold harmless Fittelly Private Limited and its affiliates from any claims,
+                damages, or expenses resulting from your use of the platform or violation of these terms.
+            </p>
+        </div>
 
-        <h5 class="mt-5">5. Indemnification Notice</h5>
-        <p>
-            You agree to indemnify, defend, and hold harmless Fittelly Private Limited and its affiliates, officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, costs, or expenses, including reasonable attorneys' fees, arising out of or in any way related to your use of the Fittelly platform, including community features and user-generated content, your violation of these Terms and Conditions, or your violation of any rights of another party.
-        </p>
-
-        <h5 class="mt-5">6. Governing Law and Jurisdiction Notice</h5>
-        <p>
-            These notices and any disputes arising out of or related to the Fittelly platform, its community features, or these notices shall be governed by and construed in accordance with the laws of India, without regard to its conflict of law principles. Any legal action or proceeding arising under these notices shall be brought exclusively in the courts located in Mumbai, Maharashtra, India.
-        </p>
+        <div class="legal-section">
+            <h5>6. Governing Law and Jurisdiction Notice</h5>
+            <p>
+                These notices shall be governed by the laws of India. Any disputes shall be subject to the exclusive
+                jurisdiction of courts in Mumbai, Maharashtra.
+            </p>
+        </div>
     </div>
 @endsection
