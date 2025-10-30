@@ -85,15 +85,16 @@
             z-index: 1000;
             transition: var(--transition-normal);
             box-shadow: var(--shadow-lg);
+            overflow-y: auto;
         }
 
-        .sidebar-header {
+        .sidebar-header_old {
             padding: 2rem 1.5rem;
             border-bottom: 1px solid var(--border-primary);
             background: var(--bg-card);
         }
 
-        .sidebar-brand {
+        .sidebar-brand_old {
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -101,8 +102,54 @@
             transition: var(--transition-fast);
         }
 
-        .sidebar-brand:hover {
+        .sidebar-brand_old:hover {
             transform: translateX(4px);
+        }
+
+        .sidebar-header {
+            padding: 0.5rem 1.5rem;
+            border-bottom: 1px solid var(--border-primary);
+            background: var(--bg-card);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+            border: none;
+
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            scale: 3;
+        }
+
+        .sidebar-brand:hover {
+            /*transform: translateX(4px);*/
+            opacity: 0.9;
+        }
+
+        .con-logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logo-img {
+            height: 50px;
+            max-width: 100%;
+            object-fit: contain;
+            transition: transform 0.2s ease;
+
+        }
+
+        .sidebar-brand:hover .logo-img {
+            transform: scale(1.05);
         }
 
         .brand-icon {
@@ -191,6 +238,14 @@
 
         .nav-link:hover,
         .nav-link.active {
+            color: var(--text-primary);
+            background: linear-gradient(135deg, rgba(247, 163, 26, 0.85), rgba(247, 163, 26, 0.6));
+            border: 1px solid rgba(247, 163, 26, 0.2);
+            transform: translateX(4px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-active {
             color: var(--text-primary);
             background: linear-gradient(135deg, rgba(247, 163, 26, 0.85), rgba(247, 163, 26, 0.6));
             border: 1px solid rgba(247, 163, 26, 0.2);
@@ -2494,35 +2549,43 @@
         <!-- Sidebar -->
         <nav class="sidebar">
             <div class="sidebar-header">
-                <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-                    <div class="brand-icon">
-                        <i class="fas fa-graduation-cap"></i>
+                <a href="{{ route('admin.dashboard') }}" class="sidebar-brand" data-link>
+                    <div class="con-logo">
+                        <img src="{{ asset('storage/app/public/logos/app_logo.png') }}"
+                            alt="FITTELLY Admin Dashboard Logo" class="logo-img">
                     </div>
-                    <div class="brand-text">fitlley</div>
                 </a>
             </div>
 
+
             <div class="sidebar-nav">
                 <div class="nav-item">
-                    <a class="nav-link active" href="{{ route('admin.dashboard') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.dashboard') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.dashboard') }}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.users') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.users*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.users') }}">
                         <i class="nav-icon fas fa-users"></i>
                         <span>Users</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.roles') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.roles*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.roles') }}">
                         <i class="nav-icon fas fa-user-tag"></i>
                         <span>Roles</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.permissions') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.permissions*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.permissions') }}">
                         <i class="nav-icon fas fa-key"></i>
                         <span>Permissions</span>
                     </a>
@@ -2535,28 +2598,36 @@
 
                 <!-- FitLive Section -->
                 <div class="nav-section">
-                    <div class="nav-section-title">FitLive</div>
+                    <div class="nav-section-title {{ request()->is('admin/fitlive*') ? 'nav-active' : '' }}">FitLive
+                    </div>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitlive.categories.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.fitlive.categories*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitlive.categories.index') }}">
                         <i class="nav-icon fas fa-folder"></i>
                         <span>Categories</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitlive.subcategories.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.fitlive.subcategories*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitlive.subcategories.index') }}">
                         <i class="nav-icon fas fa-folder-open"></i>
                         <span>Subcategories</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitlive.sessions.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.fitlive.sessions*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitlive.sessions.index') }}">
                         <i class="nav-icon fas fa-broadcast-tower"></i>
                         <span>Live Sessions</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitlive.archive.index') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.fitlive.archive*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitlive.archive.index') }}">
                         <i class="nav-icon fas fa-archive"></i>
                         <span>Archive</span>
                     </a>
@@ -2564,16 +2635,19 @@
 
                 <!-- FitNews Section -->
                 <div class="nav-section">
-                    <div class="nav-section-title">FitNews</div>
+                    <div class="nav-section-title {{ request()->is('admin/fitnews*') ? 'nav-active' : '' }}">FitNews
+                    </div>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitnews.index') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.fitnews.index*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitnews.index') }}">
                         <i class="nav-icon fas fa-newspaper"></i>
                         <span>News Streams</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitnews.archive.index') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.fitnews.archive*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitnews.archive.index') }}">
                         <i class="nav-icon fas fa-archive"></i>
                         <span>Archive</span>
                     </a>
@@ -2581,34 +2655,42 @@
 
                 <!-- FitGuide Section -->
                 <div class="nav-section">
-                    <div class="nav-section-title">FitGuide</div>
+                    <div class="nav-section-title {{ request()->is('admin/fitguide*') ? 'nav-active' : '' }}">FitGuide
+                    </div>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitguide.index') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.fitguide.index*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitguide.index') }}">
                         <i class="nav-icon fas fa-book"></i>
                         <span>Overview</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitguide.categories.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.fitguide.categories*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitguide.categories.index') }}">
                         <i class="nav-icon fas fa-folder"></i>
                         <span>Categories</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitguide.subcategories.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.fitguide.subcategories*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitguide.subcategories.index') }}">
                         <i class="nav-icon fas fa-folder-open"></i>
                         <span>Subcategories</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitguide.single.index') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.fitguide.single*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitguide.single.index') }}">
                         <i class="nav-icon fas fa-play-circle"></i>
                         <span>Single Videos</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitguide.series.index') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.fitguide.series*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitguide.series.index') }}">
                         <i class="nav-icon fas fa-video"></i>
                         <span>Series</span>
                     </a>
@@ -2616,22 +2698,26 @@
 
                 <!-- FitDoc Section -->
                 <div class="nav-section">
-                    <div class="nav-section-title">FitDoc</div>
+                    <div class="nav-section-title {{ request()->is('admin/fitdoc*') ? 'nav-active' : '' }}">FitDoc
+                    </div>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitdoc.index') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.fitdoc.index*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitdoc.index') }}">
                         <i class="nav-icon fas fa-file-medical"></i>
                         <span>Overview</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitdoc.single.index') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.fitdoc.single*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitdoc.single.index') }}">
                         <i class="nav-icon fas fa-play-circle"></i>
                         <span>Single Videos</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitdoc.series.index') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.fitdoc.series*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitdoc.series.index') }}">
                         <i class="nav-icon fas fa-video"></i>
                         <span>Series</span>
                     </a>
@@ -2639,121 +2725,178 @@
 
                 <!-- FitInsight Section -->
                 <div class="nav-section">
-                    <div class="nav-section-title">FitInsight</div>
+                    <div class="nav-section-title {{ request()->is('admin/fitinsight*') ? 'nav-active' : '' }}">
+                        FitInsight</div>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitinsight.categories.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.fitinsight.categories*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitinsight.categories.index') }}">
                         <i class="nav-icon fas fa-tags"></i>
                         <span>Categories</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitinsight.blogs.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.fitinsight.blogs*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitinsight.blogs.index') }}">
                         <i class="nav-icon fas fa-blog"></i>
                         <span>Blogs</span>
                     </a>
                 </div>
 
+
                 <!-- FitArena Live Section -->
+                {{-- FitArena Live Section --}}
                 <div class="nav-section">
-                    <div class="nav-section-title">FitArena Live</div>
+                    <div class="nav-section-title {{ request()->is('admin/fitarena*') ? 'nav-active' : '' }}">FitArena
+                        Live</div>
                 </div>
+
+                {{-- All Events --}}
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitarena.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.fitarena.index') && !request()->hasAny(['status', 'featured']) ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitarena.index') }}">
                         <i class="nav-icon fas fa-calendar-alt"></i>
                         <span>All Events</span>
                     </a>
                 </div>
+
+                {{-- Create Event --}}
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitarena.create') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.fitarena.create*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitarena.create') }}">
                         <i class="nav-icon fas fa-plus-circle"></i>
                         <span>Create Event</span>
                     </a>
                 </div>
+
+                {{-- Live Events --}}
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitarena.index') }}?status=live">
+                    <a data-link class="nav-link {{ request()->fullUrlIs('*status=live*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitarena.index', ['status' => 'live']) }}">
                         <i class="nav-icon fas fa-broadcast-tower text-danger"></i>
                         <span>Live Events</span>
                     </a>
                 </div>
+
+                {{-- Upcoming Events --}}
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitarena.index') }}?status=upcoming">
+                    <a data-link class="nav-link {{ request()->fullUrlIs('*status=upcoming*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitarena.index', ['status' => 'upcoming']) }}">
                         <i class="nav-icon fas fa-clock text-warning"></i>
                         <span>Upcoming Events</span>
                     </a>
                 </div>
+
+                {{-- Featured Events --}}
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.fitarena.index') }}?featured=1">
+                    <a data-link class="nav-link {{ request()->fullUrlIs('*featured=1*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.fitarena.index', ['featured' => 1]) }}">
                         <i class="nav-icon fas fa-star text-warning"></i>
                         <span>Featured Events</span>
                     </a>
                 </div>
 
+
                 <!-- Community Section -->
                 <div class="nav-section">
-                    <div class="nav-section-title">Community</div>
+                    <div class="nav-section-title {{ request()->is('admin/community*') ? 'nav-active' : '' }}">
+                        Community
+                    </div>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.community.dashboard') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.community.dashboard') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.community.dashboard') }}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <span>Dashboard</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.community.posts.index') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.community.posts*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.community.posts.index') }}">
                         <i class="nav-icon fas fa-comments"></i>
                         <span>Posts</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.community.categories.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.community.categories*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.community.categories.index') }}">
                         <i class="nav-icon fas fa-folder"></i>
                         <span>Post Categories</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.community.groups.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.community.groups*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.community.groups.index') }}">
                         <i class="nav-icon fas fa-users"></i>
                         <span>Groups</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.community.badges.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.community.badges*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.community.badges.index') }}">
                         <i class="nav-icon fas fa-medal"></i>
                         <span>Badges</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.community.moderation.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.community.moderation*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.community.moderation.index') }}">
                         <i class="nav-icon fas fa-shield-alt"></i>
                         <span>Moderation</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.community.fittalk.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.community.fittalk*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.community.fittalk.index') }}">
                         <i class="nav-icon fas fa-phone-alt"></i>
                         <span>FitTalk Sessions</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.community.fitflix-shorts.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.community.fitflix-shorts.index*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.community.fitflix-shorts.index') }}">
                         <i class="nav-icon fas fa-mobile-alt"></i>
                         <span>FitFlix Shorts</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.community.fitflix-shorts.categories.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.community.fitflix-shorts.categories*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.community.fitflix-shorts.categories.index') }}">
                         <i class="nav-icon fas fa-folder"></i>
                         <span>Shorts Categories</span>
                     </a>
                 </div>
 
+
                 <!-- Website Management Section -->
                 <div class="nav-section">
-                    <div class="nav-section-title">Website</div>
+                    <div class="nav-section-title {{ request()->is('admin/homepage*') ? 'nav-active' : '' }}">Website
+                    </div>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.homepage.hero.index') }}">
+                    <a data-link class="nav-link {{ request()->routeIs('admin.homepage.hero*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.homepage.hero.index') }}">
                         <i class="nav-icon fas fa-home"></i>
                         <span>Homepage Heroes</span>
                     </a>
@@ -2761,51 +2904,70 @@
 
                 <!-- Subscription Management Section -->
                 <div class="nav-section">
-                    <div class="nav-section-title">Subscription Management</div>
+                    <div class="nav-section-title {{ request()->is('admin/subscriptions*') ? 'nav-active' : '' }}">
+                        Subscription Management</div>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.subscriptions.plans.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.subscriptions.plans*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.subscriptions.plans.index') }}">
                         <i class="nav-icon fas fa-credit-card"></i>
                         <span>Subscription Plans</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.subscriptions.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.subscriptions.index') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.subscriptions.index') }}">
                         <i class="nav-icon fas fa-users-cog"></i>
                         <span>User Subscriptions</span>
                     </a>
                 </div>
+
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.subscriptions.analytics') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.subscriptions.analytics') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.subscriptions.analytics') }}">
                         <i class="nav-icon fas fa-chart-line"></i>
                         <span>Subscription Analytics</span>
                     </a>
                 </div>
 
+
                 <!-- Influencer Program Section -->
                 <div class="nav-section">
-                    <div class="nav-section-title">Influencer Program</div>
+                    <div class="nav-section-title {{ request()->is('admin/influencers*') ? 'nav-active' : '' }}">
+                        Influencer Program</div>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.influencers.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.influencers.index') && !request()->has('approved') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.influencers.index') }}">
                         <i class="nav-icon fas fa-user-check"></i>
                         <span>Applications</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.influencers.index') }}">
+                    <a data-link class="nav-link {{ request()->fullUrlIs('*approved*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.influencers.index', ['approved' => true]) }}">
                         <i class="nav-icon fas fa-star"></i>
                         <span>Approved Influencers</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.influencers.payouts.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.influencers.payouts*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.influencers.payouts.index') }}">
                         <i class="nav-icon fas fa-money-bill-wave"></i>
                         <span>Commission Payouts</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.influencers.analytics') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.influencers.analytics*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.influencers.analytics') }}">
                         <i class="nav-icon fas fa-chart-bar"></i>
                         <span>Performance Analytics</span>
                     </a>
@@ -2813,43 +2975,53 @@
 
                 <!-- Referral System Section -->
                 <div class="nav-section">
-                    <div class="nav-section-title">Referral System</div>
+                    <div
+                        class="nav-section-title {{ request()->is('admin/subscriptions/referrals*') ? 'nav-active' : '' }}">
+                        Referral System</div>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.subscriptions.referrals.index') }}">
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.subscriptions.referrals.index') && !request()->has('usage') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.subscriptions.referrals.index') }}">
                         <i class="nav-icon fas fa-ticket-alt"></i>
                         <span>Referral Codes</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.subscriptions.referrals.index') }}">
+                    <a data-link class="nav-link {{ request()->fullUrlIs('*usage*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.subscriptions.referrals.index', ['usage' => true]) }}">
                         <i class="nav-icon fas fa-exchange-alt"></i>
                         <span>Usage Tracking</span>
                     </a>
                 </div>
                 <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.subscriptions.referrals.analytics') }}">
-                        <i class="nav-icon fas fa-analytics"></i>
+                    <a data-link
+                        class="nav-link {{ request()->routeIs('admin.subscriptions.referrals.analytics*') ? 'nav-active' : '' }}"
+                        href="{{ route('admin.subscriptions.referrals.analytics') }}">
+                        <i class="nav-icon fas fa-chart-line"></i>
                         <span>Referral Analytics</span>
                     </a>
                 </div>
 
                 <!-- Community Section -->
-                <div class="nav-section">
-                    <div class="nav-section-title">Community</div>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.community.fitflix-shorts.index') }}">
-                        <i class="nav-icon fas fa-mobile-alt"></i>
-                        <span>FitFlix Shorts</span>
-                    </a>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.community.fitflix-shorts.categories.index') }}">
-                        <i class="nav-icon fas fa-folder"></i>
-                        <span>Shorts Categories</span>
-                    </a>
-                </div>
+                <!--<div class="nav-section">-->
+                <!--    <div class="nav-section-title {{ request()->is('admin/community/fitflix-shorts*') ? 'nav-active' : '' }}">Community</div>-->
+                <!--</div>-->
+                <!--<div class="nav-item">-->
+                <!--    <a data-link class="nav-link {{ request()->routeIs('admin.community.fitflix-shorts.index*') ? 'nav-active' : '' }}"-->
+                <!--        href="{{ route('admin.community.fitflix-shorts.index') }}">-->
+                <!--        <i class="nav-icon fas fa-mobile-alt"></i>-->
+                <!--        <span>FitFlix Shorts</span>-->
+                <!--    </a>-->
+                <!--</div>-->
+                <!--<div class="nav-item">-->
+                <!--    <a data-link class="nav-link {{ request()->routeIs('admin.community.fitflix-shorts.categories*') ? 'nav-active' : '' }}"-->
+                <!--        href="{{ route('admin.community.fitflix-shorts.categories.index') }}">-->
+                <!--        <i class="nav-icon fas fa-folder"></i>-->
+                <!--        <span>Shorts Categories</span>-->
+                <!--    </a>-->
+                <!--</div>-->
+
 
 
             </div>
@@ -2879,43 +3051,155 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Mobile sidebar toggle
-            function toggleSidebar() {
-                document.querySelector('.sidebar').classList.toggle('show');
+        (function () {
+            function findScrollableAncestor(el) {
+                while (el) {
+                    const overflowY = getComputedStyle(el).overflowY;
+                    if (overflowY === 'auto' || overflowY === 'scroll') return el;
+                    el = el.parentElement;
+                }
+                return null;
             }
-            window.toggleSidebar = toggleSidebar; // make it accessible in HTML onclick
 
-            // Active navigation highlighting
+            function scrollToActive(activeEl, container) {
+                try {
+                    // If container found, compute offset so item sits ~1/3 from top
+                    if (container) {
+                        const containerRect = container.getBoundingClientRect();
+                        const elRect = activeEl.getBoundingClientRect();
+                        const offsetTop = activeEl.offsetTop - container.offsetTop;
+                        const desired = offsetTop - Math.floor(container.clientHeight / 3);
+                        container.scrollTo({
+                            top: desired,
+                            behavior: 'smooth'
+                        });
+                    } else {
+                        // fallback: scroll element into view within viewport
+                        activeEl.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    }
+
+                    // flash highlight
+                    activeEl.classList.add('flash-highlight');
+                    setTimeout(() => activeEl.classList.remove('flash-highlight'), 1200);
+                } catch (e) {
+                    console.error('scrollToActive error:', e);
+                }
+            }
+
+            function getBestActive() {
+                // Prefer link elements with nav-active, otherwise first .nav-active anywhere
+                let candidate = document.querySelector('.sidebar a.nav-active') ||
+                    document.querySelector('.sidebar .nav-active') ||
+                    document.querySelector('.nav-active');
+                return candidate;
+            }
+
+            function attemptOnce() {
+                const active = getBestActive();
+                if (!active) {
+                    console.info('[SidebarScroll] No .nav-active found yet.');
+                    return false;
+                }
+
+                // If the active is inside a child element (e.g. <div class="nav-section-title nav-active">),
+                // prefer the closest link or the active element itself.
+                const preferred = active.closest('a') || active;
+                // find scrollable ancestor starting at preferred, fallback to .sidebar
+                const scrollable = findScrollableAncestor(preferred) || document.querySelector('.sidebar') || null;
+
+                console.info('[SidebarScroll] Active element:', preferred, 'Scrollable container:', scrollable);
+                scrollToActive(preferred, scrollable);
+                return true;
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                // Try immediately
+                if (attemptOnce()) return;
+
+                // If not found immediately, try a short retry loop (for DOM/rendering delays)
+                let tries = 0;
+                const maxTries = 8;
+                const interval = setInterval(() => {
+                    tries++;
+                    if (attemptOnce() || tries >= maxTries) {
+                        clearInterval(interval);
+                    }
+                }, 250);
+
+                // Also observe DOM mutations (covers Livewire/AJAX updates)
+                const sidebar = document.querySelector('.sidebar') || document.body;
+                const observer = new MutationObserver((mutations, obs) => {
+                    if (getBestActive()) {
+                        attemptOnce();
+                        obs.disconnect();
+                    }
+                });
+                observer.observe(sidebar, {
+                    childList: true,
+                    subtree: true
+                });
+            });
+        })();
+    </script>
+
+    <style>
+        /* Make sure flash applies to anchors and blocks */
+        @keyframes flash {
+            0% {
+                box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+            }
+
+            40% {
+                box-shadow: 0 0 14px var(--primary-color);
+            }
+
+            100% {
+                box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+            }
+        }
+
+        .flash-highlight,
+        .flash-highlight>* {
+            animation: flash 1.1s ease-in-out;
+        }
+
+        /* Optional: stronger visual for nav-active if not present */
+        .nav-active {
+            outline: none;
+        }
+
+        /* If your nav-active is on a .nav-section-title (non-link), make it look clickable */
+        .nav-section-title.nav-active {
+            background: var(--primary-color);
+            color: var(--bg-primary) !important;
+            font-weight: 600;
+            padding: 0.6rem 1rem;
+            border-radius: 3px;
+        }
+    </style>
+
+    <script>
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('show');
+        }
+
+        // Active navigation highlighting
+        document.addEventListener('DOMContentLoaded', function () {
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.nav-link');
-            const sidebar = document.querySelector('.sidebar');
-
-            let activeLink = null;
 
             navLinks.forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('href') === currentPath) {
                     link.classList.add('active');
-                    activeLink = link;
                 }
             });
-
-            // Scroll sidebar to active link if it's not fully visible
-            if (activeLink) {
-                const sidebarTop = sidebar.scrollTop;
-                const sidebarHeight = sidebar.clientHeight;
-                const linkOffsetTop = activeLink.offsetTop;
-                const linkHeight = activeLink.offsetHeight;
-
-                if (linkOffsetTop < sidebarTop || linkOffsetTop + linkHeight > sidebarTop + sidebarHeight) {
-                    // Scroll so active link is roughly in the middle
-                    sidebar.scrollTop = linkOffsetTop - sidebarHeight / 2 + linkHeight / 2;
-                }
-            }
         });
     </script>
-
     @stack('scripts')
 </body>
 

@@ -1308,12 +1308,13 @@
     <footer class="footer text-light pt-5 pb-3">
         <div class="container text-center">
             {{-- Logo centered --}}
-            <div class="con-logo mb-3">
-                <img src="{{ asset('storage/app/public/app_logo.png') }}" alt="FITTELLY Logo" height="50" class="mb-2">
+            <div class="con-logo">
+                <img src="{{ asset('storage/app/public/logos/app_logo.png') }}" alt="FITTELLY Logo" height="50"
+                    style="scale:3;"">
             </div>
 
             {{-- Social icons centered --}}
-            <div class="mb-3">
+            <div class=" mb-3">
                 <a href="#" class="text-light me-3 fs-5"><i class="fab fa-facebook"></i></a>
                 <a href="#" class="text-light me-3 fs-5"><i class="fab fa-instagram"></i></a>
             </div>
